@@ -1,12 +1,14 @@
 "use client";
 
 import { FOLDER_CONTENTS, type FolderItem } from "@/content/folder-files";
+import { useWindowManager } from "@/hooks/use-window-manager";
 
 interface FolderViewProps {
   folderId: string;
 }
 
 export function FolderView({ folderId }: FolderViewProps) {
+  const { openWindow } = useWindowManager();
   const folder = FOLDER_CONTENTS[folderId];
 
   if (!folder) {
@@ -18,6 +20,26 @@ export function FolderView({ folderId }: FolderViewProps) {
   }
 
   const items = folder.items;
+  // Pre-compute image indices so prev/next skips text entries
+  const imagesOnly = items.filter((it) => it.type === "image");
+
+  const handleClickItem = (item: FolderItem) => {
+    if (item.type === "text") {
+      // Open the dedicated notes app for this folder
+      openWindow(`${folderId}-notes`);
+      return;
+    }
+    if (item.type === "image" && item.src) {
+      const imageIndex = imagesOnly.findIndex((i) => i.name === item.name);
+      openWindow("image-viewer", {
+        imageUrl: item.src,
+        imageName: item.name,
+        folderId,
+        imageIndex: Math.max(0, imageIndex),
+        imageCount: imagesOnly.length,
+      });
+    }
+  };
 
   return (
     <div className="-mx-5 -my-4 h-[calc(100%+32px)] overflow-hidden">
@@ -64,31 +86,35 @@ export function FolderView({ folderId }: FolderViewProps) {
             .
           </div>
         ) : (
-          items.map((item) => <FolderRow key={item.name} item={item} />)
+          items.map((item) => (
+            <FolderRow key={item.name} item={item} onClick={() => handleClickItem(item)} />
+          ))
         )}
       </div>
     </div>
   );
 }
 
-function FolderRow({ item }: { item: FolderItem }) {
+function FolderRow({ item, onClick }: { item: FolderItem; onClick: () => void }) {
   return (
-    <div
-      className="flex items-center gap-3 border-b px-4 py-3 transition-colors hover:bg-[var(--color-surface-hover)]"
+    <button
+      className="flex w-full items-center gap-3 border-b px-4 py-3 text-left transition-colors hover:bg-[var(--color-surface-hover)]"
       style={{ borderColor: "var(--color-border)" }}
+      onClick={onClick}
+      onDoubleClick={onClick}
     >
       <div className="flex h-8 w-8 shrink-0 items-center justify-center">
         {item.type === "text" ? <TextFileIcon /> : <ImageFileIcon src={item.src} />}
       </div>
 
-      <span className="flex-1 text-[12.5px]" style={{ color: "var(--color-text)" }}>
+      <span className="flex-1 truncate text-[12.5px]" style={{ color: "var(--color-text)" }}>
         {item.name}
       </span>
 
       <span className="text-[10.5px] font-semibold tracking-wider" style={{ color: "var(--color-text-muted)" }}>
         {item.type.toUpperCase()}
       </span>
-    </div>
+    </button>
   );
 }
 
@@ -139,7 +165,7 @@ export function IndiaFolder() {
   return <FolderView folderId="india" />;
 }
 
-// Back-compat default export for any remaining imports
+// Back-compat default export
 export function PhotoGalleryApp() {
   return <FolderView folderId="germany" />;
 }

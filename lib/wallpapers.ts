@@ -4,18 +4,18 @@ export interface WallpaperOption {
   url: string;              // used in light mode (and as default if no darkUrl)
   darkUrl?: string;         // used in dark mode
   /**
-   * "theme-cat" = pixel cat wallpaper that auto-picks one of 8 variants
-   *  based on current accent + theme. The `url` field is a preview used in Settings.
+   * "theme-solid" = a plain solid color that tracks the current accent + theme.
+   * The Wallpaper component renders it via inline CSS; the `url` field is empty.
    */
-  kind: "illustration" | "photo" | "solid" | "gradient" | "theme-cat";
+  kind: "illustration" | "photo" | "solid" | "gradient" | "theme-solid";
 }
 
 export const WALLPAPERS: WallpaperOption[] = [
   {
-    id: "cat-pixel",
-    label: "Pixel Cat (theme)",
-    url: "/wallpapers/cat-orange-light.png", // preview for Settings
-    kind: "theme-cat",
+    id: "theme-solid",
+    label: "Theme Color",
+    url: "",
+    kind: "theme-solid",
   },
   {
     id: "wallpaper1",
@@ -49,20 +49,43 @@ export const WALLPAPERS: WallpaperOption[] = [
   },
 ];
 
-export const DEFAULT_WALLPAPER_ID = "cat-pixel";
+export const DEFAULT_WALLPAPER_ID = "theme-solid";
+
+/** Solid background colors per accent for "theme-solid" wallpaper. */
+export const THEME_SOLID_LIGHT: Record<string, string> = {
+  orange: "#ea580c",
+  green: "#5fa85f",
+  blue: "#5087d4",
+  purple: "#a172cf",
+};
+
+export const THEME_SOLID_DARK: Record<string, string> = {
+  orange: "#2a1608",
+  green: "#0d1f0d",
+  blue: "#0b1322",
+  purple: "#1a0e22",
+};
 
 /**
  * Resolve the actual wallpaper URL for a given wallpaper + current theme + accent.
- * For theme-cat wallpapers, this picks one of 8 variants.
+ * Returns an empty string for "theme-solid" since it's rendered as a solid color.
  */
 export function resolveWallpaperUrl(
   wp: WallpaperOption,
   mode: "light" | "dark",
-  accent: "orange" | "green" | "blue" | "purple"
+  _accent: "orange" | "green" | "blue" | "purple"
 ): string {
-  if (wp.kind === "theme-cat") {
-    return `/wallpapers/cat-${accent}-${mode}.png`;
-  }
+  if (wp.kind === "theme-solid") return "";
   if (mode === "dark" && wp.darkUrl) return wp.darkUrl;
   return wp.url;
+}
+
+/**
+ * Get the solid background color for "theme-solid" wallpapers.
+ */
+export function resolveThemeSolidColor(
+  mode: "light" | "dark",
+  accent: "orange" | "green" | "blue" | "purple"
+): string {
+  return mode === "dark" ? THEME_SOLID_DARK[accent] : THEME_SOLID_LIGHT[accent];
 }

@@ -2,7 +2,7 @@
 
 import { useTheme } from "@/hooks/use-theme";
 import { ACCENT_COLORS } from "@/lib/constants";
-import { WALLPAPERS, resolveWallpaperUrl } from "@/lib/wallpapers";
+import { WALLPAPERS, resolveWallpaperUrl, resolveThemeSolidColor } from "@/lib/wallpapers";
 
 export function SettingsApp() {
   const {
@@ -99,8 +99,9 @@ export function SettingsApp() {
         <div className="grid grid-cols-3 gap-3">
           {WALLPAPERS.map((wp) => {
             const isSelected = !customWallpaperUrl && wallpaperId === wp.id;
-            // Show theme-appropriate preview (resolves theme-cat variants)
+            const isThemeSolid = wp.kind === "theme-solid";
             const previewUrl = resolveWallpaperUrl(wp, mode, accent);
+            const solidBg = isThemeSolid ? resolveThemeSolidColor(mode, accent) : null;
             return (
               <button
                 key={wp.id}
@@ -116,12 +117,16 @@ export function SettingsApp() {
               >
                 <div
                   className="aspect-[16/10] w-full"
-                  style={{
-                    backgroundImage: `url(${previewUrl})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundColor: "#ea580c",
-                  }}
+                  style={
+                    isThemeSolid
+                      ? { background: solidBg! }
+                      : {
+                          backgroundImage: `url(${previewUrl})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          backgroundColor: "#ea580c",
+                        }
+                  }
                 />
                 <div
                   className="truncate px-2 py-1.5 text-left text-[11.5px]"

@@ -29,8 +29,15 @@ import {
   AustriaFolder,
   IndiaFolder,
 } from "@/components/apps/PhotoGalleryApp";
-import { AboutTxtApp, BuildLogApp } from "@/components/apps/TextEditorApp";
+import {
+  AboutTxtApp,
+  BuildLogApp,
+  GermanyNotesApp,
+  AustriaNotesApp,
+  IndiaNotesApp,
+} from "@/components/apps/TextEditorApp";
 import { SiteStatsApp } from "@/components/apps/SiteStatsApp";
+import { ImageViewerApp } from "@/components/apps/ImageViewerApp";
 
 const APP_COMPONENTS: Record<string, React.ComponentType> = {
   about: AboutApp,
@@ -47,6 +54,10 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
   "folder-india": IndiaFolder,
   "about-txt": AboutTxtApp,
   "build-log-md": BuildLogApp,
+  "germany-notes": GermanyNotesApp,
+  "austria-notes": AustriaNotesApp,
+  "india-notes": IndiaNotesApp,
+  "image-viewer": ImageViewerApp,
   stats: SiteStatsApp,
 };
 

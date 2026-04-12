@@ -45,6 +45,7 @@ export function TextEditorApp({ initialContent, appId }: TextEditorAppProps) {
 
 // Wrapped instances per file
 import { ABOUT_TXT, BUILD_LOG_MD } from "@/content/text-files";
+import { FOLDER_CONTENTS } from "@/content/folder-files";
 
 export function AboutTxtApp() {
   return <TextEditorApp initialContent={ABOUT_TXT} appId="about-txt" />;
@@ -52,4 +53,16 @@ export function AboutTxtApp() {
 
 export function BuildLogApp() {
   return <TextEditorApp initialContent={BUILD_LOG_MD} appId="build-log-md" />;
+}
+
+export function GermanyNotesApp() {
+  return <TextEditorApp initialContent={FOLDER_CONTENTS.germany.text} appId="germany-notes" />;
+}
+
+export function AustriaNotesApp() {
+  return <TextEditorApp initialContent={FOLDER_CONTENTS.austria.text} appId="austria-notes" />;
+}
+
+export function IndiaNotesApp() {
+  return <TextEditorApp initialContent={FOLDER_CONTENTS.india.text} appId="india-notes" />;
 }

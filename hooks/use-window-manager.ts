@@ -12,10 +12,23 @@ const MIN_W = 280;
 const MIN_H = 180;
 const TITLEBAR_VISIBLE_MIN = 100;
 
+/**
+ * Per-window context — stores arbitrary data an app needs to render
+ * (e.g. which image the ImageViewer should show).
+ */
+export interface WindowContext {
+  imageUrl?: string;
+  imageName?: string;
+  folderId?: string;
+  imageIndex?: number;
+  imageCount?: number;
+}
+
 interface WindowManagerContextValue {
   windows: WindowState[];
   windowStatuses: Record<string, string>;
-  openWindow: (appId: string) => void;
+  windowContexts: Record<string, WindowContext>;
+  openWindow: (appId: string, context?: WindowContext) => void;
   closeWindow: (appId: string) => void;
   minimizeWindow: (appId: string) => void;
   restoreWindow: (appId: string) => void;
@@ -25,6 +38,7 @@ interface WindowManagerContextValue {
   centerWindow: (appId: string) => void;
   maximizeWindow: (appId: string) => void;
   setWindowStatus: (appId: string, status: string) => void;
+  setWindowContext: (appId: string, patch: WindowContext) => void;
   getOpenWindows: () => WindowState[];
   getFocusedAppId: () => string | null;
 }
@@ -66,11 +80,17 @@ function clampSize(w: number, h: number) {
 export function useWindowManagerProvider(): WindowManagerContextValue {
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [windowStatuses, setWindowStatuses] = useState<Record<string, string>>({});
+  const [windowContexts, setWindowContexts] = useState<Record<string, WindowContext>>({});
   const zIndexCounter = useRef(10);
 
-  const openWindow = useCallback((appId: string) => {
+  const openWindow = useCallback((appId: string, context?: WindowContext) => {
     const appDef = APP_REGISTRY[appId];
     if (!appDef) return;
+
+    // Store/merge context
+    if (context) {
+      setWindowContexts((prev) => ({ ...prev, [appId]: { ...prev[appId], ...context } }));
+    }
 
     setWindows((prev) => {
       const existing = prev.find((w) => w.appId === appId);
@@ -119,6 +139,11 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
   const closeWindow = useCallback((appId: string) => {
     setWindows((prev) => prev.filter((w) => w.appId !== appId));
     setWindowStatuses((prev) => {
+      const next = { ...prev };
+      delete next[appId];
+      return next;
+    });
+    setWindowContexts((prev) => {
       const next = { ...prev };
       delete next[appId];
       return next;
@@ -224,6 +249,10 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
     });
   }, []);
 
+  const setWindowContext = useCallback((appId: string, patch: WindowContext) => {
+    setWindowContexts((prev) => ({ ...prev, [appId]: { ...prev[appId], ...patch } }));
+  }, []);
+
   const getOpenWindows = useCallback(() => windows.filter((w) => w.isOpen), [windows]);
 
   const getFocusedAppId = useCallback(() => {
@@ -235,6 +264,7 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
   return {
     windows,
     windowStatuses,
+    windowContexts,
     openWindow,
     closeWindow,
     minimizeWindow,
@@ -245,6 +275,7 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
     centerWindow,
     maximizeWindow,
     setWindowStatus,
+    setWindowContext,
     getOpenWindows,
     getFocusedAppId,
   };

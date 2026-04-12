@@ -5,6 +5,7 @@ import {
   WALLPAPERS,
   DEFAULT_WALLPAPER_ID,
   resolveWallpaperUrl,
+  resolveThemeSolidColor,
 } from "@/lib/wallpapers";
 
 export function Wallpaper() {
@@ -27,15 +28,13 @@ export function Wallpaper() {
     return <div className="desktop-wallpaper" />;
   }
 
-  const url = resolveWallpaperUrl(wp, mode, accent);
+  // Plain solid theme color (no image)
+  if (wp.kind === "theme-solid") {
+    const color = resolveThemeSolidColor(mode, accent);
+    return <div className="desktop-wallpaper" style={{ background: color }} />;
+  }
 
-  return (
-    <div
-      className="desktop-wallpaper"
-      style={{
-        backgroundImage: `url(${url})`,
-        imageRendering: wp.kind === "theme-cat" ? "pixelated" : "auto",
-      }}
-    />
-  );
+  // Standard image wallpaper
+  const url = resolveWallpaperUrl(wp, mode, accent);
+  return <div className="desktop-wallpaper" style={{ backgroundImage: `url(${url})` }} />;
 }
