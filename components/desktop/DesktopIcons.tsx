@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWindowManager } from "@/hooks/use-window-manager";
-import { LLM_TXT } from "@/content/text-files";
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -24,7 +23,6 @@ interface DesktopItem {
   label: string;
   type: IconType;
   appId?: string;
-  kind?: "clipboard";
 }
 
 interface IconPos {
@@ -39,7 +37,6 @@ const DESKTOP_ITEMS: DesktopItem[] = [
   { id: "contact", label: "Contact", type: "envelope", appId: "contact" },
   { id: "about", label: "about.txt", type: "file", appId: "about-txt" },
   { id: "buildlog", label: "build-log.md", type: "file", appId: "build-log-md" },
-  { id: "llm", label: "llm.txt", type: "clipboard", kind: "clipboard" },
 ];
 
 // Grid cell size — icons snap to multiples of these on drop
@@ -55,7 +52,6 @@ const DEFAULT_POSITIONS: Record<string, IconPos> = {
   contact: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 3 },
   about: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 4 },
   buildlog: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 5 },
-  llm: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 6 },
 };
 
 const ICON_WIDTH = 104;
@@ -91,29 +87,12 @@ export function DesktopIcons() {
   const isMobile = useIsMobile();
   // Session-only state — positions reset on refresh
   const [positions, setPositions] = useState<Record<string, IconPos>>(DEFAULT_POSITIONS);
-  const [toast, setToast] = useState<string | null>(null);
-  const toastTimerRef = useRef<number | null>(null);
-
-  const showToast = useCallback((msg: string) => {
-    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
-    setToast(msg);
-    toastTimerRef.current = window.setTimeout(() => setToast(null), 1800);
-  }, []);
 
   const handleActivate = useCallback(
     (item: DesktopItem) => {
-      if (item.kind === "clipboard") {
-        // Always open the viewer so the user can see what gets copied
-        openWindow("llm-txt");
-        navigator.clipboard
-          .writeText(LLM_TXT)
-          .then(() => showToast("llm.txt copied to clipboard"))
-          .catch(() => showToast("opened — clipboard blocked, copy manually"));
-        return;
-      }
       if (item.appId) openWindow(item.appId);
     },
-    [openWindow, showToast]
+    [openWindow]
   );
 
   // On small screens, render icons as a horizontally scrollable row pinned
@@ -122,7 +101,7 @@ export function DesktopIcons() {
     return (
       <>
         <div
-          className="no-scrollbar absolute left-0 right-0 top-0 z-[400] overflow-x-auto overflow-y-hidden"
+          className="no-scrollbar absolute left-0 right-0 top-0 z-[5] overflow-x-auto overflow-y-hidden"
           style={{
             WebkitOverflowScrolling: "touch",
             maxWidth: "100vw",
@@ -149,7 +128,6 @@ export function DesktopIcons() {
             ))}
           </div>
         </div>
-        <Toast message={toast} />
       </>
     );
   }
@@ -171,25 +149,7 @@ export function DesktopIcons() {
           }}
         />
       ))}
-      <Toast message={toast} />
     </>
-  );
-}
-
-function Toast({ message }: { message: string | null }) {
-  if (!message) return null;
-  return (
-    <div
-      className="absolute bottom-24 left-1/2 z-[700] -translate-x-1/2 whitespace-nowrap border-2 px-4 py-2 text-[12.5px] font-medium"
-      style={{
-        background: "var(--color-surface-solid)",
-        borderColor: "var(--color-border-strong)",
-        color: "var(--color-text)",
-        boxShadow: "4px 4px 0 var(--color-window-shadow)",
-      }}
-    >
-      {message}
-    </div>
   );
 }
 

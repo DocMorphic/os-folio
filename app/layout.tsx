@@ -67,14 +67,14 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="light"
-      data-accent="orange"
+      data-accent="green"
       suppressHydrationWarning
       className={`${dmSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
     >
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('os-folio:theme')||'light';var a=localStorage.getItem('os-folio:accent')||'orange';var b=localStorage.getItem('os-folio:brightness')||'100';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-accent',a);document.documentElement.style.setProperty('--display-brightness',(parseInt(b,10)/100).toString())}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('os-folio:theme')||'light';var a=localStorage.getItem('os-folio:accent')||'green';var b=localStorage.getItem('os-folio:brightness')||'100';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-accent',a);document.documentElement.style.setProperty('--display-brightness',(parseInt(b,10)/100).toString())}catch(e){}})()`,
           }}
         />
       </head>

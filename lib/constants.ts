@@ -12,7 +12,7 @@ export const STORAGE_KEYS = {
 
 export const DEFAULT_THEME = {
   mode: "light" as const,
-  accent: "orange" as const,
+  accent: "green" as const,
   brightness: 100,
   wallpaperId: "theme-solid",
   customWallpaperUrl: null,

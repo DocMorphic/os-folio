@@ -95,22 +95,16 @@ export function BlogApp() {
         </p>
       </div>
 
-      {/* Add-link form */}
+      {/* Add-link form — compact */}
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-2 border px-4 py-3"
+        className="flex flex-col gap-1.5 border px-3 py-2"
         style={{
           background: "var(--color-surface-alt)",
           borderColor: "var(--color-border)",
         }}
       >
-        <div className="flex flex-col gap-1">
-          <label
-            className="text-[10px] font-semibold tracking-wider"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            URL
-          </label>
+        <div className="flex gap-1.5">
           <input
             type="url"
             value={url}
@@ -119,50 +113,29 @@ export function BlogApp() {
               if (error) setError(null);
             }}
             placeholder="https://..."
-            className="w-full border px-3 py-1.5 text-[12px] outline-none"
+            className="min-w-0 flex-1 border px-2 py-1 text-[11.5px] outline-none"
             style={{
               background: "var(--color-input-bg)",
               borderColor: error ? "var(--color-error)" : "var(--color-border)",
               color: "var(--color-text)",
             }}
           />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label
-            className="text-[10px] font-semibold tracking-wider"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            TITLE <span className="font-normal lowercase opacity-70">(optional — auto-fetched if empty)</span>
-          </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Leave blank to auto-detect"
-            className="w-full border px-3 py-1.5 text-[12px] outline-none"
+            placeholder="Title (optional)"
+            className="hidden min-w-0 flex-1 border px-2 py-1 text-[11.5px] outline-none sm:block"
             style={{
               background: "var(--color-input-bg)",
               borderColor: "var(--color-border)",
               color: "var(--color-text)",
             }}
           />
-        </div>
-
-        {error && (
-          <div className="text-[11px]" style={{ color: "var(--color-error)" }}>
-            {error}
-          </div>
-        )}
-
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
-            {submitState === "success" ? "Added." : submitState === "sending" ? "Adding..." : `${blogs.length} post${blogs.length === 1 ? "" : "s"}`}
-          </span>
           <button
             type="submit"
             disabled={submitState === "sending"}
-            className="px-4 py-1.5 text-[11.5px] font-medium text-white transition-colors disabled:opacity-70"
+            className="shrink-0 px-3 py-1 text-[11px] font-medium text-white transition-colors disabled:opacity-70"
             style={{ background: "var(--color-button-dark)" }}
             onMouseEnter={(e) => {
               if (submitState !== "sending")
@@ -172,9 +145,20 @@ export function BlogApp() {
               e.currentTarget.style.background = "var(--color-button-dark)";
             }}
           >
-            {submitState === "sending" ? "Adding..." : "Add link"}
+            {submitState === "sending" ? "…" : "Add"}
           </button>
         </div>
+
+        {error && (
+          <div className="text-[10.5px]" style={{ color: "var(--color-error)" }}>
+            {error}
+          </div>
+        )}
+        {submitState === "success" && !error && (
+          <div className="text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
+            Added.
+          </div>
+        )}
       </form>
 
       {/* POST LIST card */}

@@ -93,15 +93,14 @@ export function Taskbar() {
   const apps = isMobile ? DOCK_APPS_MOBILE : DOCK_APPS;
 
   return (
-    <div
-      className="no-scrollbar absolute bottom-2 left-1/2 z-[600] -translate-x-1/2 overflow-x-auto overflow-y-hidden"
-      style={{ maxWidth: "calc(100vw - 12px)" }}
-    >
+    <div className="absolute bottom-3 left-1/2 z-[600] -translate-x-1/2 md:bottom-2">
       <div
-        className="flex w-max items-center gap-0.5 border-2 px-1.5 py-1 md:gap-2 md:px-3 md:py-2"
+        className="flex items-center justify-center gap-1.5 border-2 px-3 py-2 md:w-auto md:gap-2 md:px-3 md:py-2"
         style={{
           background: "var(--color-dock-bg)",
           borderColor: "var(--color-dock-border)",
+          width: isMobile ? "calc(100vw - 16px)" : undefined,
+          maxWidth: "calc(100vw - 12px)",
         }}
       >
         {apps.map((app) => {
@@ -127,7 +126,7 @@ export function Taskbar() {
               </div>
 
               <button
-                className="flex h-8 w-8 items-center justify-center border-2 transition-colors md:h-12 md:w-12"
+                className="flex h-10 w-10 items-center justify-center border-2 transition-colors md:h-12 md:w-12"
                 style={{
                   background: isFocused ? "var(--color-button-dark-hover)" : "var(--color-button-dark)",
                   borderColor: "var(--color-border-strong)",
@@ -145,7 +144,7 @@ export function Taskbar() {
                 }}
                 aria-label={app.title}
               >
-                <span className="scale-[0.6] md:scale-100">
+                <span className="scale-[0.8] md:scale-100">
                   {DOCK_ICONS[app.id] || <span className="text-sm text-white">{app.icon}</span>}
                 </span>
               </button>

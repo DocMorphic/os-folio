@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ThemeContext, useThemeProvider } from "@/hooks/use-theme";
 import {
   WindowManagerContext,
@@ -14,6 +14,7 @@ import { DesktopIcons } from "./DesktopIcons";
 import { Window } from "@/components/window/Window";
 import { APP_REGISTRY } from "@/lib/constants";
 import { FOLDER_CONTENTS, type FolderItem } from "@/content/folder-files";
+import { LLM_TXT } from "@/content/text-files";
 
 // Kick off image preloading right after the desktop mounts so thumbnails
 // are cached by the time the user opens a folder window.
@@ -85,10 +86,62 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
   stats: SiteStatsApp,
 };
 
+// Classic konami: ↑ ↑ ↓ ↓ ← → ← → b a
+const KONAMI_SEQUENCE = [
+  "ArrowUp",
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowLeft",
+  "ArrowRight",
+  "b",
+  "a",
+];
+
 export function Desktop() {
   const theme = useThemeProvider();
   const windowManager = useWindowManagerProvider();
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimerRef = useRef<number | null>(null);
+
+  const showToast = (msg: string) => {
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
+    setToast(msg);
+    toastTimerRef.current = window.setTimeout(() => setToast(null), 2200);
+  };
+
   useFolderImagePreload();
+
+  // Secret: type the Konami sequence anywhere on the page (not inside
+  // an input/textarea) to reveal + open llm.txt. Also copies to clipboard.
+  useEffect(() => {
+    let idx = 0;
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
+        return;
+      }
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (key === KONAMI_SEQUENCE[idx]) {
+        idx += 1;
+        if (idx === KONAMI_SEQUENCE.length) {
+          idx = 0;
+          windowManager.openWindow("llm-txt");
+          navigator.clipboard
+            .writeText(LLM_TXT)
+            .then(() => showToast("llm.txt unlocked · copied to clipboard"))
+            .catch(() => showToast("llm.txt unlocked · clipboard blocked"));
+        }
+      } else {
+        // Reset but allow the first key to match if it's the start of the sequence
+        idx = key === KONAMI_SEQUENCE[0] ? 1 : 0;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [windowManager]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -183,6 +236,20 @@ export function Desktop() {
           </div>
 
           <Taskbar />
+
+          {toast && (
+            <div
+              className="pointer-events-none absolute bottom-24 left-1/2 z-[700] -translate-x-1/2 whitespace-nowrap border-2 px-4 py-2 text-[12.5px] font-medium"
+              style={{
+                background: "var(--color-surface-solid)",
+                borderColor: "var(--color-border-strong)",
+                color: "var(--color-text)",
+                boxShadow: "4px 4px 0 var(--color-window-shadow)",
+              }}
+            >
+              {toast}
+            </div>
+          )}
         </div>
       </WindowManagerContext>
     </ThemeContext>
