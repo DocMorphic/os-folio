@@ -61,11 +61,13 @@ function emptyStats(): StatsResult {
 async function countRows(filter?: string): Promise<number> {
   if (!isConfigured()) return 0;
 
-  const qs = filter ? `?${filter}` : "";
-  const url = `${SUPABASE_URL}/rest/v1/${TABLE}${qs}&select=id`.replace("?&", "?");
+  let url = `${SUPABASE_URL}/rest/v1/${TABLE}?select=id`;
+  if (filter) {
+    url += `&${filter}`;
+  }
 
   try {
-    const res = await fetch(url.includes("?") ? url : `${url}?select=id`, {
+    const res = await fetch(url, {
       method: "HEAD",
       headers: {
         ...authHeaders(),
