@@ -222,7 +222,14 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
         prev.map((w) => {
           if (w.appId !== appId) return w;
           const clamped = clampSize(size.width, size.height);
-          return { ...w, size: clamped };
+          // Manual resize drops the maximize flag — no more restore icon.
+          return {
+            ...w,
+            size: clamped,
+            isMaximized: false,
+            preMaxPosition: undefined,
+            preMaxSize: undefined,
+          };
         })
       );
     },
@@ -265,12 +272,12 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
           };
         }
 
-        // Toggle on — remember current bounds, fill the desktop, and respect
-        // the mobile icon-row reserve so we don't tuck under the icons.
-        const reserve = topReserve();
+        // Toggle on — remember current bounds, fill the desktop. We do NOT
+        // subtract topReserve here because the point of maximize on mobile
+        // is to cover the icon row (dock is still visible at the bottom).
         const size = {
           width: vw - MIN_MARGIN * 2,
-          height: vh - MENUBAR_HEIGHT - DOCK_HEIGHT - MIN_MARGIN * 2 - reserve,
+          height: vh - MENUBAR_HEIGHT - DOCK_HEIGHT - MIN_MARGIN * 2,
         };
         return {
           ...w,
@@ -279,7 +286,7 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
           preMaxPosition: w.position,
           preMaxSize: w.size,
           size,
-          position: { x: MIN_MARGIN, y: MIN_MARGIN + reserve },
+          position: { x: MIN_MARGIN, y: MIN_MARGIN },
           zIndex: ++zIndexCounter.current,
         };
       })

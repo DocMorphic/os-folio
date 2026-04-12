@@ -223,14 +223,16 @@ body {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* === Window control buttons — distinct squares === */
+/* === Window control buttons — distinct squares ===
+   Min/max buttons are intentionally static — they never track theme or
+   accent. Only the close button flips with theme. */
 .window-control-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
-  background: var(--color-button-dark);
+  background: #6b3410;
   color: #ffffff;
   transition: background 0.12s;
   cursor: pointer;
@@ -238,14 +240,14 @@ body {
 }
 
 .window-control-btn:hover {
-  background: var(--color-button-dark-hover);
+  background: #823d14;
 }
 
 .window-control-btn.maximize {
-  background: var(--color-button-dark-hover);
+  background: #8a7560;
 }
 .window-control-btn.maximize:hover {
-  background: var(--color-button-dark);
+  background: #9a8470;
 }
 
 .window-control-btn.close {
@@ -259,6 +261,15 @@ body {
 .terminal-input::placeholder {
   color: rgba(255, 176, 122, 0.35);
   font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* Hide scrollbar for containers that scroll but shouldn't show chrome */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* === Resize handle — visible, bigger === */

@@ -212,6 +212,7 @@ export function Window({
       <WindowTitleBar
         title={appDef.title}
         isFocused={isFocused}
+        isMaximized={windowState.isMaximized}
         itemCount={itemCount}
         statusText={statusText}
         showMinimize={showMinimize}

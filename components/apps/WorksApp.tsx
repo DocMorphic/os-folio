@@ -7,8 +7,8 @@ const MONTH_NAMES: Record<string, number> = {
   jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
   jul: 6, aug: 7, sept: 8, sep: 8, oct: 9, nov: 10, dec: 11,
 };
-const START_YEAR = 2024;
-const TOTAL_MONTHS = 36; // 3 years: 2024, 2025, 2026
+const START_YEAR = 2025;
+const TOTAL_MONTHS = 24; // 2 years: 2025, 2026
 
 function toMonthIndex(dateStr: string): number {
   if (dateStr.toLowerCase() === "now") {
@@ -75,7 +75,7 @@ export function WorksApp() {
 }
 
 // Timeline visual constants
-const MONTH_WIDTH = 56; // px per month in the scrollable strip
+const MONTH_WIDTH = 32; // px per month in the scrollable strip
 const NAMES_WIDTH = 140; // px — fixed left column for project titles
 const HEADER_H = 36; // px — year header row
 const ROW_H = 42; // px — each project row
@@ -154,7 +154,7 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
                 background: "var(--color-surface-alt)",
               }}
             >
-              {["2024", "2025", "2026"].map((year, i) => (
+              {["2025", "2026"].map((year, i) => (
                 <span
                   key={year}
                   className="absolute top-1/2 -translate-y-1/2 text-[10.5px] font-semibold tracking-wider"
@@ -173,7 +173,7 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
                 below. */}
             <div className="relative">
               {/* Vertical grid — year boundaries (stronger) */}
-              {[0, 1, 2, 3].map((i) => (
+              {[0, 1, 2].map((i) => (
                 <div
                   key={`y-${i}`}
                   className="pointer-events-none absolute top-0 bottom-0 w-px"
@@ -184,9 +184,9 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
                 />
               ))}
               {/* Vertical grid — quarter boundaries (more subtle) */}
-              {Array.from({ length: 12 })
+              {Array.from({ length: 8 })
                 .map((_, i) => (i + 1) * 3)
-                .filter((m) => m % 12 !== 0)
+                .filter((m) => m % 12 !== 0 && m < TOTAL_MONTHS)
                 .map((m) => (
                   <div
                     key={`q-${m}`}

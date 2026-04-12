@@ -14,7 +14,7 @@ export function BrightnessPopover({ onClose }: BrightnessPopoverProps) {
 
   return (
     <div
-      className="menu-dropdown absolute right-0 top-full mt-0.5 w-[260px] border p-3"
+      className="menu-dropdown absolute right-0 top-full mt-0.5 w-[210px] border p-2 md:w-[260px] md:p-3"
       style={{
         background: "var(--color-surface-solid)",
         borderColor: "var(--color-border-strong)",

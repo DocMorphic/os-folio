@@ -1,10 +1,24 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useWindowManager } from "@/hooks/use-window-manager";
 import { APP_REGISTRY } from "@/lib/constants";
 
 const DOCK_APPS_ORDER = ["about", "blog", "contact", "experience", "help", "search", "settings", "terminal", "works"];
+const DOCK_APPS_MOBILE_ORDER = ["about", "blog", "contact", "experience", "search", "terminal", "works"];
 const DOCK_APPS = DOCK_APPS_ORDER.map((id) => APP_REGISTRY[id]).filter(Boolean);
+const DOCK_APPS_MOBILE = DOCK_APPS_MOBILE_ORDER.map((id) => APP_REGISTRY[id]).filter(Boolean);
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
 
 const DOCK_ICONS: Record<string, React.ReactNode> = {
   about: (
@@ -75,20 +89,22 @@ const DOCK_ICONS: Record<string, React.ReactNode> = {
 
 export function Taskbar() {
   const { windows, openWindow, focusWindow, restoreWindow, minimizeWindow } = useWindowManager();
+  const isMobile = useIsMobile();
+  const apps = isMobile ? DOCK_APPS_MOBILE : DOCK_APPS;
 
   return (
     <div
-      className="custom-scrollbar absolute bottom-2 left-1/2 z-[600] -translate-x-1/2 overflow-x-auto overflow-y-hidden"
+      className="no-scrollbar absolute bottom-2 left-1/2 z-[600] -translate-x-1/2 overflow-x-auto overflow-y-hidden"
       style={{ maxWidth: "calc(100vw - 12px)" }}
     >
       <div
-        className="flex w-max items-center gap-1 border-2 px-2 py-1.5 md:gap-2 md:px-3 md:py-2"
+        className="flex w-max items-center gap-0.5 border-2 px-1.5 py-1 md:gap-2 md:px-3 md:py-2"
         style={{
           background: "var(--color-dock-bg)",
           borderColor: "var(--color-dock-border)",
         }}
       >
-        {DOCK_APPS.map((app) => {
+        {apps.map((app) => {
           const win = windows.find((w) => w.appId === app.id);
           const isOpen = !!win;
           const isFocused =
@@ -111,7 +127,7 @@ export function Taskbar() {
               </div>
 
               <button
-                className="flex h-9 w-9 items-center justify-center border-2 transition-colors md:h-12 md:w-12"
+                className="flex h-8 w-8 items-center justify-center border-2 transition-colors md:h-12 md:w-12"
                 style={{
                   background: isFocused ? "var(--color-button-dark-hover)" : "var(--color-button-dark)",
                   borderColor: "var(--color-border-strong)",
@@ -129,7 +145,7 @@ export function Taskbar() {
                 }}
                 aria-label={app.title}
               >
-                <span className="scale-[0.75] md:scale-100">
+                <span className="scale-[0.6] md:scale-100">
                   {DOCK_ICONS[app.id] || <span className="text-sm text-white">{app.icon}</span>}
                 </span>
               </button>

@@ -56,7 +56,7 @@ export function MenuBar() {
       <div className="flex items-stretch">
         {/* Logo — click to open Site Stats */}
         <button
-          className="mr-1 flex h-[34px] w-[34px] shrink-0 items-center justify-center"
+          className="ml-1.5 mr-1 flex h-[34px] w-[34px] shrink-0 items-center justify-center"
           onClick={() => openWindow("stats")}
           aria-label="Site stats"
         >

@@ -122,7 +122,7 @@ export function DesktopIcons() {
     return (
       <>
         <div
-          className="absolute left-0 right-0 top-0 z-[400] overflow-x-auto overflow-y-hidden"
+          className="no-scrollbar absolute left-0 right-0 top-0 z-[400] overflow-x-auto overflow-y-hidden"
           style={{
             WebkitOverflowScrolling: "touch",
             maxWidth: "100vw",

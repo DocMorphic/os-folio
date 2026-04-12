@@ -3,6 +3,7 @@
 interface WindowTitleBarProps {
   title: string;
   isFocused: boolean;
+  isMaximized?: boolean;
   itemCount?: number;
   statusText?: string;
   showMinimize?: boolean;
@@ -18,6 +19,7 @@ interface WindowTitleBarProps {
 export function WindowTitleBar({
   title,
   isFocused,
+  isMaximized = false,
   itemCount,
   statusText,
   showMinimize = true,
@@ -91,12 +93,24 @@ export function WindowTitleBar({
           </button>
         )}
 
-        {/* Maximize */}
+        {/* Maximize / Restore — same button, SVG flips based on state */}
         {showMaximize && (
-          <button className="window-control-btn maximize" onClick={onMaximize} aria-label="Maximize">
-            <svg width="12" height="12" viewBox="0 0 14 14">
-              <rect x="3" y="3" width="8" height="8" stroke="white" strokeWidth="1.5" fill="none" />
-            </svg>
+          <button
+            className="window-control-btn maximize"
+            onClick={onMaximize}
+            aria-label={isMaximized ? "Restore" : "Maximize"}
+          >
+            {isMaximized ? (
+              // Restore: two overlapping squares
+              <svg width="12" height="12" viewBox="0 0 14 14">
+                <rect x="4.5" y="2.5" width="7" height="7" stroke="white" strokeWidth="1.4" fill="none" />
+                <rect x="2.5" y="4.5" width="7" height="7" stroke="white" strokeWidth="1.4" fill="#8a7560" />
+              </svg>
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 14 14">
+                <rect x="3" y="3" width="8" height="8" stroke="white" strokeWidth="1.5" fill="none" />
+              </svg>
+            )}
           </button>
         )}
 
