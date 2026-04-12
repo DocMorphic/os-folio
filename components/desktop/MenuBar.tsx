@@ -46,7 +46,7 @@ export function MenuBar() {
   return (
     <div
       ref={menuRef}
-      className="relative z-[600] flex h-[34px] items-stretch justify-between border-b-2 pr-3"
+      className="relative z-[600] flex h-[34px] items-stretch justify-between border-b pr-3"
       style={{
         background: "var(--color-menubar-bg)",
         borderColor: "var(--color-menubar-border)",
@@ -56,7 +56,7 @@ export function MenuBar() {
       <div className="flex items-stretch">
         {/* Logo — click to open Site Stats */}
         <button
-          className="mr-1 flex h-[34px] w-[34px] shrink-0 items-center justify-center p-1"
+          className="mr-1 flex h-[34px] w-[34px] shrink-0 items-center justify-center"
           onClick={() => openWindow("stats")}
           aria-label="Site stats"
         >
@@ -64,9 +64,9 @@ export function MenuBar() {
           <img
             src={mode === "dark" ? "/icon_dark.png" : "/icon.png"}
             alt="Portfolio logo"
-            width={26}
-            height={26}
-            style={{ display: "block", width: "26px", height: "26px", objectFit: "contain" }}
+            width={32}
+            height={32}
+            style={{ display: "block", width: "32px", height: "32px", objectFit: "contain" }}
           />
         </button>
 

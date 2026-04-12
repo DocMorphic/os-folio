@@ -82,7 +82,7 @@ export function Taskbar() {
       style={{ maxWidth: "calc(100vw - 12px)" }}
     >
       <div
-        className="flex w-max items-center gap-2 border-2 px-3 py-2"
+        className="flex w-max items-center gap-1 border-2 px-2 py-1.5 md:gap-2 md:px-3 md:py-2"
         style={{
           background: "var(--color-dock-bg)",
           borderColor: "var(--color-dock-border)",
@@ -111,7 +111,7 @@ export function Taskbar() {
               </div>
 
               <button
-                className="flex h-12 w-12 items-center justify-center border-2 transition-colors"
+                className="flex h-9 w-9 items-center justify-center border-2 transition-colors md:h-12 md:w-12"
                 style={{
                   background: isFocused ? "var(--color-button-dark-hover)" : "var(--color-button-dark)",
                   borderColor: "var(--color-border-strong)",
@@ -129,7 +129,9 @@ export function Taskbar() {
                 }}
                 aria-label={app.title}
               >
-                {DOCK_ICONS[app.id] || <span className="text-sm text-white">{app.icon}</span>}
+                <span className="scale-[0.75] md:scale-100">
+                  {DOCK_ICONS[app.id] || <span className="text-sm text-white">{app.icon}</span>}
+                </span>
               </button>
 
               {isOpen && (

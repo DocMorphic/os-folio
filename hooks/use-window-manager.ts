@@ -151,6 +151,7 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
         appId,
         isOpen: true,
         isMinimized: false,
+        isMaximized: false,
         zIndex: newZ,
         position: pos,
         size: clampedSize,
@@ -249,16 +250,36 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
     setWindows((prev) =>
       prev.map((w) => {
         if (w.appId !== appId) return w;
+
+        // Toggle off — restore the previous bounds
+        if (w.isMaximized && w.preMaxSize && w.preMaxPosition) {
+          return {
+            ...w,
+            isMaximized: false,
+            isMinimized: false,
+            position: w.preMaxPosition,
+            size: w.preMaxSize,
+            preMaxPosition: undefined,
+            preMaxSize: undefined,
+            zIndex: ++zIndexCounter.current,
+          };
+        }
+
+        // Toggle on — remember current bounds, fill the desktop, and respect
+        // the mobile icon-row reserve so we don't tuck under the icons.
+        const reserve = topReserve();
         const size = {
           width: vw - MIN_MARGIN * 2,
-          height: vh - MENUBAR_HEIGHT - DOCK_HEIGHT - MIN_MARGIN * 2,
+          height: vh - MENUBAR_HEIGHT - DOCK_HEIGHT - MIN_MARGIN * 2 - reserve,
         };
-        // Also ensure isMinimized is false and bump z-index
         return {
           ...w,
-          size,
-          position: { x: MIN_MARGIN, y: MIN_MARGIN },
+          isMaximized: true,
           isMinimized: false,
+          preMaxPosition: w.position,
+          preMaxSize: w.size,
+          size,
+          position: { x: MIN_MARGIN, y: MIN_MARGIN + reserve },
           zIndex: ++zIndexCounter.current,
         };
       })

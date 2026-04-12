@@ -44,7 +44,7 @@ export function TextEditorApp({ initialContent, appId }: TextEditorAppProps) {
 }
 
 // Wrapped instances per file
-import { ABOUT_TXT, BUILD_LOG_MD } from "@/content/text-files";
+import { ABOUT_TXT, BUILD_LOG_MD, LLM_TXT } from "@/content/text-files";
 import { FOLDER_CONTENTS } from "@/content/folder-files";
 
 export function AboutTxtApp() {
@@ -53,6 +53,10 @@ export function AboutTxtApp() {
 
 export function BuildLogApp() {
   return <TextEditorApp initialContent={BUILD_LOG_MD} appId="build-log-md" />;
+}
+
+export function LlmTxtApp() {
+  return <TextEditorApp initialContent={LLM_TXT} appId="llm-txt" />;
 }
 
 export function GermanyNotesApp() {

@@ -13,9 +13,13 @@ export interface WindowState {
   appId: string;
   isOpen: boolean;
   isMinimized: boolean;
+  isMaximized: boolean;
   zIndex: number;
   position: { x: number; y: number };
   size: { width: number; height: number };
+  // Saved bounds to restore when the user toggles maximize off
+  preMaxPosition?: { x: number; y: number };
+  preMaxSize?: { width: number; height: number };
 }
 
 export interface AppDefinition {

@@ -54,6 +54,7 @@ import {
 import {
   AboutTxtApp,
   BuildLogApp,
+  LlmTxtApp,
   GermanyNotesApp,
   AustriaNotesApp,
   IndiaNotesApp,
@@ -76,6 +77,7 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
   "folder-india": IndiaFolder,
   "about-txt": AboutTxtApp,
   "build-log-md": BuildLogApp,
+  "llm-txt": LlmTxtApp,
   "germany-notes": GermanyNotesApp,
   "austria-notes": AustriaNotesApp,
   "india-notes": IndiaNotesApp,

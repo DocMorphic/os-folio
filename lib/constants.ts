@@ -180,6 +180,17 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     showInExplorer: false,
     showInTaskbar: true,
   },
+  "llm-txt": {
+    id: "llm-txt",
+    title: "llm.txt",
+    icon: "📄",
+    defaultWidth: 760,
+    defaultHeight: 520,
+    defaultX: 280,
+    defaultY: 70,
+    showInExplorer: false,
+    showInTaskbar: true,
+  },
   stats: {
     id: "stats",
     title: "Site Stats",
