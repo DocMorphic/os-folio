@@ -86,25 +86,17 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
   stats: SiteStatsApp,
 };
 
-// Classic konami: ↑ ↑ ↓ ↓ ← → ← → b a
-const KONAMI_SEQUENCE = [
-  "ArrowUp",
-  "ArrowUp",
-  "ArrowDown",
-  "ArrowDown",
-  "ArrowLeft",
-  "ArrowRight",
-  "ArrowLeft",
-  "ArrowRight",
-  "b",
-  "a",
-];
+// Simple secret sequence: up up down down
+const SECRET_SEQUENCE = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown"];
 
 export function Desktop() {
   const theme = useThemeProvider();
   const windowManager = useWindowManagerProvider();
   const [toast, setToast] = useState<string | null>(null);
   const toastTimerRef = useRef<number | null>(null);
+  // Once unlocked, clicking llm.txt on the desktop also opens the viewer.
+  // Before unlock, clicking only copies to clipboard.
+  const [llmUnlocked, setLlmUnlocked] = useState(false);
 
   const showToast = (msg: string) => {
     if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
@@ -114,8 +106,8 @@ export function Desktop() {
 
   useFolderImagePreload();
 
-  // Secret: type the Konami sequence anywhere on the page (not inside
-  // an input/textarea) to reveal + open llm.txt. Also copies to clipboard.
+  // Type ↑ ↑ ↓ ↓ anywhere on the page (outside of inputs) to unlock
+  // llm.txt so the viewer window opens on click.
   useEffect(() => {
     let idx = 0;
     const handler = (e: KeyboardEvent) => {
@@ -123,11 +115,11 @@ export function Desktop() {
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
         return;
       }
-      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-      if (key === KONAMI_SEQUENCE[idx]) {
+      if (e.key === SECRET_SEQUENCE[idx]) {
         idx += 1;
-        if (idx === KONAMI_SEQUENCE.length) {
+        if (idx === SECRET_SEQUENCE.length) {
           idx = 0;
+          setLlmUnlocked(true);
           windowManager.openWindow("llm-txt");
           navigator.clipboard
             .writeText(LLM_TXT)
@@ -135,8 +127,7 @@ export function Desktop() {
             .catch(() => showToast("llm.txt unlocked · clipboard blocked"));
         }
       } else {
-        // Reset but allow the first key to match if it's the start of the sequence
-        idx = key === KONAMI_SEQUENCE[0] ? 1 : 0;
+        idx = e.key === SECRET_SEQUENCE[0] ? 1 : 0;
       }
     };
     window.addEventListener("keydown", handler);
@@ -203,7 +194,7 @@ export function Desktop() {
             tabIndex={-1}
           >
             {/* Desktop shortcut icons */}
-            <DesktopIcons />
+            <DesktopIcons llmUnlocked={llmUnlocked} onToast={showToast} />
 
             {/* Window layer */}
             <div className="absolute inset-0 overflow-hidden">

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWindowManager } from "@/hooks/use-window-manager";
+import { LLM_TXT } from "@/content/text-files";
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -37,6 +38,7 @@ const DESKTOP_ITEMS: DesktopItem[] = [
   { id: "contact", label: "Contact", type: "envelope", appId: "contact" },
   { id: "about", label: "about.txt", type: "file", appId: "about-txt" },
   { id: "buildlog", label: "build-log.md", type: "file", appId: "build-log-md" },
+  { id: "llm", label: "llm.txt", type: "clipboard" },
 ];
 
 // Grid cell size — icons snap to multiples of these on drop
@@ -52,6 +54,7 @@ const DEFAULT_POSITIONS: Record<string, IconPos> = {
   contact: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 3 },
   about: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 4 },
   buildlog: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 5 },
+  llm: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 6 },
 };
 
 const ICON_WIDTH = 104;
@@ -82,7 +85,14 @@ function clampPosition(x: number, y: number): IconPos {
   };
 }
 
-export function DesktopIcons() {
+interface DesktopIconsProps {
+  /** Controls whether clicking llm.txt also opens the viewer window. */
+  llmUnlocked: boolean;
+  /** Callback for showing a brief notification near the dock. */
+  onToast: (message: string) => void;
+}
+
+export function DesktopIcons({ llmUnlocked, onToast }: DesktopIconsProps) {
   const { openWindow } = useWindowManager();
   const isMobile = useIsMobile();
   // Session-only state — positions reset on refresh
@@ -90,9 +100,24 @@ export function DesktopIcons() {
 
   const handleActivate = useCallback(
     (item: DesktopItem) => {
+      // llm.txt: clipboard-only before unlock, clipboard + viewer after.
+      if (item.type === "clipboard") {
+        navigator.clipboard
+          .writeText(LLM_TXT)
+          .then(() => {
+            onToast(
+              llmUnlocked
+                ? "llm.txt copied · opened viewer"
+                : "llm.txt copied to clipboard"
+            );
+          })
+          .catch(() => onToast("clipboard blocked"));
+        if (llmUnlocked) openWindow("llm-txt");
+        return;
+      }
       if (item.appId) openWindow(item.appId);
     },
-    [openWindow]
+    [openWindow, llmUnlocked, onToast]
   );
 
   // On small screens, render icons as a horizontally scrollable row pinned

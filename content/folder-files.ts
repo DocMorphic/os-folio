@@ -20,7 +20,7 @@ export const FOLDER_CONTENTS: Record<string, FolderData> = {
     description: "Photos and notes from life and trips around Germany.",
     text: `# Germany
 
-{{TODO: Write your trip notes here. Where did you go, what did you see, what do you remember?}}
+Photos since I moved to Germany for the first time in August 2025.
 `,
     items: [
       { name: "germany-notes.txt", type: "text" },
@@ -41,7 +41,7 @@ export const FOLDER_CONTENTS: Record<string, FolderData> = {
     description: "Photos and notes from trips around Austria.",
     text: `# Austria
 
-{{TODO: Your Austria trip notes. Vienna? Salzburg? Alps? Write whatever you want here.}}
+Photos from when I went to Salzburg in November 2025.
 `,
     items: [
       { name: "austria-notes.txt", type: "text" },
@@ -56,7 +56,7 @@ export const FOLDER_CONTENTS: Record<string, FolderData> = {
     description: "Photos and memories from home — Rajkot and beyond.",
     text: `# India
 
-{{TODO: Your India notes. Rajkot, family, growing up, whatever you want to share.}}
+Photos from India, Gujarat especially, where I've spent most of my life.
 `,
     items: [
       { name: "india-notes.txt", type: "text" },
