@@ -179,33 +179,13 @@ export function MenuBar() {
         </MenuButton>
       </div>
 
-      {/* Right: Brightness + Clock */}
-      <div className="flex items-stretch gap-3">
+      {/* Right: Display + Clock */}
+      <div className="flex items-stretch gap-2">
         <div className="relative flex items-center">
-          <button
-            className="flex h-7 w-7 items-center justify-center"
-            style={{ background: "var(--color-button-dark)" }}
+          <DisplayButton
+            isOpen={openMenu === "brightness"}
             onClick={() => setOpenMenu(openMenu === "brightness" ? null : "brightness")}
-            aria-label="Display settings"
-          >
-            {/* Gear icon — pixel/blocky style, white on dark */}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="white">
-              {/* Top/bottom/left/right teeth */}
-              <rect x="7" y="1" width="2" height="2" />
-              <rect x="7" y="13" width="2" height="2" />
-              <rect x="1" y="7" width="2" height="2" />
-              <rect x="13" y="7" width="2" height="2" />
-              {/* Diagonal teeth */}
-              <rect x="2.5" y="2.5" width="2" height="2" />
-              <rect x="11.5" y="2.5" width="2" height="2" />
-              <rect x="2.5" y="11.5" width="2" height="2" />
-              <rect x="11.5" y="11.5" width="2" height="2" />
-              {/* Outer ring */}
-              <path d="M4 4H12V12H4V4Z M5 5V11H11V5H5Z" />
-              {/* Center hole */}
-              <rect x="7" y="7" width="2" height="2" />
-            </svg>
-          </button>
+          />
           {openMenu === "brightness" && (
             <BrightnessPopover onClose={() => setOpenMenu(null)} />
           )}
@@ -316,5 +296,44 @@ function MenuItem({
 
 function MenuDivider() {
   return <div className="mx-3 my-1 h-px" style={{ background: "var(--color-border)" }} />;
+}
+
+/**
+ * Brightness / Display button — sized and styled like File / View / Portfolio.
+ * Transparent by default, light cream on hover, dark brown when open.
+ * Icon is a sun.
+ */
+function DisplayButton({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) {
+  const [hover, setHover] = useState(false);
+  const bg = isOpen
+    ? "var(--color-button-dark)"
+    : hover
+    ? "var(--color-surface-solid)"
+    : "transparent";
+  const iconColor = isOpen ? "#ffffff" : "var(--color-menubar-text)";
+  return (
+    <button
+      className="flex h-[26px] w-[26px] items-center justify-center transition-colors"
+      style={{ background: bg }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={onClick}
+      aria-label="Display settings"
+    >
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={iconColor}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+      </svg>
+    </button>
+  );
 }
 
