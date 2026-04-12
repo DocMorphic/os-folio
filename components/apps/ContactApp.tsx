@@ -72,32 +72,19 @@ export function ContactApp() {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-3">
       {/* Heading */}
       <div>
-        <h1 className="font-serif-heading text-[30px] leading-none" style={{ color: "var(--color-text)" }}>
+        <h1 className="font-serif-heading text-[26px] leading-none" style={{ color: "var(--color-text)" }}>
           Contact
         </h1>
-        <p className="mt-3 text-[12.5px] leading-[1.55]" style={{ color: "var(--color-text-secondary)" }}>
+        <p className="mt-2 text-[12px] leading-[1.5]" style={{ color: "var(--color-text-secondary)" }}>
           Send a message directly for project inquiries, collaborations, or just to say hello.
         </p>
       </div>
 
-      {/* Info box */}
-      <div
-        className="border px-4 py-3"
-        style={{
-          background: "var(--color-info-box)",
-          borderColor: "var(--color-border)",
-        }}
-      >
-        <span className="text-[12.5px]" style={{ color: "var(--color-text-muted)" }}>
-          Fill in your details and send your message directly.
-        </span>
-      </div>
-
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
         <Field label="NAME" error={errors.name}>
           <input
             type="text"
@@ -107,7 +94,7 @@ export function ContactApp() {
               if (errors.name) setErrors({ ...errors, name: "" });
             }}
             placeholder="Your name"
-            className="w-full border px-3 py-2.5 text-[12.5px] outline-none transition-colors"
+            className="w-full border px-3 py-2 text-[12px] outline-none transition-colors"
             style={{
               background: "var(--color-input-bg)",
               borderColor: errors.name ? "var(--color-error)" : "var(--color-border)",
@@ -125,7 +112,7 @@ export function ContactApp() {
               if (errors.email) setErrors({ ...errors, email: "" });
             }}
             placeholder="you@example.com"
-            className="w-full border px-3 py-2.5 text-[12.5px] outline-none transition-colors"
+            className="w-full border px-3 py-2 text-[12px] outline-none transition-colors"
             style={{
               background: "var(--color-input-bg)",
               borderColor: errors.email ? "var(--color-error)" : "var(--color-border)",
@@ -143,7 +130,7 @@ export function ContactApp() {
               if (errors.subject) setErrors({ ...errors, subject: "" });
             }}
             placeholder="Project inquiry"
-            className="w-full border px-3 py-2.5 text-[12.5px] outline-none transition-colors"
+            className="w-full border px-3 py-2 text-[12px] outline-none transition-colors"
             style={{
               background: "var(--color-input-bg)",
               borderColor: errors.subject ? "var(--color-error)" : "var(--color-border)",
@@ -159,7 +146,7 @@ export function ContactApp() {
               setForm({ ...form, message: e.target.value });
               if (errors.message) setErrors({ ...errors, message: "" });
             }}
-            rows={5}
+            rows={3}
             placeholder="Tell me a bit about your project..."
             className="custom-scrollbar w-full resize-none border px-3 py-2.5 text-[12.5px] outline-none transition-colors"
             style={{
@@ -203,11 +190,11 @@ export function ContactApp() {
           </div>
         )}
 
-        <div className="flex justify-end pt-1">
+        <div className="flex justify-end">
           <button
             type="submit"
             disabled={submitState === "sending"}
-            className="flex items-center gap-2 px-5 py-2.5 text-[12.5px] font-medium text-white transition-colors disabled:opacity-70"
+            className="flex items-center gap-2 px-5 py-2 text-[12px] font-medium text-white transition-colors disabled:opacity-70"
             style={{ background: "var(--color-button-dark)" }}
             onMouseEnter={(e) => {
               if (submitState !== "sending") e.currentTarget.style.background = "var(--color-button-dark-hover)";
@@ -230,16 +217,16 @@ export function ContactApp() {
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
       <label
-        className="text-[10.5px] font-semibold tracking-wider"
+        className="text-[10px] font-semibold tracking-wider"
         style={{ color: "var(--color-text-muted)" }}
       >
         {label}
       </label>
       {children}
       {error && (
-        <span className="text-[11.5px]" style={{ color: "var(--color-error)" }}>
+        <span className="text-[11px]" style={{ color: "var(--color-error)" }}>
           {error}
         </span>
       )}

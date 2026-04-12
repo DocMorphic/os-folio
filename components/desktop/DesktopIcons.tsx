@@ -26,20 +26,18 @@ const DESKTOP_ITEMS: DesktopItem[] = [
   { id: "buildlog", label: "build-log.md", type: "file", appId: "build-log-md" },
 ];
 
-// Grid cell size — icons snap to multiples of these when dragged
+// Grid cell size — icons snap to multiples of these on drop
 const GRID_COL_W = 104;
 const GRID_ROW_H = 96;
-// Outer margin from the desktop edges
 const GRID_OFFSET_X = 12;
 const GRID_OFFSET_Y = 12;
 
-// Default positions: one icon per grid cell in the first column
 const DEFAULT_POSITIONS: Record<string, IconPos> = {
-  germany:  { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 0 },
-  austria:  { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 1 },
-  india:    { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 2 },
-  contact:  { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 3 },
-  about:    { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 4 },
+  germany: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 0 },
+  austria: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 1 },
+  india: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 2 },
+  contact: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 3 },
+  about: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 4 },
   buildlog: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 5 },
 };
 
@@ -47,7 +45,6 @@ const ICON_WIDTH = 104;
 const ICON_HEIGHT = 88;
 const DRAG_THRESHOLD_PX = 5;
 
-/** Snap an arbitrary (x, y) to the nearest grid cell. */
 function snapToGrid(x: number, y: number): IconPos {
   const col = Math.round((x - GRID_OFFSET_X) / GRID_COL_W);
   const row = Math.round((y - GRID_OFFSET_Y) / GRID_ROW_H);
@@ -57,12 +54,11 @@ function snapToGrid(x: number, y: number): IconPos {
   };
 }
 
-/** Keep the icon within the visible desktop area (above dock, not fully off-screen). */
 function clampPosition(x: number, y: number): IconPos {
   if (typeof window === "undefined") return { x, y };
   const vw = window.innerWidth;
-  const contentH = window.innerHeight - 34; // minus menu bar
-  const dockReserve = 90; // keep icons above the dock
+  const contentH = window.innerHeight - 34;
+  const dockReserve = 90;
   const minX = 0;
   const maxX = Math.max(minX, vw - ICON_WIDTH);
   const minY = 0;
@@ -75,27 +71,26 @@ function clampPosition(x: number, y: number): IconPos {
 
 export function DesktopIcons() {
   const { openWindow } = useWindowManager();
-  // Session-only state — positions reset to defaults on refresh
+  // Session-only state — positions reset on refresh
   const [positions, setPositions] = useState<Record<string, IconPos>>(DEFAULT_POSITIONS);
 
   return (
     <>
-      {DESKTOP_ITEMS.map((item) => {
-        const pos = positions[item.id] ?? DEFAULT_POSITIONS[item.id] ?? { x: 12, y: 12 };
-        return (
-          <DraggableIcon
-            key={item.id}
-            item={item}
-            position={pos}
-            onOpen={() => openWindow(item.appId)}
-            onMove={(newPos) => {
-              // Snap the drop point to the grid, then clamp to viewport
-              const snapped = snapToGrid(newPos.x, newPos.y);
-              setPositions((prev) => ({ ...prev, [item.id]: clampPosition(snapped.x, snapped.y) }));
-            }}
-          />
-        );
-      })}
+      {DESKTOP_ITEMS.map((item) => (
+        <DraggableIcon
+          key={item.id}
+          item={item}
+          position={positions[item.id] ?? DEFAULT_POSITIONS[item.id]}
+          onOpen={() => openWindow(item.appId)}
+          onDrop={(x, y) => {
+            const snapped = snapToGrid(x, y);
+            setPositions((prev) => ({
+              ...prev,
+              [item.id]: clampPosition(snapped.x, snapped.y),
+            }));
+          }}
+        />
+      ))}
     </>
   );
 }
@@ -104,24 +99,39 @@ interface DraggableIconProps {
   item: DesktopItem;
   position: IconPos;
   onOpen: () => void;
-  onMove: (pos: IconPos) => void;
+  onDrop: (x: number, y: number) => void;
 }
 
-function DraggableIcon({ item, position, onOpen, onMove }: DraggableIconProps) {
-  const isDragging = useRef(false);
-  const draggedEnough = useRef(false);
-  const dragOffset = useRef({ x: 0, y: 0 });
-  const startPointer = useRef({ x: 0, y: 0 });
+function DraggableIcon({ item, position, onOpen, onDrop }: DraggableIconProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const dragState = useRef({
+    dragging: false,
+    draggedEnough: false,
+    startX: 0,
+    startY: 0,
+    offsetX: 0,
+    offsetY: 0,
+    latestX: 0,
+    latestY: 0,
+    rafPending: false,
+  });
+
+  // Animating flag is React state so CSS transition can turn on/off
+  const [animating, setAnimating] = useState(false);
+  // isDragging is React state so we can apply translucent styling
+  const [isDragging, setIsDragging] = useState(false);
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
-      isDragging.current = true;
-      draggedEnough.current = false;
-      startPointer.current = { x: e.clientX, y: e.clientY };
-      dragOffset.current = {
-        x: e.clientX - position.x,
-        y: e.clientY - position.y,
-      };
+      const s = dragState.current;
+      s.dragging = true;
+      s.draggedEnough = false;
+      s.startX = e.clientX;
+      s.startY = e.clientY;
+      s.offsetX = e.clientX - position.x;
+      s.offsetY = e.clientY - position.y;
+      s.latestX = position.x;
+      s.latestY = position.y;
       try {
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {}
@@ -129,48 +139,83 @@ function DraggableIcon({ item, position, onOpen, onMove }: DraggableIconProps) {
     [position.x, position.y]
   );
 
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isDragging.current) return;
-      const dx = e.clientX - startPointer.current.x;
-      const dy = e.clientY - startPointer.current.y;
-      if (!draggedEnough.current && Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
-      draggedEnough.current = true;
-      onMove({
-        x: e.clientX - dragOffset.current.x,
-        y: e.clientY - dragOffset.current.y,
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    const s = dragState.current;
+    if (!s.dragging) return;
+    const dx = e.clientX - s.startX;
+    const dy = e.clientY - s.startY;
+    if (!s.draggedEnough) {
+      if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
+      s.draggedEnough = true;
+      setIsDragging(true);
+    }
+    s.latestX = e.clientX - s.offsetX;
+    s.latestY = e.clientY - s.offsetY;
+    // Direct DOM write inside rAF — no React re-render during drag
+    if (!s.rafPending) {
+      s.rafPending = true;
+      requestAnimationFrame(() => {
+        s.rafPending = false;
+        if (rootRef.current) {
+          rootRef.current.style.left = `${s.latestX}px`;
+          rootRef.current.style.top = `${s.latestY}px`;
+        }
       });
-    },
-    [onMove]
-  );
+    }
+  }, []);
 
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
+      const s = dragState.current;
       try {
         if (e.currentTarget && "releasePointerCapture" in e.currentTarget) {
           (e.currentTarget as Element).releasePointerCapture(e.pointerId);
         }
       } catch {}
-      const wasDragging = draggedEnough.current;
-      isDragging.current = false;
-      draggedEnough.current = false;
+      const wasDragging = s.draggedEnough;
+      s.dragging = false;
+      s.draggedEnough = false;
+
       if (!wasDragging) {
+        // Pure click — open the window
         onOpen();
+        return;
       }
+
+      // Drag ended — pop into the nearest grid cell.
+      // Enable CSS transition briefly, then commit state so React sets left/top.
+      setIsDragging(false);
+      setAnimating(true);
+      onDrop(s.latestX, s.latestY);
+      // Turn off transition after it finishes (250ms)
+      window.setTimeout(() => setAnimating(false), 280);
     },
-    [onOpen]
+    [onDrop, onOpen]
   );
+
+  // Compose style: during drag, position is written directly to DOM (rAF)
+  // and we only toggle opacity. On drop, React sets the snapped left/top
+  // and the `animating` class adds a transition so it "pops" into place.
+  const style: React.CSSProperties = {
+    left: position.x,
+    top: position.y,
+    width: ICON_WIDTH,
+    cursor: "pointer",
+    touchAction: "none",
+    opacity: isDragging ? 0.45 : 1,
+    // During a snap-back transition, animate left/top and a subtle scale
+    transition: animating
+      ? "left 0.22s cubic-bezier(0.2, 1.4, 0.4, 1), top 0.22s cubic-bezier(0.2, 1.4, 0.4, 1), transform 0.22s ease-out"
+      : "opacity 0.1s ease-out",
+    transform: animating ? "scale(1.08)" : "scale(1)",
+    willChange: isDragging ? "left, top" : undefined,
+  };
 
   return (
     <div
+      ref={rootRef}
       className="desktop-icon absolute z-10 flex flex-col items-center gap-1.5 px-2 py-2 select-none"
-      style={{
-        left: position.x,
-        top: position.y,
-        width: ICON_WIDTH,
-        cursor: "pointer",
-        touchAction: "none",
-      }}
+      style={style}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
