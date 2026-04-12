@@ -23,8 +23,8 @@ export const projects: Project[] = [
     role: "Solo",
     category: "Personal",
     year: "2025",
-    startDate: "Feb 2025",
-    endDate: "Feb 2025",
+    startDate: "May 2025",
+    endDate: "May 2025",
   },
   {
     id: "hashi",

@@ -19,4 +19,10 @@ export const BUILD_LOG_MD = `# Build Log (2026)
 - Hashi: a Hashiwokakero logic puzzle with graph-based bridge validation
 - Framed: a PvP arena fighter in Godot with window-based mechanics
 - Freelance-ez: AI-powered website builder for small businesses
+
+---
+
+Design heavily inspired by Wes Dieleman's portfolio
+(wesdieleman.com). Thanks Wes — your desktop-OS metaphor made me
+want to build my own. The code here is mine, the vibe is yours.
 `;

@@ -22,6 +22,7 @@ const COMMANDS: Array<[string, string]> = [
   ["close <app-id>", "Close a window by app id."],
   ["coffee", "Get a coffee ☕"],
   ["contact", "Open the contact window."],
+  ["credits", "Show credits and acknowledgements."],
   ["date", "Show the current date."],
   ["echo <text>", "Print any text back to the terminal."],
   ["email", "Open mailto link."],
@@ -246,6 +247,18 @@ export function TerminalApp() {
         case "contact":
           openWindow("contact");
           newLines.push({ type: "output", text: "→ opened contact" });
+          break;
+
+        case "credits":
+          newLines.push({ type: "output", text: "" });
+          newLines.push({ type: "orange", text: "  credits" });
+          newLines.push({ type: "output", text: "  ─────────────────────────────" });
+          newLines.push({ type: "output", text: "  design inspired by Wes Dieleman" });
+          newLines.push({ type: "output", text: "  https://wesdieleman.com" });
+          newLines.push({ type: "output", text: "" });
+          newLines.push({ type: "output", text: "  built by Dharmay Dave, 2026" });
+          newLines.push({ type: "output", text: "  Next.js · React · Tailwind · Supabase" });
+          newLines.push({ type: "output", text: "" });
           break;
 
         case "github":

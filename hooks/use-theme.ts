@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useCallback } from "react";
+import { createContext, useContext, useEffect, useCallback, useState } from "react";
 import type { ThemeMode, AccentColor, ThemeState } from "@/lib/types";
 import { STORAGE_KEYS, DEFAULT_THEME } from "@/lib/constants";
 import { useLocalStorage } from "./use-local-storage";
@@ -26,8 +26,11 @@ export function useThemeProvider(): ThemeContextValue {
   const [mode, setModeRaw] = useLocalStorage<ThemeMode>(STORAGE_KEYS.theme, DEFAULT_THEME.mode);
   const [accent, setAccentRaw] = useLocalStorage<AccentColor>(STORAGE_KEYS.accent, DEFAULT_THEME.accent);
   const [brightness, setBrightnessRaw] = useLocalStorage<number>(STORAGE_KEYS.brightness, DEFAULT_THEME.brightness);
-  const [wallpaperId, setWallpaperIdRaw] = useLocalStorage<string>(STORAGE_KEYS.wallpaperId, DEFAULT_THEME.wallpaperId);
-  const [customWallpaperUrl, setCustomWallpaperRaw] = useLocalStorage<string | null>(STORAGE_KEYS.customWallpaper, DEFAULT_THEME.customWallpaperUrl);
+  // Wallpaper is session-only: resets to the default on every refresh so
+  // new visitors (and returning users) always land on the plain background.
+  // Customized wallpapers during the session are preserved until reload.
+  const [wallpaperId, setWallpaperIdRaw] = useState<string>(DEFAULT_THEME.wallpaperId);
+  const [customWallpaperUrl, setCustomWallpaperRaw] = useState<string | null>(DEFAULT_THEME.customWallpaperUrl);
 
   // Apply theme attributes to document
   useEffect(() => {
