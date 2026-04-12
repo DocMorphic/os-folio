@@ -37,22 +37,40 @@ export function Window({
 
   const windowState = windows.find((w) => w.appId === appId);
   const appDef = APP_REGISTRY[appId];
-  const dragOffset = useRef({ x: 0, y: 0 });
-  const isDragging = useRef(false);
-  const isResizing = useRef(false);
-  const resizeStart = useRef({ x: 0, y: 0, w: 0, h: 0 });
+
+  // Refs for direct DOM manipulation during drag/resize (avoids re-renders)
+  const rootRef = useRef<HTMLDivElement>(null);
+  const dragState = useRef({
+    dragging: false,
+    resizing: false,
+    startX: 0,
+    startY: 0,
+    startWinX: 0,
+    startWinY: 0,
+    startW: 0,
+    startH: 0,
+    // Latest values we'll commit to state on pointerUp
+    latestX: 0,
+    latestY: 0,
+    latestW: 0,
+    latestH: 0,
+    rafPending: false,
+  });
+
   const isFocused = getFocusedAppId() === appId;
   const statusText = windowStatuses[appId];
 
-  // === Drag handlers ===
+  // === Drag handlers — direct DOM writes during move ===
   const handleDragDown = useCallback(
     (e: React.PointerEvent) => {
       if (!windowState) return;
-      isDragging.current = true;
-      dragOffset.current = {
-        x: e.clientX - windowState.position.x,
-        y: e.clientY - windowState.position.y,
-      };
+      dragState.current.dragging = true;
+      dragState.current.startX = e.clientX;
+      dragState.current.startY = e.clientY;
+      dragState.current.startWinX = windowState.position.x;
+      dragState.current.startWinY = windowState.position.y;
+      dragState.current.latestX = windowState.position.x;
+      dragState.current.latestY = windowState.position.y;
       try {
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {}
@@ -61,39 +79,55 @@ export function Window({
     [appId, focusWindow, windowState]
   );
 
-  const handleDragMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isDragging.current) return;
-      updatePosition(appId, {
-        x: e.clientX - dragOffset.current.x,
-        y: e.clientY - dragOffset.current.y,
+  const handleDragMove = useCallback((e: React.PointerEvent) => {
+    const s = dragState.current;
+    if (!s.dragging || !rootRef.current) return;
+    const dx = e.clientX - s.startX;
+    const dy = e.clientY - s.startY;
+    s.latestX = s.startWinX + dx;
+    s.latestY = s.startWinY + dy;
+    // Write directly to style — no React re-render during drag
+    if (!s.rafPending) {
+      s.rafPending = true;
+      requestAnimationFrame(() => {
+        s.rafPending = false;
+        if (rootRef.current) {
+          rootRef.current.style.left = `${s.latestX}px`;
+          rootRef.current.style.top = `${s.latestY}px`;
+        }
       });
+    }
+  }, []);
+
+  const handleDragUp = useCallback(
+    (e: React.PointerEvent) => {
+      const s = dragState.current;
+      if (!s.dragging) return;
+      s.dragging = false;
+      try {
+        if (e.currentTarget && "releasePointerCapture" in e.currentTarget) {
+          (e.currentTarget as Element).releasePointerCapture(e.pointerId);
+        }
+      } catch {}
+      // Commit the final position to state once
+      updatePosition(appId, { x: s.latestX, y: s.latestY });
     },
     [appId, updatePosition]
   );
 
-  const handleDragUp = useCallback((e: React.PointerEvent) => {
-    isDragging.current = false;
-    try {
-      if (e.currentTarget && "releasePointerCapture" in e.currentTarget) {
-        (e.currentTarget as Element).releasePointerCapture(e.pointerId);
-      }
-    } catch {}
-  }, []);
-
-  // === Resize handlers ===
+  // === Resize handlers — same pattern ===
   const handleResizeDown = useCallback(
     (e: React.PointerEvent) => {
       if (!windowState) return;
       e.stopPropagation();
       e.preventDefault();
-      isResizing.current = true;
-      resizeStart.current = {
-        x: e.clientX,
-        y: e.clientY,
-        w: windowState.size.width,
-        h: windowState.size.height,
-      };
+      dragState.current.resizing = true;
+      dragState.current.startX = e.clientX;
+      dragState.current.startY = e.clientY;
+      dragState.current.startW = windowState.size.width;
+      dragState.current.startH = windowState.size.height;
+      dragState.current.latestW = windowState.size.width;
+      dragState.current.latestH = windowState.size.height;
       try {
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {}
@@ -102,44 +136,56 @@ export function Window({
     [appId, focusWindow, windowState]
   );
 
-  const handleResizeMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isResizing.current) return;
-      const dx = e.clientX - resizeStart.current.x;
-      const dy = e.clientY - resizeStart.current.y;
-      updateSize(appId, {
-        width: resizeStart.current.w + dx,
-        height: resizeStart.current.h + dy,
+  const handleResizeMove = useCallback((e: React.PointerEvent) => {
+    const s = dragState.current;
+    if (!s.resizing || !rootRef.current) return;
+    const dx = e.clientX - s.startX;
+    const dy = e.clientY - s.startY;
+    s.latestW = Math.max(280, s.startW + dx);
+    s.latestH = Math.max(180, s.startH + dy);
+    if (!s.rafPending) {
+      s.rafPending = true;
+      requestAnimationFrame(() => {
+        s.rafPending = false;
+        if (rootRef.current) {
+          rootRef.current.style.width = `${s.latestW}px`;
+          rootRef.current.style.height = `${s.latestH}px`;
+        }
       });
+    }
+  }, []);
+
+  const handleResizeUp = useCallback(
+    (e: React.PointerEvent) => {
+      const s = dragState.current;
+      if (!s.resizing) return;
+      s.resizing = false;
+      try {
+        if (e.currentTarget && "releasePointerCapture" in e.currentTarget) {
+          (e.currentTarget as Element).releasePointerCapture(e.pointerId);
+        }
+      } catch {}
+      updateSize(appId, { width: s.latestW, height: s.latestH });
     },
     [appId, updateSize]
   );
 
-  const handleResizeUp = useCallback((e: React.PointerEvent) => {
-    isResizing.current = false;
-    try {
-      if (e.currentTarget && "releasePointerCapture" in e.currentTarget) {
-        (e.currentTarget as Element).releasePointerCapture(e.pointerId);
-      }
-    } catch {}
-  }, []);
-
   // === Button handlers with defensive reset ===
   const handleClose = useCallback(() => {
-    isDragging.current = false;
-    isResizing.current = false;
+    dragState.current.dragging = false;
+    dragState.current.resizing = false;
     closeWindow(appId);
   }, [appId, closeWindow]);
 
   const handleMinimize = useCallback(() => {
-    isDragging.current = false;
-    isResizing.current = false;
+    dragState.current.dragging = false;
+    dragState.current.resizing = false;
     minimizeWindow(appId);
   }, [appId, minimizeWindow]);
 
   const handleMaximize = useCallback(() => {
-    isDragging.current = false;
-    isResizing.current = false;
+    dragState.current.dragging = false;
+    dragState.current.resizing = false;
     maximizeWindow(appId);
   }, [appId, maximizeWindow]);
 
@@ -147,6 +193,7 @@ export function Window({
 
   return (
     <div
+      ref={rootRef}
       className="window-enter absolute flex flex-col overflow-hidden border-2"
       style={{
         left: windowState.position.x,
@@ -178,7 +225,6 @@ export function Window({
       />
       <WindowContent>{children}</WindowContent>
 
-      {/* Resize handle — visible diagonal grip */}
       {!noResize && (
         <div
           className="resize-handle"

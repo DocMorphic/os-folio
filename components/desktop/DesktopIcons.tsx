@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useWindowManager } from "@/hooks/use-window-manager";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type IconType = "folder" | "envelope" | "file";
 
@@ -27,19 +26,36 @@ const DESKTOP_ITEMS: DesktopItem[] = [
   { id: "buildlog", label: "build-log.md", type: "file", appId: "build-log-md" },
 ];
 
+// Grid cell size — icons snap to multiples of these when dragged
+const GRID_COL_W = 104;
+const GRID_ROW_H = 96;
+// Outer margin from the desktop edges
+const GRID_OFFSET_X = 12;
+const GRID_OFFSET_Y = 12;
+
+// Default positions: one icon per grid cell in the first column
 const DEFAULT_POSITIONS: Record<string, IconPos> = {
-  germany: { x: 12, y: 12 },
-  austria: { x: 12, y: 108 },
-  india: { x: 12, y: 204 },
-  contact: { x: 12, y: 300 },
-  about: { x: 12, y: 396 },
-  buildlog: { x: 12, y: 492 },
+  germany:  { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 0 },
+  austria:  { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 1 },
+  india:    { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 2 },
+  contact:  { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 3 },
+  about:    { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 4 },
+  buildlog: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 5 },
 };
 
-const STORAGE_KEY = "os-folio:icon-positions";
 const ICON_WIDTH = 104;
 const ICON_HEIGHT = 88;
 const DRAG_THRESHOLD_PX = 5;
+
+/** Snap an arbitrary (x, y) to the nearest grid cell. */
+function snapToGrid(x: number, y: number): IconPos {
+  const col = Math.round((x - GRID_OFFSET_X) / GRID_COL_W);
+  const row = Math.round((y - GRID_OFFSET_Y) / GRID_ROW_H);
+  return {
+    x: GRID_OFFSET_X + col * GRID_COL_W,
+    y: GRID_OFFSET_Y + row * GRID_ROW_H,
+  };
+}
 
 /** Keep the icon within the visible desktop area (above dock, not fully off-screen). */
 function clampPosition(x: number, y: number): IconPos {
@@ -59,10 +75,8 @@ function clampPosition(x: number, y: number): IconPos {
 
 export function DesktopIcons() {
   const { openWindow } = useWindowManager();
-  const [positions, setPositions] = useLocalStorage<Record<string, IconPos>>(
-    STORAGE_KEY,
-    DEFAULT_POSITIONS
-  );
+  // Session-only state — positions reset to defaults on refresh
+  const [positions, setPositions] = useState<Record<string, IconPos>>(DEFAULT_POSITIONS);
 
   return (
     <>
@@ -75,7 +89,9 @@ export function DesktopIcons() {
             position={pos}
             onOpen={() => openWindow(item.appId)}
             onMove={(newPos) => {
-              setPositions((prev) => ({ ...prev, [item.id]: clampPosition(newPos.x, newPos.y) }));
+              // Snap the drop point to the grid, then clamp to viewport
+              const snapped = snapToGrid(newPos.x, newPos.y);
+              setPositions((prev) => ({ ...prev, [item.id]: clampPosition(snapped.x, snapped.y) }));
             }}
           />
         );

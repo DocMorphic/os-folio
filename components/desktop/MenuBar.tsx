@@ -39,6 +39,7 @@ export function MenuBar() {
   }, []);
 
   const focusedAppId = getFocusedAppId();
+  const anyMenuOpen = openMenu === "portfolio" || openMenu === "file" || openMenu === "view";
 
   return (
     <div
@@ -53,7 +54,7 @@ export function MenuBar() {
       <div className="flex items-stretch">
         {/* Logo — click to open Site Stats */}
         <button
-          className="flex h-[34px] w-[34px] items-center justify-center p-0"
+          className="mr-1 flex h-[34px] w-[34px] shrink-0 items-center justify-center p-1"
           onClick={() => openWindow("stats")}
           aria-label="Site stats"
         >
@@ -61,9 +62,9 @@ export function MenuBar() {
           <img
             src="/icon.png"
             alt="Portfolio logo"
-            width={34}
-            height={34}
-            style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
+            width={26}
+            height={26}
+            style={{ display: "block", width: "26px", height: "26px", objectFit: "contain" }}
           />
         </button>
 
@@ -72,6 +73,8 @@ export function MenuBar() {
           label="Portfolio"
           isOpen={openMenu === "portfolio"}
           onClick={() => setOpenMenu(openMenu === "portfolio" ? null : "portfolio")}
+          onHoverOpen={() => setOpenMenu("portfolio")}
+          anyMenuOpen={anyMenuOpen}
           className="ml-3"
           bold
         >
@@ -107,6 +110,8 @@ export function MenuBar() {
           label="File"
           isOpen={openMenu === "file"}
           onClick={() => setOpenMenu(openMenu === "file" ? null : "file")}
+          onHoverOpen={() => setOpenMenu("file")}
+          anyMenuOpen={anyMenuOpen}
           className="ml-2"
         >
           <MenuItem label="New Window" disabled />
@@ -128,6 +133,8 @@ export function MenuBar() {
           label="View"
           isOpen={openMenu === "view"}
           onClick={() => setOpenMenu(openMenu === "view" ? null : "view")}
+          onHoverOpen={() => setOpenMenu("view")}
+          anyMenuOpen={anyMenuOpen}
           className="ml-2"
         >
           <MenuItem
@@ -199,6 +206,8 @@ function MenuButton({
   label,
   isOpen,
   onClick,
+  onHoverOpen,
+  anyMenuOpen,
   className,
   bold,
   children,
@@ -206,6 +215,8 @@ function MenuButton({
   label: string;
   isOpen: boolean;
   onClick: () => void;
+  onHoverOpen: () => void;
+  anyMenuOpen: boolean;
   className?: string;
   bold?: boolean;
   children: React.ReactNode;
@@ -226,7 +237,13 @@ function MenuButton({
           color: fg,
           fontWeight: bold ? 600 : 500,
         }}
-        onMouseEnter={() => setHover(true)}
+        onMouseEnter={() => {
+          setHover(true);
+          // Auto-switch: if any menu is already open and it's not this one, open this one
+          if (anyMenuOpen && !isOpen) {
+            onHoverOpen();
+          }
+        }}
         onMouseLeave={() => setHover(false)}
         onClick={onClick}
       >
@@ -234,10 +251,11 @@ function MenuButton({
       </button>
       {isOpen && (
         <div
-          className="menu-dropdown absolute left-0 top-full mt-0 min-w-[220px] border-2 py-1.5"
+          className="menu-dropdown absolute left-0 top-full mt-0 min-w-[180px] border"
           style={{
             background: "var(--color-surface-solid)",
             borderColor: "var(--color-border-strong)",
+            padding: "4px 0",
           }}
         >
           {children}
@@ -260,7 +278,7 @@ function MenuItem({
 }) {
   return (
     <button
-      className="flex w-full items-center justify-between px-3 py-1.5 text-left text-[12px] transition-colors"
+      className="flex w-full items-center justify-between px-3 py-1 text-left text-[11.5px] transition-colors"
       style={{
         color: disabled ? "var(--color-text-dim)" : "var(--color-text)",
         cursor: disabled ? "default" : "pointer",
@@ -282,7 +300,7 @@ function MenuItem({
     >
       {label}
       {shortcut && (
-        <span className="ml-5 text-[10.5px]" style={{ color: "inherit", opacity: 0.6 }}>
+        <span className="ml-5 text-[10px]" style={{ color: "inherit", opacity: 0.6 }}>
           {shortcut}
         </span>
       )}
@@ -291,7 +309,7 @@ function MenuItem({
 }
 
 function MenuDivider() {
-  return <div className="mx-3 my-1 h-px" style={{ background: "var(--color-border)" }} />;
+  return <div className="mx-2 my-0.5 h-px" style={{ background: "var(--color-border)" }} />;
 }
 
 /**
