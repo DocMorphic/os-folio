@@ -222,10 +222,12 @@ function MenuButton({
   children: React.ReactNode;
 }) {
   const [hover, setHover] = useState(false);
+  // Hover is always light beige (works in both themes since the menu bar
+  // is always beige). Open state stays dark brown + white.
   const bg = isOpen
     ? "var(--color-button-dark)"
     : hover
-    ? "var(--color-surface-solid)"
+    ? "var(--color-menubar-hover)"
     : "transparent";
   const fg = isOpen ? "#ffffff" : "var(--color-menubar-text)";
   return (
@@ -319,10 +321,11 @@ function MenuDivider() {
  */
 function DisplayButton({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) {
   const [hover, setHover] = useState(false);
+  // Hover always light beige; open state dark brown + white (same as other menu buttons)
   const bg = isOpen
     ? "var(--color-button-dark)"
     : hover
-    ? "var(--color-surface-solid)"
+    ? "var(--color-menubar-hover)"
     : "transparent";
   const iconColor = isOpen ? "#ffffff" : "var(--color-menubar-text)";
   return (

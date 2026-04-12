@@ -48,6 +48,8 @@
   --color-menubar-bg: #e0d0b4;
   --color-menubar-border: #8b5a2b;
   --color-menubar-text: #3a2817;
+  --color-menubar-hover: #ede0c5;
+  --color-menubar-active: #faf1db;
   --color-dock-bg: #f7ebd8;
   --color-dock-border: #8b5a2b;
   --color-desktop-label: #ffffff;
@@ -86,6 +88,8 @@
   --color-menubar-bg: #e0d0b4;
   --color-menubar-border: #8b5a2b;
   --color-menubar-text: #3a2817;
+  --color-menubar-hover: #ede0c5;
+  --color-menubar-active: #faf1db;
   --color-dock-bg: #f7ebd8;
   --color-dock-border: #8b5a2b;
   --color-desktop-label: #ffffff;
