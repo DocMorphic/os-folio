@@ -239,8 +239,8 @@ function DesktopIconSvg({ type }: { type: IconType }) {
   if (type === "folder") {
     return (
       <svg width="58" height="50" viewBox="0 0 56 48" fill="none" className="pointer-events-none">
-        <rect x="10" y="4" width="20" height="7" fill="#e8dbc2" stroke="#3a1a06" strokeWidth="1" />
-        <rect x="5" y="10" width="46" height="34" fill="#8b3e14" stroke="#3a1a06" strokeWidth="2" />
+        <rect x="10" y="4" width="20" height="7" fill="#e8dbc2" stroke="#3a1a06" strokeWidth="0.8" />
+        <rect x="5" y="10" width="46" height="34" fill="#8b3e14" stroke="#3a1a06" strokeWidth="0.8" />
       </svg>
     );
   }
@@ -248,9 +248,9 @@ function DesktopIconSvg({ type }: { type: IconType }) {
   if (type === "envelope") {
     return (
       <svg width="58" height="50" viewBox="0 0 56 48" fill="none" className="pointer-events-none">
-        <rect x="7" y="4" width="42" height="40" fill="#f5e7d0" stroke="#3a2817" strokeWidth="2" />
-        <rect x="17" y="16" width="22" height="16" fill="none" stroke="#3a2817" strokeWidth="1.5" />
-        <path d="M17 16L28 25L39 16" stroke="#3a2817" strokeWidth="1.5" fill="none" />
+        <rect x="7" y="4" width="42" height="40" fill="#f5e7d0" stroke="#3a2817" strokeWidth="0.8" />
+        <rect x="17" y="16" width="22" height="16" fill="none" stroke="#3a2817" strokeWidth="1" />
+        <path d="M17 16L28 25L39 16" stroke="#3a2817" strokeWidth="1" fill="none" />
       </svg>
     );
   }
@@ -258,10 +258,10 @@ function DesktopIconSvg({ type }: { type: IconType }) {
   // file
   return (
     <svg width="58" height="50" viewBox="0 0 56 48" fill="none" className="pointer-events-none">
-      <path d="M11 4 L36 4 L45 13 L45 44 L11 44 Z" fill="#f5e7d0" stroke="#3a2817" strokeWidth="2" />
-      <path d="M36 4 L36 13 L45 13" fill="#d4c4a8" stroke="#3a2817" strokeWidth="2" />
-      <line x1="17" y1="22" x2="39" y2="22" stroke="#9c8260" strokeWidth="1.2" />
-      <line x1="17" y1="28" x2="33" y2="28" stroke="#9c8260" strokeWidth="1.2" />
+      <path d="M11 4 L36 4 L45 13 L45 44 L11 44 Z" fill="#f5e7d0" stroke="#3a2817" strokeWidth="0.8" />
+      <path d="M36 4 L36 13 L45 13" fill="#d4c4a8" stroke="#3a2817" strokeWidth="0.8" />
+      <line x1="17" y1="22" x2="39" y2="22" stroke="#9c8260" strokeWidth="0.8" />
+      <line x1="17" y1="28" x2="33" y2="28" stroke="#9c8260" strokeWidth="0.8" />
     </svg>
   );
 }

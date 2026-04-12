@@ -89,7 +89,7 @@ export function BootScreen() {
             fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
           }}
         >
-          OS-FOLIO v1.0
+          DHARMAY&apos;S PORTFOLIO
         </span>
       </div>
 

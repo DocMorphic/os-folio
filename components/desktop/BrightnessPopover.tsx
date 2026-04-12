@@ -77,9 +77,17 @@ export function BrightnessPopover({ onClose }: BrightnessPopoverProps) {
 
       {/* Dark mode toggle */}
       <button
-        className="flex w-full items-center justify-between py-1 text-[12px]"
+        className="flex w-full items-center justify-between px-2 py-1.5 text-[12px] transition-colors"
         style={{ color: "var(--color-text)" }}
         onClick={toggleMode}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "var(--color-button-dark)";
+          e.currentTarget.style.color = "#ffffff";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.color = "var(--color-text)";
+        }}
       >
         <span>Switch to {mode === "dark" ? "light" : "dark"} mode</span>
         <span
@@ -95,11 +103,19 @@ export function BrightnessPopover({ onClose }: BrightnessPopoverProps) {
       </button>
 
       <button
-        className="mt-1 text-left text-[12px]"
+        className="mt-0.5 w-full px-2 py-1.5 text-left text-[12px] transition-colors"
         style={{ color: "var(--color-text)" }}
         onClick={() => {
           openWindow("settings");
           onClose();
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "var(--color-button-dark)";
+          e.currentTarget.style.color = "#ffffff";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.color = "var(--color-text)";
         }}
       >
         Open settings...
