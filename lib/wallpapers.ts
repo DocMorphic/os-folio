@@ -11,7 +11,6 @@ export const WALLPAPERS: WallpaperOption[] = [
     id: "cat",
     label: "Cat",
     url: "/wallpapers/cat.png",
-    darkUrl: "/wallpapers/cat-dark.png",
     kind: "illustration",
   },
   // More wallpapers go here — user will provide from their phone

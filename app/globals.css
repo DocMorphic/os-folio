@@ -237,6 +237,23 @@ body {
 .cursor-blink { animation: blink 1s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
+/* === Skeleton loader shimmer === */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-alt) 0%,
+    var(--color-surface-hover) 50%,
+    var(--color-surface-alt) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* === Dock === */
 .dock-tooltip {
   opacity: 0;
@@ -263,6 +280,7 @@ body {
   .window-enter, .boot-screen { animation: none; }
   .boot-screen { opacity: 0; pointer-events: none; }
   .cursor-blink { animation: none; }
+  .skeleton { animation: none; }
 }
 
 /* === Skip to content === */

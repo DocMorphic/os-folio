@@ -97,16 +97,31 @@ export function SiteStatsApp() {
       {/* OVERVIEW label */}
       <div>
         <div
-          className="mb-3 text-[10.5px] font-semibold tracking-wider"
+          className="mb-3 flex items-center gap-2 text-[10.5px] font-semibold tracking-wider"
           style={{ color: "var(--color-text-muted)" }}
         >
-          OVERVIEW
+          <span>OVERVIEW</span>
+          {loading && (
+            <span className="flex items-center gap-1.5" style={{ textTransform: "none", letterSpacing: 0 }}>
+              <Spinner />
+              <span className="text-[10.5px]">loading…</span>
+            </span>
+          )}
         </div>
 
-        {/* Two big stat cards */}
+        {/* Two big stat cards — skeleton while loading */}
         <div className="grid grid-cols-2 gap-3">
-          <StatCard label="VISITORS ALL TIME" value={loading ? "…" : fmt(stats.allTime.visitors)} />
-          <StatCard label="PAGE VIEWS ALL TIME" value={loading ? "…" : fmt(stats.allTime.pageViews)} />
+          {loading ? (
+            <>
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </>
+          ) : (
+            <>
+              <StatCard label="VISITORS ALL TIME" value={fmt(stats.allTime.visitors)} />
+              <StatCard label="PAGE VIEWS ALL TIME" value={fmt(stats.allTime.pageViews)} />
+            </>
+          )}
         </div>
       </div>
 
@@ -127,28 +142,35 @@ export function SiteStatsApp() {
           <span className="text-right">30D</span>
         </div>
 
-        {/* Rows */}
-        {stats.metrics.map((row, i) => (
-          <div
-            key={row.label}
-            className="grid grid-cols-[1fr_80px_80px_80px] gap-3 px-4 py-3 text-[12.5px]"
-            style={{
-              borderBottom: i < stats.metrics.length - 1 ? "1px solid var(--color-border)" : "none",
-              color: "var(--color-text)",
-            }}
-          >
-            <span>{row.label}</span>
-            <span className="text-right font-mono" style={{ color: "var(--color-text-muted)" }}>
-              {loading ? "…" : fmt(row.today)}
-            </span>
-            <span className="text-right font-mono" style={{ color: "var(--color-text-muted)" }}>
-              {loading ? "…" : fmt(row.d7)}
-            </span>
-            <span className="text-right font-mono" style={{ color: "var(--color-text-muted)" }}>
-              {loading ? "…" : fmt(row.d30)}
-            </span>
-          </div>
-        ))}
+        {/* Rows — skeleton while loading */}
+        {loading ? (
+          <>
+            <MetricRowSkeleton />
+            <MetricRowSkeleton isLast />
+          </>
+        ) : (
+          stats.metrics.map((row, i) => (
+            <div
+              key={row.label}
+              className="grid grid-cols-[1fr_80px_80px_80px] gap-3 px-4 py-3 text-[12.5px]"
+              style={{
+                borderBottom: i < stats.metrics.length - 1 ? "1px solid var(--color-border)" : "none",
+                color: "var(--color-text)",
+              }}
+            >
+              <span>{row.label}</span>
+              <span className="text-right font-mono" style={{ color: "var(--color-text-muted)" }}>
+                {fmt(row.today)}
+              </span>
+              <span className="text-right font-mono" style={{ color: "var(--color-text-muted)" }}>
+                {fmt(row.d7)}
+              </span>
+              <span className="text-right font-mono" style={{ color: "var(--color-text-muted)" }}>
+                {fmt(row.d30)}
+              </span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -173,5 +195,45 @@ function StatCard({ label, value }: { label: string; value: string }) {
         {value}
       </div>
     </div>
+  );
+}
+
+function StatCardSkeleton() {
+  return (
+    <div
+      className="border p-4"
+      style={{
+        background: "var(--color-surface-solid)",
+        borderColor: "var(--color-border)",
+      }}
+    >
+      <div className="skeleton mb-3 h-[11px] w-[130px]" />
+      <div className="skeleton h-[32px] w-[90px]" />
+    </div>
+  );
+}
+
+function MetricRowSkeleton({ isLast }: { isLast?: boolean }) {
+  return (
+    <div
+      className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-3 px-4 py-3"
+      style={{
+        borderBottom: isLast ? "none" : "1px solid var(--color-border)",
+      }}
+    >
+      <div className="skeleton h-[14px] w-[100px]" />
+      <div className="skeleton h-[14px] w-[36px] justify-self-end" />
+      <div className="skeleton h-[14px] w-[36px] justify-self-end" />
+      <div className="skeleton h-[14px] w-[36px] justify-self-end" />
+    </div>
+  );
+}
+
+function Spinner() {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" className="animate-spin">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" strokeOpacity="0.25" />
+      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
   );
 }

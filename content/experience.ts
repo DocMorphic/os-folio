@@ -1,45 +1,88 @@
 import type { ExperienceEntry } from "@/lib/types";
 
 export const currentFocus: string[] = [
-  "Expanding the SCAILE venture factory with blog CMS, conversion flows, and agent framework integration.",
-  "Shipping nextsure — our first venture factory client — with partner checkout flows.",
-  "Exploring creative-coding portfolios with Three.js and React Three Fiber.",
+  "Computer Science at TU Munich (Studienkolleg).",
+  "Freelance full-stack work for startups in Germany and India.",
+  "Building Lighthouse — a React Native navigation app using OpenStreetMap.",
 ];
 
 export const experience: ExperienceEntry[] = [
   {
-    id: "scaile-venture-factory",
-    company: "SCAILE",
-    role: "Frontend Architect · Venture Factory Owner",
-    employmentType: "Full-time",
-    location: "{{TODO: city, country}}",
-    locationType: "{{TODO: Remote / Hybrid / On-site}}",
-    startDate: "{{TODO: Sept 2025 or actual start}}",
-    endDate: "Present",
-    duration: "{{TODO: auto-compute or leave blank}}",
-    description:
-      "Owns architecture and MVP of the SCAILE venture factory — a prompt-to-website system generating SEO/GEO-optimized lead gen sites. Shipped generation pipeline, premium design system, SEO infra, publishing flow, and multi-tenant foundations.",
-    tags: ["Next.js", "React", "TypeScript", "Tailwind", "Supabase", "Vercel"],
-  },
-  {
-    id: "scaile-platform",
-    company: "SCAILE",
-    role: "Frontend Engineer · SCAILE Platform",
-    employmentType: "Full-time",
-    startDate: "{{TODO: start date}}",
+    id: "freelance",
+    company: "Independent",
+    role: "Freelance Full-Stack Engineer",
+    employmentType: "Freelance",
+    location: "India & Germany",
+    locationType: "Remote",
+    startDate: "May 2025",
     endDate: "Present",
     description:
-      "Contributes to the SCAILE platform (Next.js 16 + FastAPI monorepo) — blog engine, social listening, shadcn/ui components, multi-tenant config system. Worked on the FormMed tenant, an AI content platform for German health writing.",
-    tags: ["Next.js", "FastAPI", "Multi-tenant", "AI", "shadcn/ui"],
+      "Designing and building websites for small local startups — focused on responsiveness, speed, and accessibility. Delivering custom solutions in React, Next.js, Java, Python, and Node.js for clients in education and retail.",
+    tags: ["React", "Next.js", "Python", "Node.js"],
   },
   {
-    id: "prior",
-    company: "{{TODO: previous company}}",
-    role: "{{TODO: previous role}}",
-    employmentType: "{{TODO: full-time / internship / freelance}}",
-    startDate: "{{TODO: start date}}",
-    endDate: "{{TODO: end date}}",
-    description: "{{TODO: describe this role — or remove this entry entirely from content/experience.ts if you don't want it}}",
-    tags: [],
+    id: "sigment-ai",
+    company: "Sigment AI",
+    role: "Software Engineering Intern",
+    employmentType: "Internship",
+    locationType: "Remote",
+    startDate: "Jul 2025",
+    endDate: "Sep 2025",
+    description:
+      "Contributed to a unified marketplace platform that simplifies the integration and deployment of autonomous AI agents for business operations.",
+    tags: ["AI Agents", "Platform", "Full-Stack"],
+  },
+  {
+    id: "cs-tutor-intern",
+    company: "S. N. Kansagra School",
+    role: "Computer Science Tutor",
+    employmentType: "Internship",
+    location: "Rajkot, India",
+    locationType: "On-site",
+    startDate: "Apr 2025",
+    endDate: "Jul 2025",
+    description:
+      "Taught programming fundamentals and algorithms to high school students. Helped students prepare for national-level coding competitions and board examinations. Simplified complex CS concepts through real-world analogies and project-based learning.",
+    tags: ["Teaching", "Algorithms", "Mentoring"],
+  },
+  {
+    id: "private-tutor",
+    company: "S. N. Kansagra School",
+    role: "Private Tutor",
+    employmentType: "Part-time",
+    location: "Rajkot, India",
+    locationType: "On-site",
+    startDate: "Sep 2024",
+    endDate: "Dec 2024",
+    description:
+      "Provided personalized tutoring in Mathematics, Physics, and English to secondary school students. Developed structured learning materials and adapted sessions to different learning styles.",
+    tags: ["Teaching", "Math", "Physics"],
+  },
+];
+
+export const education: ExperienceEntry[] = [
+  {
+    id: "tum",
+    company: "Technical University of Munich",
+    role: "Computer Science",
+    employmentType: "Studienkolleg",
+    location: "Munich, Germany",
+    startDate: "Oct 2025",
+    endDate: "Present",
+    description:
+      "Preparing for the CS undergraduate program. Coursework includes Advanced Mathematics, Higher Physics, Linear Algebra, Calculus, and Introduction to Programming.",
+    tags: ["Mathematics", "Physics", "Programming"],
+  },
+  {
+    id: "kansagra",
+    company: "S. N. Kansagra School",
+    role: "Class XII — Science",
+    employmentType: "High School",
+    location: "Rajkot, India",
+    startDate: "Jun 2013",
+    endDate: "Apr 2025",
+    description:
+      "Valedictorian with 97% in Class XII — ranked among the top 0.1% in India. Coursework in Advanced Mathematics, Computer Science, and Advanced Physics.",
+    tags: ["Mathematics", "Computer Science", "Physics"],
   },
 ];

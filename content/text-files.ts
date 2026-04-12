@@ -2,20 +2,21 @@
 
 export const ABOUT_TXT = `NOW
 
-Building SCAILE's venture factory from MVP to production.
-Shipping conversion flows for nextsure, our first venture client.
-Exploring creative interfaces with Three.js and R3F.
+Studying Computer Science at TU Munich.
+Freelancing full-stack work for startups in India and Germany.
+Building Lighthouse — a mobile nav app with OSM data.
 
 Current obsessions:
-- prompt-to-product systems
-- clean UX under shipping pressure
-- shipping fast without chaos
+- procedural content generation
+- game theory in game design
+- building weird things fast
 `;
 
 export const BUILD_LOG_MD = `# Build Log (2026)
 
-- SCAILE Venture Factory: prompt-to-website system for lead-gen ventures
-- nextsure: first production client, insurance venture with partner checkouts
-- FormMed: multi-tenant AI content platform for German health writing
+- Lighthouse: React Native + Expo navigation app with OpenStreetMap
 - Portfolio: a desktop-style UX with draggable app windows
+- Hashi: a Hashiwokakero logic puzzle with graph-based bridge validation
+- Framed: a PvP arena fighter in Godot with window-based mechanics
+- Freelance-ez: AI-powered website builder for small businesses
 `;
