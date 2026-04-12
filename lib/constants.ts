@@ -213,6 +213,17 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     showInExplorer: false,
     showInTaskbar: true,
   },
+  "search-result": {
+    id: "search-result",
+    title: "Search action complete",
+    icon: "✨",
+    defaultWidth: 360,
+    defaultHeight: 160,
+    defaultX: 600,
+    defaultY: 80,
+    showInExplorer: false,
+    showInTaskbar: false,
+  },
   "germany-notes": {
     id: "germany-notes",
     title: "germany-notes.txt",

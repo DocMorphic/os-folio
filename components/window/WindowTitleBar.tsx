@@ -36,7 +36,7 @@ export function WindowTitleBar({
 
   return (
     <div
-      className="flex h-9 shrink-0 cursor-grab items-center justify-between border-b-2 pl-3 pr-1.5 active:cursor-grabbing"
+      className="flex h-9 shrink-0 cursor-move items-center justify-between border-b-2 pl-3 pr-1.5"
       style={{
         background: "var(--color-titlebar)",
         borderColor: "var(--color-border-strong)",

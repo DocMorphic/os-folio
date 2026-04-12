@@ -107,12 +107,15 @@ const HANG_FIGURES = [
   "     O",
 ];
 
-// Snake game board
-const SNAKE_COLS = 26;
-const SNAKE_ROWS = 14;
+// Snake game board — 20 cols × 12 rows, each cell is 2 chars wide so the
+// rendered aspect ratio in monospace feels closer to square.
+const SNAKE_COLS = 20;
+const SNAKE_ROWS = 12;
+const SNAKE_BEST_KEY = "os-folio:snake-best";
 
 type GameMode = "idle" | "snake";
 type Dir = "up" | "down" | "left" | "right";
+type Difficulty = "easy" | "normal" | "hard";
 interface Point { x: number; y: number; }
 interface SnakeState {
   snake: Point[]; // head is snake[0]
@@ -120,7 +123,10 @@ interface SnakeState {
   dir: Dir;
   queued: Dir; // buffered next direction (prevents 180° reversal mid-tick)
   score: number;
+  best: number;
   over: boolean;
+  paused: boolean;
+  difficulty: Difficulty;
   speedMs: number;
 }
 
@@ -179,29 +185,53 @@ export function TerminalApp() {
   // ── Snake game ──────────────────────────────────────────────────────────
 
   const renderSnake = useCallback((state: SnakeState): Line[] => {
+    // Each cell is 2 chars wide so the rendered aspect ratio is ~square.
+    const EMPTY = "  ";
+    const BODY = "oo";
+    const HEAD = "@@";
+    const FOOD = "<>";
+
     const grid: string[][] = Array.from({ length: SNAKE_ROWS }, () =>
-      Array.from({ length: SNAKE_COLS }, () => "·")
+      Array.from({ length: SNAKE_COLS }, () => EMPTY)
     );
     state.snake.forEach((p, i) => {
       if (p.y < 0 || p.y >= SNAKE_ROWS || p.x < 0 || p.x >= SNAKE_COLS) return;
-      grid[p.y][p.x] = i === 0 ? "◆" : "█";
+      grid[p.y][p.x] = i === 0 ? HEAD : BODY;
     });
-    grid[state.food.y][state.food.x] = "●";
+    grid[state.food.y][state.food.x] = FOOD;
+
+    const border = "+" + "-".repeat(SNAKE_COLS * 2) + "+";
+    const diffLabel =
+      state.difficulty === "easy"
+        ? "Easy"
+        : state.difficulty === "hard"
+        ? "Hard"
+        : "Normal";
+    const speed = (1000 / state.speedMs).toFixed(1);
 
     const out: Line[] = [];
-    out.push({ type: "output", text: "┌" + "─".repeat(SNAKE_COLS) + "┐" });
-    grid.forEach((row) => {
-      out.push({ type: "output", text: "│" + row.join("") + "│" });
-    });
-    out.push({ type: "output", text: "└" + "─".repeat(SNAKE_COLS) + "┘" });
+    out.push({ type: "orange", text: "Terminal Snake" });
     out.push({
-      type: "orange",
-      text: `  score: ${state.score}   ← → ↑ ↓ to move · q to quit`,
+      type: "output",
+      text: "Controls: Arrow Keys move | P pause/resume | R restart | Q or Esc quit",
     });
+    out.push({
+      type: "output",
+      text: `Difficulty ${diffLabel} | Score ${state.score} | Best ${state.best} | Length ${state.snake.length} | Speed ${speed}/s`,
+    });
+    out.push({ type: "output", text: border });
+    grid.forEach((row) => {
+      out.push({ type: "output", text: "|" + row.join("") + "|" });
+    });
+    out.push({ type: "output", text: border });
+
     if (state.over) {
-      out.push({ type: "output", text: "" });
-      out.push({ type: "error", text: `  GAME OVER — final score: ${state.score}` });
-      out.push({ type: "orange", text: "  press any key to continue" });
+      out.push({
+        type: "error",
+        text: "Game over. Press R to restart or Q to return to terminal.",
+      });
+    } else if (state.paused) {
+      out.push({ type: "orange", text: "Paused. Press P to resume." });
     }
     return out;
   }, []);
@@ -220,7 +250,7 @@ export function TerminalApp() {
 
   const tickSnake = useCallback(() => {
     const s = snakeRef.current;
-    if (!s || s.over) return;
+    if (!s || s.over || s.paused) return;
 
     const opposite: Record<Dir, Dir> = {
       up: "down",
@@ -248,6 +278,13 @@ export function TerminalApp() {
 
     if (hitWall || hitSelf) {
       s.over = true;
+      // Bump best score if this run beat it
+      if (s.score > s.best) {
+        s.best = s.score;
+        try {
+          window.localStorage.setItem(SNAKE_BEST_KEY, String(s.best));
+        } catch {}
+      }
       if (snakeTickRef.current != null) {
         window.clearInterval(snakeTickRef.current);
         snakeTickRef.current = null;
@@ -268,24 +305,39 @@ export function TerminalApp() {
     setLines([...gameBaseRef.current, ...renderSnake(s)]);
   }, [renderSnake, spawnFood]);
 
-  const startSnake = useCallback(
-    (difficulty: "easy" | "normal" | "hard") => {
+  const buildSnakeState = useCallback(
+    (difficulty: Difficulty): SnakeState => {
       const speedMs =
-        difficulty === "easy" ? 200 : difficulty === "hard" ? 80 : 130;
+        difficulty === "easy" ? 180 : difficulty === "hard" ? 90 : 130;
       const initial: Point[] = [
-        { x: 6, y: 7 },
-        { x: 5, y: 7 },
-        { x: 4, y: 7 },
+        { x: 6, y: Math.floor(SNAKE_ROWS / 2) },
+        { x: 5, y: Math.floor(SNAKE_ROWS / 2) },
+        { x: 4, y: Math.floor(SNAKE_ROWS / 2) },
       ];
-      const state: SnakeState = {
+      let best = 0;
+      try {
+        const raw = window.localStorage.getItem(SNAKE_BEST_KEY);
+        if (raw) best = parseInt(raw, 10) || 0;
+      } catch {}
+      return {
         snake: initial,
         food: spawnFood(initial),
         dir: "right",
         queued: "right",
         score: 0,
+        best,
         over: false,
+        paused: false,
+        difficulty,
         speedMs,
       };
+    },
+    [spawnFood]
+  );
+
+  const startSnake = useCallback(
+    (difficulty: Difficulty) => {
+      const state = buildSnakeState(difficulty);
       snakeRef.current = state;
 
       setLines((prev) => {
@@ -293,10 +345,24 @@ export function TerminalApp() {
         return [...prev, ...renderSnake(state)];
       });
       setGameMode("snake");
-      snakeTickRef.current = window.setInterval(tickSnake, speedMs);
+      snakeTickRef.current = window.setInterval(tickSnake, state.speedMs);
     },
-    [renderSnake, spawnFood, tickSnake]
+    [buildSnakeState, renderSnake, tickSnake]
   );
+
+  const restartSnake = useCallback(() => {
+    const current = snakeRef.current;
+    const difficulty: Difficulty = current?.difficulty ?? "normal";
+    const state = buildSnakeState(difficulty);
+    // Preserve the best score from the previous run
+    if (current && current.best > state.best) state.best = current.best;
+    snakeRef.current = state;
+    if (snakeTickRef.current != null) {
+      window.clearInterval(snakeTickRef.current);
+    }
+    setLines([...gameBaseRef.current, ...renderSnake(state)]);
+    snakeTickRef.current = window.setInterval(tickSnake, state.speedMs);
+  }, [buildSnakeState, renderSnake, tickSnake]);
 
   const stopSnake = useCallback(() => {
     if (snakeTickRef.current != null) {
@@ -332,17 +398,43 @@ export function TerminalApp() {
       const s = snakeRef.current;
       if (!s) return;
 
-      if (s.over) {
+      const key = e.key;
+      const lower = key.length === 1 ? key.toLowerCase() : key;
+
+      // Quit is always available
+      if (lower === "q" || key === "Escape") {
         e.preventDefault();
         stopSnake();
         return;
       }
 
-      if (e.key === "q" || e.key === "Q" || e.key === "Escape") {
-        e.preventDefault();
-        stopSnake();
+      // Restart after death
+      if (s.over) {
+        if (lower === "r") {
+          e.preventDefault();
+          restartSnake();
+        }
+        // Ignore other keys after death — user must pick R or Q
         return;
       }
+
+      // Pause / resume
+      if (lower === "p") {
+        e.preventDefault();
+        s.paused = !s.paused;
+        setLines([...gameBaseRef.current, ...renderSnake(s)]);
+        return;
+      }
+
+      // Restart even during play (fresh run)
+      if (lower === "r") {
+        e.preventDefault();
+        restartSnake();
+        return;
+      }
+
+      // Don't process steering while paused
+      if (s.paused) return;
 
       const opposite: Record<Dir, Dir> = {
         up: "down",
@@ -359,12 +451,8 @@ export function TerminalApp() {
         s: "down",
         a: "left",
         d: "right",
-        W: "up",
-        S: "down",
-        A: "left",
-        D: "right",
       };
-      const next = map[e.key];
+      const next = map[key] ?? map[lower];
       if (next) {
         e.preventDefault();
         if (next !== opposite[s.dir]) s.queued = next;
@@ -372,7 +460,7 @@ export function TerminalApp() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [gameMode, stopSnake]);
+  }, [gameMode, stopSnake, restartSnake, renderSnake]);
 
   const processCommand = useCallback(
     (raw: string) => {

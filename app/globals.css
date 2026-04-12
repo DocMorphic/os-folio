@@ -160,6 +160,9 @@
 /* === Base === */
 * { box-sizing: border-box; }
 
+/* Every enabled <button> gets the click cursor by default. */
+button:not(:disabled) { cursor: pointer; }
+
 html {
   background: var(--color-bg);
   color: var(--color-text);

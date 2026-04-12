@@ -46,7 +46,7 @@ import { ContactApp } from "@/components/apps/ContactApp";
 import { TerminalApp } from "@/components/apps/TerminalApp";
 import { SettingsApp } from "@/components/apps/SettingsApp";
 import { HelpApp } from "@/components/apps/HelpApp";
-import { SearchApp } from "@/components/apps/SearchApp";
+import { SearchApp, SearchResultApp } from "@/components/apps/SearchApp";
 import {
   GermanyFolder,
   AustriaFolder,
@@ -73,6 +73,7 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
   settings: SettingsApp,
   help: HelpApp,
   search: SearchApp,
+  "search-result": SearchResultApp,
   "folder-germany": GermanyFolder,
   "folder-austria": AustriaFolder,
   "folder-india": IndiaFolder,

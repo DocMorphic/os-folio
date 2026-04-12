@@ -36,6 +36,10 @@ export interface WindowContext {
   folderId?: string;
   imageIndex?: number;
   imageCount?: number;
+  /** Message shown in the search-result window. */
+  searchMessage?: string;
+  /** Original query that was searched. */
+  searchQuery?: string;
 }
 
 interface WindowManagerContextValue {
