@@ -15,11 +15,15 @@ const TITLEBAR_VISIBLE_MIN = 100;
 // Mobile (< MOBILE_BREAKPOINT) reserves extra vertical space at the top
 // of the desktop for the horizontally-scrolling icon row.
 const MOBILE_BREAKPOINT = 768;
-const MOBILE_ICON_ROW_RESERVE = 80;
+const MOBILE_ICON_ROW_RESERVE = 96;
+
+function isMobileViewport() {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth < MOBILE_BREAKPOINT;
+}
 
 function topReserve() {
-  if (typeof window === "undefined") return 0;
-  return window.innerWidth < MOBILE_BREAKPOINT ? MOBILE_ICON_ROW_RESERVE : 0;
+  return isMobileViewport() ? MOBILE_ICON_ROW_RESERVE : 0;
 }
 
 /**
@@ -79,11 +83,18 @@ function clampSize(w: number, h: number) {
   if (typeof window === "undefined") return { width: w, height: h };
   const vw = window.innerWidth;
   const vh = window.innerHeight;
+  const mobile = isMobileViewport();
   const maxW = vw - MIN_MARGIN * 2;
   const maxH = vh - MENUBAR_HEIGHT - DOCK_HEIGHT - MIN_MARGIN * 2 - topReserve();
+  // On mobile, force windows to the viewport width regardless of default.
+  // Min is loosened so small phones (<300px) still get a usable window.
+  const minW = mobile ? Math.min(240, maxW) : MIN_W;
+  const minH = mobile ? Math.min(220, maxH) : MIN_H;
+  const desiredW = mobile ? maxW : w;
+  const desiredH = mobile ? maxH : h;
   return {
-    width: Math.max(MIN_W, Math.min(maxW, w)),
-    height: Math.max(MIN_H, Math.min(maxH, h)),
+    width: Math.max(minW, Math.min(maxW, desiredW)),
+    height: Math.max(minH, Math.min(maxH, desiredH)),
   };
 }
 
@@ -121,8 +132,9 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const reserve = topReserve();
+        const mobile = isMobileViewport();
         const contentHeight = vh - MENUBAR_HEIGHT - reserve;
-        const offset = (prev.length % 5) * 24;
+        const offset = mobile ? 0 : (prev.length % 5) * 24;
         defaultX = Math.max(
           MIN_MARGIN,
           Math.floor((vw - clampedSize.width) / 2) + offset

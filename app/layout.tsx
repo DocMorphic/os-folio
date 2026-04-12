@@ -1,7 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Newsreader, Geist_Mono } from "next/font/google";
 import { StatsTracker } from "@/components/StatsTracker";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",

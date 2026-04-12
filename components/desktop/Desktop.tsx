@@ -13,7 +13,29 @@ import { Wallpaper } from "./Wallpaper";
 import { DesktopIcons } from "./DesktopIcons";
 import { Window } from "@/components/window/Window";
 import { APP_REGISTRY } from "@/lib/constants";
-import { FOLDER_CONTENTS } from "@/content/folder-files";
+import { FOLDER_CONTENTS, type FolderItem } from "@/content/folder-files";
+
+// Kick off image preloading right after the desktop mounts so thumbnails
+// are cached by the time the user opens a folder window.
+function useFolderImagePreload() {
+  useEffect(() => {
+    const srcs: string[] = [];
+    Object.values(FOLDER_CONTENTS).forEach((folder) => {
+      folder.items.forEach((it: FolderItem) => {
+        if (it.type === "image" && it.src) srcs.push(it.src);
+      });
+    });
+    // Defer past the first paint so boot animation isn't jankier than it
+    // already is.
+    const handle = window.setTimeout(() => {
+      srcs.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    }, 300);
+    return () => window.clearTimeout(handle);
+  }, []);
+}
 
 import { AboutApp } from "@/components/apps/AboutApp";
 import { WorksApp } from "@/components/apps/WorksApp";
@@ -64,6 +86,7 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
 export function Desktop() {
   const theme = useThemeProvider();
   const windowManager = useWindowManagerProvider();
+  useFolderImagePreload();
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {

@@ -77,9 +77,12 @@ export function Taskbar() {
   const { windows, openWindow, focusWindow, restoreWindow, minimizeWindow } = useWindowManager();
 
   return (
-    <div className="absolute bottom-2 left-1/2 z-[600] -translate-x-1/2">
+    <div
+      className="custom-scrollbar absolute bottom-2 left-1/2 z-[600] -translate-x-1/2 overflow-x-auto overflow-y-hidden"
+      style={{ maxWidth: "calc(100vw - 12px)" }}
+    >
       <div
-        className="flex items-center gap-2 border-2 px-3 py-2"
+        className="flex w-max items-center gap-2 border-2 px-3 py-2"
         style={{
           background: "var(--color-dock-bg)",
           borderColor: "var(--color-dock-border)",
@@ -108,9 +111,10 @@ export function Taskbar() {
               </div>
 
               <button
-                className="flex h-12 w-12 items-center justify-center transition-colors"
+                className="flex h-12 w-12 items-center justify-center border-2 transition-colors"
                 style={{
                   background: isFocused ? "var(--color-button-dark-hover)" : "var(--color-button-dark)",
+                  borderColor: "var(--color-border-strong)",
                 }}
                 onClick={() => {
                   if (!win) {
