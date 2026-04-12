@@ -87,6 +87,74 @@ The berlin / portugal / provance-france folder labels are placeholders. Change t
 
 ---
 
+## Desktop Folders — `content/folder-files.ts`
+
+Three folders live on the desktop: **germany**, **austria**, **india**. Each has its own dynamic window.
+
+### To add photos:
+
+1. Drop image files into the matching directory:
+   - `public/photos/germany/your-photo.jpg`
+   - `public/photos/austria/your-photo.jpg`
+   - `public/photos/india/your-photo.jpg`
+
+2. List them in `content/folder-files.ts` under the folder's `items` array:
+   ```ts
+   germany: {
+     ...,
+     items: [
+       { name: "germany-notes.txt", type: "text" },
+       { name: "munich-1.jpg", type: "image", src: "/photos/germany/munich-1.jpg" },
+       { name: "berlin-1.jpg", type: "image", src: "/photos/germany/berlin-1.jpg" },
+     ],
+   }
+   ```
+
+3. Edit each folder's `text` field (the multi-line string) to add your trip notes. Currently marked `{{TODO}}`.
+
+---
+
+## Contact Form → Email (Resend)
+
+The contact form is wired to a real backend via `/api/contact` route that uses Resend REST API.
+
+**Status:** Code is complete. Waiting for `RESEND_API_KEY` in `.env.local`.
+
+### Setup steps (one-time)
+
+1. Go to [resend.com](https://resend.com) and sign up for free using **davedharmay@gmail.com**
+2. Confirm your email (click the link in the email Resend sends you)
+3. Go to **API Keys** in the Resend dashboard
+4. Click **Create API Key**, name it "Portfolio", permission: **Sending access**, domain: **All domains**
+5. Copy the key (starts with `re_...`)
+6. Paste it to me and I'll add it to `.env.local`
+
+### How it works
+
+- User submits the Contact form → POST `/api/contact`
+- API route validates + rate-limits (1 req per 5s per IP)
+- Honeypot field catches spam bots
+- Calls Resend REST API via `lib/email.ts`
+- Email sent from `onboarding@resend.dev` (Resend's sandbox sender — works without a verified domain)
+- **Delivered to davedharmay@gmail.com** (the email you signed up with)
+- Subject: `[Portfolio Contact] {subject}`
+- Reply-To is set to the sender's email so you can just hit Reply
+
+### Limits on free tier
+
+- 100 emails/day
+- Only able to send to your own signup email (`davedharmay@gmail.com`) until you verify a domain
+- For a portfolio contact form, this is exactly what you want — all messages come to you
+
+### If you want to send from a custom domain later
+
+- Add your domain to Resend
+- Add the DNS records they show you
+- Update `SENDER` in `lib/email.ts:14` from `onboarding@resend.dev` to `contact@yourdomain.com`
+- You'll then be able to send to any recipient (not just your signup email)
+
+---
+
 ## Site Stats Backend (Supabase)
 
 **Connected.** `.env.local` already has:

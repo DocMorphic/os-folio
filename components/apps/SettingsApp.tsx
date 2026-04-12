@@ -138,9 +138,9 @@ export function SettingsApp() {
         </div>
 
         {/* Upload custom */}
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3">
           <label
-            className="flex-1 cursor-pointer border-2 px-3 py-2 text-center text-[12.5px]"
+            className="block cursor-pointer border-2 px-3 py-2 text-center text-[12.5px]"
             style={{
               borderColor: "var(--color-border-strong)",
               background: "var(--color-surface-alt)",
@@ -161,17 +161,6 @@ export function SettingsApp() {
               }}
             />
           </label>
-          <button
-            className="border-2 px-4 py-2 text-[12.5px]"
-            style={{
-              borderColor: "var(--color-border-strong)",
-              background: "var(--color-surface-alt)",
-              color: "var(--color-text)",
-            }}
-            onClick={() => setCustomWallpaper(null)}
-          >
-            Reset
-          </button>
         </div>
       </div>
     </div>

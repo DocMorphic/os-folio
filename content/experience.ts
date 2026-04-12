@@ -8,6 +8,18 @@ export const currentFocus: string[] = [
 
 export const experience: ExperienceEntry[] = [
   {
+    id: "scaile",
+    company: "SCAILE",
+    role: "Working Student",
+    employmentType: "Working Student",
+    location: "Germany",
+    locationType: "Remote",
+    startDate: "Mar 2026",
+    endDate: "Present",
+    description: "Building products curated to client requests.",
+    tags: ["Next.js", "TypeScript", "React"],
+  },
+  {
     id: "freelance",
     company: "Independent",
     role: "Freelance Full-Stack Engineer",

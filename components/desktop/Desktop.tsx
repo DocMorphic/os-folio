@@ -13,6 +13,7 @@ import { Wallpaper } from "./Wallpaper";
 import { DesktopIcons } from "./DesktopIcons";
 import { Window } from "@/components/window/Window";
 import { APP_REGISTRY } from "@/lib/constants";
+import { FOLDER_CONTENTS } from "@/content/folder-files";
 
 import { AboutApp } from "@/components/apps/AboutApp";
 import { WorksApp } from "@/components/apps/WorksApp";
@@ -23,7 +24,11 @@ import { TerminalApp } from "@/components/apps/TerminalApp";
 import { SettingsApp } from "@/components/apps/SettingsApp";
 import { HelpApp } from "@/components/apps/HelpApp";
 import { SearchApp } from "@/components/apps/SearchApp";
-import { PhotoGalleryApp } from "@/components/apps/PhotoGalleryApp";
+import {
+  GermanyFolder,
+  AustriaFolder,
+  IndiaFolder,
+} from "@/components/apps/PhotoGalleryApp";
 import { AboutTxtApp, BuildLogApp } from "@/components/apps/TextEditorApp";
 import { SiteStatsApp } from "@/components/apps/SiteStatsApp";
 
@@ -37,7 +42,9 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
   settings: SettingsApp,
   help: HelpApp,
   search: SearchApp,
-  photos: PhotoGalleryApp,
+  "folder-germany": GermanyFolder,
+  "folder-austria": AustriaFolder,
+  "folder-india": IndiaFolder,
   "about-txt": AboutTxtApp,
   "build-log-md": BuildLogApp,
   stats: SiteStatsApp,
@@ -117,7 +124,12 @@ export function Desktop() {
                   const AppComponent = APP_COMPONENTS[w.appId];
                   const appDef = APP_REGISTRY[w.appId];
                   if (!AppComponent || !appDef) return null;
-                  const itemCount = w.appId === "photos" ? 7 : undefined;
+                  // For folder windows, show the item count from the folder data
+                  let itemCount: number | undefined;
+                  if (w.appId.startsWith("folder-")) {
+                    const folderId = w.appId.replace("folder-", "");
+                    itemCount = FOLDER_CONTENTS[folderId]?.items.length;
+                  }
                   const isSearch = w.appId === "search";
                   return (
                     <Window

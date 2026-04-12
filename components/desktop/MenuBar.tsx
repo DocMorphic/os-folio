@@ -188,9 +188,22 @@ export function MenuBar() {
             onClick={() => setOpenMenu(openMenu === "brightness" ? null : "brightness")}
             aria-label="Display settings"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="4"/>
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            {/* Gear icon — pixel/blocky style, white on dark */}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="white">
+              {/* Top/bottom/left/right teeth */}
+              <rect x="7" y="1" width="2" height="2" />
+              <rect x="7" y="13" width="2" height="2" />
+              <rect x="1" y="7" width="2" height="2" />
+              <rect x="13" y="7" width="2" height="2" />
+              {/* Diagonal teeth */}
+              <rect x="2.5" y="2.5" width="2" height="2" />
+              <rect x="11.5" y="2.5" width="2" height="2" />
+              <rect x="2.5" y="11.5" width="2" height="2" />
+              <rect x="11.5" y="11.5" width="2" height="2" />
+              {/* Outer ring */}
+              <path d="M4 4H12V12H4V4Z M5 5V11H11V5H5Z" />
+              {/* Center hole */}
+              <rect x="7" y="7" width="2" height="2" />
             </svg>
           </button>
           {openMenu === "brightness" && (
@@ -221,15 +234,24 @@ function MenuButton({
   bold?: boolean;
   children: React.ReactNode;
 }) {
+  const [hover, setHover] = useState(false);
+  const bg = isOpen
+    ? "var(--color-button-dark)"
+    : hover
+    ? "var(--color-surface-solid)"
+    : "transparent";
+  const fg = isOpen ? "#ffffff" : "var(--color-menubar-text)";
   return (
     <div className={`relative flex items-center ${className ?? ""}`}>
       <button
         className="px-2.5 py-1 text-[12.5px] transition-colors"
         style={{
-          background: isOpen ? "var(--color-button-dark)" : "transparent",
-          color: isOpen ? "#ffffff" : "var(--color-menubar-text)",
+          background: bg,
+          color: fg,
           fontWeight: bold ? 600 : 500,
         }}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         onClick={onClick}
       >
         {label}

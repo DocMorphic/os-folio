@@ -12,9 +12,9 @@ interface DesktopItem {
 }
 
 const DESKTOP_ITEMS: DesktopItem[] = [
-  { id: "berlin", label: "berlin", type: "folder", appId: "photos" },
-  { id: "portugal", label: "portugal", type: "folder", appId: "photos" },
-  { id: "provence", label: "provance-\nfrance", type: "folder", appId: "photos" },
+  { id: "germany", label: "germany", type: "folder", appId: "folder-germany" },
+  { id: "austria", label: "austria", type: "folder", appId: "folder-austria" },
+  { id: "india", label: "india", type: "folder", appId: "folder-india" },
   { id: "contact", label: "Contact", type: "envelope", appId: "contact" },
   { id: "about", label: "about.txt", type: "file", appId: "about-txt" },
   { id: "buildlog", label: "build-log.md", type: "file", appId: "build-log-md" },
