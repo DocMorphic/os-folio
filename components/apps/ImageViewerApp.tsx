@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo } from "react";
 import { useWindowManager } from "@/hooks/use-window-manager";
 import { FOLDER_CONTENTS } from "@/content/folder-files";
@@ -88,13 +89,17 @@ export function ImageViewerApp() {
     >
       {/* Image area */}
       <div className="relative flex flex-1 items-center justify-center overflow-hidden p-6">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={name}
-          className="max-h-full max-w-full"
-          style={{ objectFit: "contain" }}
-        />
+        <div className="relative h-full w-full">
+          <Image
+            src={src}
+            alt={name}
+            fill
+            sizes="(max-width: 900px) 90vw, 900px"
+            quality={82}
+            priority
+            style={{ objectFit: "contain" }}
+          />
+        </div>
 
         {/* Prev button */}
         {total > 1 && (

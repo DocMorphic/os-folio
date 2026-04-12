@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FOLDER_CONTENTS, type FolderItem } from "@/content/folder-files";
 import { useWindowManager } from "@/hooks/use-window-manager";
 
@@ -134,14 +135,18 @@ function ImageFileIcon({ src }: { src?: string }) {
   if (src) {
     return (
       <div
-        className="h-[26px] w-[26px] rounded-sm border"
-        style={{
-          backgroundImage: `url(${src})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          borderColor: "var(--color-border)",
-        }}
-      />
+        className="relative h-[26px] w-[26px] overflow-hidden rounded-sm border"
+        style={{ borderColor: "var(--color-border)" }}
+      >
+        <Image
+          src={src}
+          alt=""
+          fill
+          sizes="32px"
+          quality={60}
+          style={{ objectFit: "cover" }}
+        />
+      </div>
     );
   }
   return (

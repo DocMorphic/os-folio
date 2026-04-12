@@ -12,7 +12,6 @@ const TOTAL_MONTHS = 36; // 3 years: 2024, 2025, 2026
 
 function toMonthIndex(dateStr: string): number {
   if (dateStr.toLowerCase() === "now") {
-    // Today (approx): use current date
     const now = new Date();
     return Math.max(0, (now.getFullYear() - START_YEAR) * 12 + now.getMonth());
   }
@@ -24,6 +23,7 @@ function toMonthIndex(dateStr: string): number {
 
 export function WorksApp() {
   const todayIndex = toMonthIndex("Now");
+  const todayPct = (todayIndex / TOTAL_MONTHS) * 100;
 
   return (
     <div className="flex flex-col gap-5">
@@ -82,47 +82,79 @@ export function WorksApp() {
           </span>
         </div>
 
-        <div className="p-4">
+        <div className="px-4 pt-3 pb-2">
           {/* Year headers */}
-          <div className="mb-2 flex">
+          <div
+            className="mb-0 flex border-b pb-2"
+            style={{ borderColor: "var(--color-border)" }}
+          >
             <div className="w-[140px] shrink-0">
               <span className="text-[10px] font-semibold tracking-wider" style={{ color: "var(--color-text-muted)" }}>
                 PROJECTS
               </span>
             </div>
             <div className="relative flex-1">
-              <div className="flex justify-between">
-                {["2024", "2025", "2026"].map((year) => (
-                  <span key={year} className="text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
-                    {year}
-                  </span>
-                ))}
-              </div>
+              {["2024", "2025", "2026"].map((year, i) => (
+                <span
+                  key={year}
+                  className="absolute text-[10.5px]"
+                  style={{
+                    color: "var(--color-text-muted)",
+                    left: `${(i / 3) * 100}%`,
+                  }}
+                >
+                  {year}
+                </span>
+              ))}
             </div>
           </div>
 
           {/* Rows */}
           <div className="relative">
-            {/* Today marker */}
+            {/* Today marker — runs full height of all rows */}
             <div
-              className="absolute top-0 bottom-0 w-px"
+              className="pointer-events-none absolute top-0 bottom-0 w-px"
               style={{
-                left: `calc(140px + ${(todayIndex / TOTAL_MONTHS) * 100}% * (100% - 140px) / 100%)`,
+                left: `calc(140px + ${todayPct}% * (100% - 140px) / 100%)`,
                 background: "var(--color-accent)",
-                opacity: 0.6,
+                opacity: 0.7,
+                zIndex: 2,
               }}
             />
+            {/* Today label — small box at top of marker */}
+            <div
+              className="pointer-events-none absolute"
+              style={{
+                left: `calc(140px + ${todayPct}% * (100% - 140px) / 100%)`,
+                top: "6px",
+                transform: "translateX(-50%)",
+                background: "var(--color-accent)",
+                color: "#ffffff",
+                fontSize: "9.5px",
+                padding: "1px 5px",
+                zIndex: 3,
+                fontWeight: 500,
+              }}
+            >
+              Today
+            </div>
 
-            {projects.map((p) => {
+            {projects.map((p, i) => {
               const start = toMonthIndex(p.startDate || "Jan 2024");
               const end = toMonthIndex(p.endDate || "Now");
               const leftPct = (Math.min(start, end) / TOTAL_MONTHS) * 100;
               const widthPct = Math.max(1.5, (Math.abs(end - start) / TOTAL_MONTHS) * 100);
 
               return (
-                <div key={p.id} className="flex items-center py-1.5">
-                  <div className="w-[140px] shrink-0 pr-3 text-right">
-                    <span className="truncate text-[10.5px]" style={{ color: "var(--color-text)" }}>
+                <div
+                  key={p.id}
+                  className={`flex items-center py-2 ${
+                    i !== projects.length - 1 ? "border-b" : ""
+                  }`}
+                  style={{ borderColor: "var(--color-border)" }}
+                >
+                  <div className="w-[140px] shrink-0 pr-3">
+                    <span className="truncate text-[11px]" style={{ color: "var(--color-text)" }}>
                       {p.title}
                     </span>
                   </div>
@@ -132,27 +164,14 @@ export function WorksApp() {
                       style={{
                         left: `${leftPct}%`,
                         width: `${widthPct}%`,
-                        background: "var(--color-button-dark)",
-                        opacity: 0.6,
+                        background: "var(--color-accent)",
+                        opacity: 0.55,
                       }}
                     />
                   </div>
                 </div>
               );
             })}
-          </div>
-
-          {/* Today label */}
-          <div className="relative mt-2">
-            <span
-              className="absolute text-[10px]"
-              style={{
-                color: "var(--color-accent)",
-                right: "4px",
-              }}
-            >
-              Today
-            </span>
           </div>
         </div>
       </div>

@@ -188,10 +188,10 @@ body {
 }
 
 .window-control-btn.close {
-  background: #d4916a;
+  background: #ef7a42;
 }
 .window-control-btn.close:hover {
-  background: #c28156;
+  background: #ff8f55;
 }
 
 /* === Resize handle — visible, bigger === */

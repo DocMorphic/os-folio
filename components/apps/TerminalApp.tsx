@@ -30,7 +30,10 @@ const COMMANDS: Array<[string, string]> = [
   ["experience", "List career experience."],
   ["folders", "List desktop folders."],
   ["fortune", "Random developer quote."],
+  ["game [easy|normal|hard]", "Play Terminal Snake. Arrow keys to move, q to quit."],
   ["github", "Open GitHub profile."],
+  ["guess [number]", "Guess the number — 1 to 100."],
+  ["hangman [letter]", "Play hangman with programmer words."],
   ["hello", "Say hi."],
   ["help", "List every available command."],
   ["history", "Show recently executed commands."],
@@ -43,6 +46,7 @@ const COMMANDS: Array<[string, string]> = [
   ["projects", "List all projects."],
   ["pwd", "Print the current desktop path."],
   ["quit", "Close the terminal."],
+  ["rps <rock|paper|scissors>", "Rock · paper · scissors one-shot."],
   ["status", "Show terminal and workspace status."],
   ["sudo <command>", "Become root."],
   ["theme <dark|light>", "Switch theme."],
@@ -80,6 +84,46 @@ const TIPS = [
   "Type 'help' to see every command available.",
 ];
 
+const HANG_WORDS = [
+  "react", "linux", "typescript", "docker", "vercel", "supabase",
+  "tailwind", "graphql", "nextjs", "python", "haskell", "kotlin",
+  "rust", "swift", "binary", "compiler", "algorithm", "variable",
+  "function", "recursion",
+];
+
+// Indexed by tries remaining (0-5). Each entry is a multi-line ASCII figure.
+const HANG_FIGURES = [
+  // tries=0 — full figure, dead
+  "     O\n    /|\\\n    / \\",
+  // tries=1 — head + body + arms + one leg
+  "     O\n    /|\\\n    /",
+  // tries=2 — head + body + both arms
+  "     O\n    /|\\",
+  // tries=3 — head + body + one arm
+  "     O\n    /|",
+  // tries=4 — head + body
+  "     O\n     |",
+  // tries=5 — head only
+  "     O",
+];
+
+// Snake game board
+const SNAKE_COLS = 26;
+const SNAKE_ROWS = 14;
+
+type GameMode = "idle" | "snake";
+type Dir = "up" | "down" | "left" | "right";
+interface Point { x: number; y: number; }
+interface SnakeState {
+  snake: Point[]; // head is snake[0]
+  food: Point;
+  dir: Dir;
+  queued: Dir; // buffered next direction (prevents 180° reversal mid-tick)
+  score: number;
+  over: boolean;
+  speedMs: number;
+}
+
 interface Line {
   type: "output" | "input" | "error" | "orange" | "green";
   text: string;
@@ -89,7 +133,7 @@ export function TerminalApp() {
   const greeting: Line[] = [
     { type: "orange", text: "Dharmay Dave — Portfolio Terminal v1.2" },
     { type: "output", text: "Type 'help' to list all available commands." },
-    { type: "output", text: "Try: projects, cat about.txt, matrix, fortune" },
+    { type: "output", text: "Try: projects, cat about.txt, matrix, game" },
     { type: "output", text: "" },
   ];
 
@@ -101,6 +145,14 @@ export function TerminalApp() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { openWindow, closeWindow } = useWindowManager();
   const { setMode } = useTheme();
+
+  // Game state
+  const [gameMode, setGameMode] = useState<GameMode>("idle");
+  const snakeRef = useRef<SnakeState | null>(null);
+  const snakeTickRef = useRef<number | null>(null);
+  const gameBaseRef = useRef<Line[]>([]);
+  const guessRef = useRef<{ target: number; attempts: number } | null>(null);
+  const hangRef = useRef<{ word: string; guessed: Set<string>; tries: number } | null>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -123,6 +175,204 @@ export function TerminalApp() {
     frames.push({ type: "output", text: "" });
     setLines((prev) => [...prev, { type: "input", text: `${PROMPT} matrix` }, ...frames]);
   }, []);
+
+  // ── Snake game ──────────────────────────────────────────────────────────
+
+  const renderSnake = useCallback((state: SnakeState): Line[] => {
+    const grid: string[][] = Array.from({ length: SNAKE_ROWS }, () =>
+      Array.from({ length: SNAKE_COLS }, () => "·")
+    );
+    state.snake.forEach((p, i) => {
+      if (p.y < 0 || p.y >= SNAKE_ROWS || p.x < 0 || p.x >= SNAKE_COLS) return;
+      grid[p.y][p.x] = i === 0 ? "◆" : "█";
+    });
+    grid[state.food.y][state.food.x] = "●";
+
+    const out: Line[] = [];
+    out.push({ type: "output", text: "┌" + "─".repeat(SNAKE_COLS) + "┐" });
+    grid.forEach((row) => {
+      out.push({ type: "output", text: "│" + row.join("") + "│" });
+    });
+    out.push({ type: "output", text: "└" + "─".repeat(SNAKE_COLS) + "┘" });
+    out.push({
+      type: "orange",
+      text: `  score: ${state.score}   ← → ↑ ↓ to move · q to quit`,
+    });
+    if (state.over) {
+      out.push({ type: "output", text: "" });
+      out.push({ type: "error", text: `  GAME OVER — final score: ${state.score}` });
+      out.push({ type: "orange", text: "  press any key to continue" });
+    }
+    return out;
+  }, []);
+
+  const spawnFood = useCallback((snake: Point[]): Point => {
+    // Naive rejection sampling — grid is large enough that it's fine
+    for (let i = 0; i < 500; i++) {
+      const p = {
+        x: Math.floor(Math.random() * SNAKE_COLS),
+        y: Math.floor(Math.random() * SNAKE_ROWS),
+      };
+      if (!snake.some((s) => s.x === p.x && s.y === p.y)) return p;
+    }
+    return { x: 0, y: 0 };
+  }, []);
+
+  const tickSnake = useCallback(() => {
+    const s = snakeRef.current;
+    if (!s || s.over) return;
+
+    const opposite: Record<Dir, Dir> = {
+      up: "down",
+      down: "up",
+      left: "right",
+      right: "left",
+    };
+    if (s.queued !== opposite[s.dir]) s.dir = s.queued;
+
+    const head = s.snake[0];
+    const nextHead: Point = { x: head.x, y: head.y };
+    if (s.dir === "up") nextHead.y -= 1;
+    else if (s.dir === "down") nextHead.y += 1;
+    else if (s.dir === "left") nextHead.x -= 1;
+    else nextHead.x += 1;
+
+    const hitWall =
+      nextHead.x < 0 ||
+      nextHead.x >= SNAKE_COLS ||
+      nextHead.y < 0 ||
+      nextHead.y >= SNAKE_ROWS;
+    const hitSelf = s.snake.some(
+      (seg) => seg.x === nextHead.x && seg.y === nextHead.y
+    );
+
+    if (hitWall || hitSelf) {
+      s.over = true;
+      if (snakeTickRef.current != null) {
+        window.clearInterval(snakeTickRef.current);
+        snakeTickRef.current = null;
+      }
+      setLines([...gameBaseRef.current, ...renderSnake(s)]);
+      return;
+    }
+
+    if (nextHead.x === s.food.x && nextHead.y === s.food.y) {
+      s.snake.unshift(nextHead);
+      s.score += 1;
+      s.food = spawnFood(s.snake);
+    } else {
+      s.snake.unshift(nextHead);
+      s.snake.pop();
+    }
+
+    setLines([...gameBaseRef.current, ...renderSnake(s)]);
+  }, [renderSnake, spawnFood]);
+
+  const startSnake = useCallback(
+    (difficulty: "easy" | "normal" | "hard") => {
+      const speedMs =
+        difficulty === "easy" ? 200 : difficulty === "hard" ? 80 : 130;
+      const initial: Point[] = [
+        { x: 6, y: 7 },
+        { x: 5, y: 7 },
+        { x: 4, y: 7 },
+      ];
+      const state: SnakeState = {
+        snake: initial,
+        food: spawnFood(initial),
+        dir: "right",
+        queued: "right",
+        score: 0,
+        over: false,
+        speedMs,
+      };
+      snakeRef.current = state;
+
+      setLines((prev) => {
+        gameBaseRef.current = prev;
+        return [...prev, ...renderSnake(state)];
+      });
+      setGameMode("snake");
+      snakeTickRef.current = window.setInterval(tickSnake, speedMs);
+    },
+    [renderSnake, spawnFood, tickSnake]
+  );
+
+  const stopSnake = useCallback(() => {
+    if (snakeTickRef.current != null) {
+      window.clearInterval(snakeTickRef.current);
+      snakeTickRef.current = null;
+    }
+    snakeRef.current = null;
+    setGameMode("idle");
+    setLines((prev) => [
+      ...prev,
+      { type: "output", text: "" },
+      { type: "output", text: "[game ended]" },
+      { type: "output", text: "" },
+    ]);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }, []);
+
+  // Clean up any running game when the terminal unmounts
+  useEffect(
+    () => () => {
+      if (snakeTickRef.current != null) {
+        window.clearInterval(snakeTickRef.current);
+      }
+    },
+    []
+  );
+
+  // Global key listener while Snake is running. Uses window-level capture
+  // so arrow keys work even if the hidden input isn't focused.
+  useEffect(() => {
+    if (gameMode !== "snake") return;
+    const handler = (e: KeyboardEvent) => {
+      const s = snakeRef.current;
+      if (!s) return;
+
+      if (s.over) {
+        e.preventDefault();
+        stopSnake();
+        return;
+      }
+
+      if (e.key === "q" || e.key === "Q" || e.key === "Escape") {
+        e.preventDefault();
+        stopSnake();
+        return;
+      }
+
+      const opposite: Record<Dir, Dir> = {
+        up: "down",
+        down: "up",
+        left: "right",
+        right: "left",
+      };
+      const map: Record<string, Dir> = {
+        ArrowUp: "up",
+        ArrowDown: "down",
+        ArrowLeft: "left",
+        ArrowRight: "right",
+        w: "up",
+        s: "down",
+        a: "left",
+        d: "right",
+        W: "up",
+        S: "down",
+        A: "left",
+        D: "right",
+      };
+      const next = map[e.key];
+      if (next) {
+        e.preventDefault();
+        if (next !== opposite[s.dir]) s.queued = next;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [gameMode, stopSnake]);
 
   const processCommand = useCallback(
     (raw: string) => {
@@ -429,6 +679,171 @@ export function TerminalApp() {
           newLines.push({ type: "output", text: "" });
           break;
 
+        case "game":
+        case "snake": {
+          const diff = (args[0] ?? "normal").toLowerCase();
+          if (!["easy", "normal", "hard"].includes(diff)) {
+            newLines.push({
+              type: "error",
+              text: "usage: game [easy|normal|hard]",
+            });
+            break;
+          }
+          // Push the echo first so it's captured in the game's scrollback snapshot
+          setLines((prev) => [...prev, ...newLines]);
+          startSnake(diff as "easy" | "normal" | "hard");
+          return;
+        }
+
+        case "rps": {
+          const choice = args[0]?.toLowerCase();
+          const valid = ["rock", "paper", "scissors"] as const;
+          if (!choice || !(valid as readonly string[]).includes(choice)) {
+            newLines.push({
+              type: "error",
+              text: "usage: rps <rock|paper|scissors>",
+            });
+            break;
+          }
+          const cpu = valid[Math.floor(Math.random() * 3)];
+          newLines.push({
+            type: "output",
+            text: `you: ${choice}  ·  cpu: ${cpu}`,
+          });
+          if (choice === cpu) {
+            newLines.push({ type: "output", text: "draw." });
+          } else {
+            const beats: Record<string, string> = {
+              rock: "scissors",
+              paper: "rock",
+              scissors: "paper",
+            };
+            const youWon = beats[choice] === cpu;
+            newLines.push({
+              type: youWon ? "green" : "error",
+              text: youWon ? "you win!" : "you lose!",
+            });
+          }
+          break;
+        }
+
+        case "guess": {
+          if (args.length === 0) {
+            guessRef.current = {
+              target: Math.floor(Math.random() * 100) + 1,
+              attempts: 0,
+            };
+            newLines.push({
+              type: "orange",
+              text: "I'm thinking of a number between 1 and 100.",
+            });
+            newLines.push({
+              type: "output",
+              text: "Type 'guess <number>' to play.",
+            });
+            break;
+          }
+          if (!guessRef.current) {
+            newLines.push({
+              type: "error",
+              text: "start a game first: guess",
+            });
+            break;
+          }
+          const n = Number(args[0]);
+          if (!Number.isInteger(n) || n < 1 || n > 100) {
+            newLines.push({
+              type: "error",
+              text: "guess a whole number between 1 and 100.",
+            });
+            break;
+          }
+          guessRef.current.attempts += 1;
+          if (n < guessRef.current.target) {
+            newLines.push({ type: "output", text: "higher ↑" });
+          } else if (n > guessRef.current.target) {
+            newLines.push({ type: "output", text: "lower ↓" });
+          } else {
+            newLines.push({
+              type: "green",
+              text: `correct! ${guessRef.current.attempts} attempt(s).`,
+            });
+            guessRef.current = null;
+          }
+          break;
+        }
+
+        case "hangman": {
+          if (args.length === 0) {
+            const word =
+              HANG_WORDS[Math.floor(Math.random() * HANG_WORDS.length)];
+            hangRef.current = { word, guessed: new Set(), tries: 6 };
+            newLines.push({
+              type: "orange",
+              text: "new hangman game — 6 tries.",
+            });
+            newLines.push({
+              type: "output",
+              text: "word: " + "_ ".repeat(word.length).trim(),
+            });
+            newLines.push({
+              type: "output",
+              text: "type 'hangman <letter>' to guess.",
+            });
+            break;
+          }
+          if (!hangRef.current) {
+            newLines.push({
+              type: "error",
+              text: "start a game first: hangman",
+            });
+            break;
+          }
+          const letter = args[0].toLowerCase();
+          if (letter.length !== 1 || !/[a-z]/.test(letter)) {
+            newLines.push({
+              type: "error",
+              text: "guess a single letter a–z.",
+            });
+            break;
+          }
+          const state = hangRef.current;
+          if (state.guessed.has(letter)) {
+            newLines.push({
+              type: "output",
+              text: `already guessed '${letter}'.`,
+            });
+            break;
+          }
+          state.guessed.add(letter);
+          if (!state.word.includes(letter)) {
+            state.tries -= 1;
+            const figure = HANG_FIGURES[Math.max(0, state.tries)];
+            figure.split("\n").forEach((l) =>
+              newLines.push({ type: "output", text: l })
+            );
+          }
+          const revealed = state.word
+            .split("")
+            .map((c) => (state.guessed.has(c) ? c : "_"))
+            .join(" ");
+          newLines.push({ type: "output", text: "word: " + revealed });
+          if (!revealed.includes("_")) {
+            newLines.push({
+              type: "green",
+              text: `you win! the word was '${state.word}'.`,
+            });
+            hangRef.current = null;
+          } else if (state.tries <= 0) {
+            newLines.push({
+              type: "error",
+              text: `game over. the word was '${state.word}'.`,
+            });
+            hangRef.current = null;
+          }
+          break;
+        }
+
         default:
           // rm -rf / joke
           if (raw.trim() === "rm -rf /" || raw.trim() === "rm -rf /*") {
@@ -443,7 +858,7 @@ export function TerminalApp() {
 
       setLines((prev) => [...prev, ...newLines]);
     },
-    [openWindow, closeWindow, setMode, history, runMatrix]
+    [openWindow, closeWindow, setMode, history, runMatrix, startSnake]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -485,7 +900,9 @@ export function TerminalApp() {
     <div
       className="-mx-5 -my-4 flex h-[calc(100%+32px)] flex-col font-mono"
       style={{ background: "#1a0e06" }}
-      onClick={() => inputRef.current?.focus()}
+      onClick={() => {
+        if (gameMode === "idle") inputRef.current?.focus();
+      }}
     >
       <div ref={scrollRef} className="custom-scrollbar flex-1 overflow-y-auto px-4 pt-3 pb-1">
         {lines.map((line, i) => (
@@ -500,30 +917,32 @@ export function TerminalApp() {
             {line.text}
           </div>
         ))}
-        <div
-          className="flex items-center text-[12.5px]"
-          style={{
-            color: "#ff9b5c",
-            fontFamily: "var(--font-geist-mono), monospace",
-          }}
-        >
-          <span>{PROMPT}&nbsp;</span>
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-[12.5px] outline-none"
+        {gameMode === "idle" && (
+          <div
+            className="flex items-center text-[12.5px]"
             style={{
-              color: "#ffb07a",
+              color: "#ff9b5c",
               fontFamily: "var(--font-geist-mono), monospace",
             }}
-            autoFocus
-            spellCheck={false}
-            autoComplete="off"
-          />
-        </div>
+          >
+            <span>{PROMPT}&nbsp;</span>
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 bg-transparent text-[12.5px] outline-none"
+              style={{
+                color: "#ffb07a",
+                fontFamily: "var(--font-geist-mono), monospace",
+              }}
+              autoFocus
+              spellCheck={false}
+              autoComplete="off"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
