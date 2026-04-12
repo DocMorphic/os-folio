@@ -194,6 +194,12 @@ body {
   background: #ff8f55;
 }
 
+/* Terminal input placeholder — faint "help" hint */
+.terminal-input::placeholder {
+  color: rgba(255, 176, 122, 0.35);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
 /* === Resize handle — visible, bigger === */
 .resize-handle {
   position: absolute;

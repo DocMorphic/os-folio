@@ -932,11 +932,12 @@ export function TerminalApp() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent text-[12.5px] outline-none"
+              className="terminal-input flex-1 bg-transparent text-[12.5px] outline-none"
               style={{
                 color: "#ffb07a",
                 fontFamily: "var(--font-geist-mono), monospace",
               }}
+              placeholder="help"
               autoFocus
               spellCheck={false}
               autoComplete="off"

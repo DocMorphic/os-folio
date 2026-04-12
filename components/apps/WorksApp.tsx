@@ -117,21 +117,22 @@ export function WorksApp() {
               style={{
                 left: `calc(140px + ${todayPct}% * (100% - 140px) / 100%)`,
                 background: "var(--color-accent)",
-                opacity: 0.7,
+                opacity: 0.8,
                 zIndex: 2,
               }}
             />
-            {/* Today label — small box at top of marker */}
+            {/* Today label — small pill near top of marker */}
             <div
               className="pointer-events-none absolute"
               style={{
                 left: `calc(140px + ${todayPct}% * (100% - 140px) / 100%)`,
-                top: "6px",
+                top: "4px",
                 transform: "translateX(-50%)",
-                background: "var(--color-accent)",
-                color: "#ffffff",
+                background: "var(--color-tag-bg)",
+                color: "var(--color-accent)",
                 fontSize: "9.5px",
-                padding: "1px 5px",
+                padding: "1px 6px",
+                border: "1px solid var(--color-accent)",
                 zIndex: 3,
                 fontWeight: 500,
               }}
@@ -148,7 +149,7 @@ export function WorksApp() {
               return (
                 <div
                   key={p.id}
-                  className={`flex items-center py-2 ${
+                  className={`flex items-center py-2.5 ${
                     i !== projects.length - 1 ? "border-b" : ""
                   }`}
                   style={{ borderColor: "var(--color-border)" }}
@@ -158,13 +159,13 @@ export function WorksApp() {
                       {p.title}
                     </span>
                   </div>
-                  <div className="relative h-4 flex-1">
+                  <div className="relative h-[18px] flex-1">
                     <div
-                      className="absolute top-0 h-4"
+                      className="absolute top-0 h-[18px]"
                       style={{
                         left: `${leftPct}%`,
                         width: `${widthPct}%`,
-                        background: "var(--color-accent)",
+                        background: "var(--color-button-dark)",
                         opacity: 0.55,
                       }}
                     />

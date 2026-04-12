@@ -52,30 +52,6 @@ export const projects: Project[] = [
     endDate: "Feb 2025",
   },
   {
-    id: "iot-home",
-    title: "Voice-Controlled Home IoT",
-    description:
-      "Python-based IoT system on Raspberry Pi enabling hands-free voice control of home appliances via real-time signal processing. Uses SpeechRecognition and GPIO libraries.",
-    tags: ["Python", "Raspberry Pi", "SpeechRecognition", "GPIO"],
-    role: "Solo",
-    category: "Personal",
-    year: "2024",
-    startDate: "2024",
-    endDate: "2024",
-  },
-  {
-    id: "health-chatbot",
-    title: "AI Health Chatbot",
-    description:
-      "Built from scratch in Python with NLP libraries. Answers health-related queries, generates basic wellness prompts, and suggests specific medications based on reported symptoms.",
-    tags: ["Python", "NLP", "Machine Learning"],
-    role: "Solo",
-    category: "Personal",
-    year: "2024",
-    startDate: "2024",
-    endDate: "2024",
-  },
-  {
     id: "os-folio",
     title: "OS Portfolio",
     description:
