@@ -53,22 +53,21 @@ export function MenuBar() {
       <div className="flex items-stretch">
         {/* Logo — click to open Site Stats */}
         <button
-          className="flex h-[34px] w-[34px] items-center justify-center border-r-2"
+          className="flex h-[34px] w-[34px] items-center justify-center border-r-2 p-0"
           style={{
-            background: "var(--color-accent)",
             borderColor: "var(--color-menubar-border)",
           }}
           onClick={() => openWindow("stats")}
           aria-label="Site stats"
         >
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="white">
-            <rect x="2" y="6" width="2" height="10" />
-            <rect x="5" y="3" width="2" height="13" />
-            <rect x="8" y="7" width="2" height="9" />
-            <rect x="11" y="2" width="2" height="14" />
-            <rect x="14" y="5" width="2" height="11" />
-            <rect x="17" y="8" width="2" height="8" />
-          </svg>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/icon.png"
+            alt="Portfolio logo"
+            width={34}
+            height={34}
+            style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
+          />
         </button>
 
         {/* Portfolio dropdown menu */}

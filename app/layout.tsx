@@ -22,12 +22,29 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "Dharmay Dave — Portfolio",
-  description: "Frontend engineer and venture builder at SCAILE. Building prompt-to-website systems, creative interfaces, and AI-powered products.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ),
+  title: "Dharmay Dave | Portfolio",
+  description:
+    "CS student at TU Munich, freelance full-stack developer, and builder of weird and wonderful web and mobile products.",
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
-    title: "Dharmay Dave — Portfolio",
-    description: "Frontend engineer and venture builder at SCAILE.",
+    title: "Dharmay Dave | Portfolio",
+    description:
+      "CS student at TU Munich, freelance full-stack developer, and builder of weird and wonderful web and mobile products.",
     type: "website",
+    images: ["/favicon.png"],
+  },
+  twitter: {
+    card: "summary",
+    title: "Dharmay Dave | Portfolio",
+    description: "CS student at TU Munich, freelance full-stack developer.",
+    images: ["/favicon.png"],
   },
 };
 
