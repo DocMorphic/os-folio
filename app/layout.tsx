@@ -28,6 +28,13 @@ export const metadata: Metadata = {
   title: "Dharmay Dave | Portfolio",
   description:
     "CS student at TU Munich, freelance full-stack developer, and builder of weird and wonderful web and mobile products.",
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png", sizes: "any" },
+    ],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     title: "Dharmay Dave | Portfolio",
     description:
