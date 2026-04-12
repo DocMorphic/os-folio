@@ -1,0 +1,113 @@
+"use client";
+
+interface WindowTitleBarProps {
+  title: string;
+  isFocused: boolean;
+  itemCount?: number;
+  statusText?: string;
+  showMinimize?: boolean;
+  showMaximize?: boolean;
+  onClose: () => void;
+  onMinimize?: () => void;
+  onMaximize?: () => void;
+  onPointerDown: (e: React.PointerEvent) => void;
+  onPointerMove: (e: React.PointerEvent) => void;
+  onPointerUp: (e: React.PointerEvent) => void;
+}
+
+export function WindowTitleBar({
+  title,
+  isFocused,
+  itemCount,
+  statusText,
+  showMinimize = true,
+  showMaximize = true,
+  onClose,
+  onMinimize,
+  onMaximize,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+}: WindowTitleBarProps) {
+  // Priority: statusText > itemCount > active dot
+  const hasMeta = !!statusText || typeof itemCount === "number";
+
+  return (
+    <div
+      className="flex h-9 shrink-0 cursor-grab items-center justify-between border-b-2 pl-3 pr-1.5 active:cursor-grabbing"
+      style={{
+        background: "var(--color-titlebar)",
+        borderColor: "var(--color-border-strong)",
+      }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+    >
+      {/* Title — LEFT */}
+      <span
+        className="pointer-events-none truncate text-[12px]"
+        style={{
+          color: isFocused ? "var(--color-text)" : "var(--color-text-dim)",
+          fontWeight: 500,
+        }}
+      >
+        {title}
+      </span>
+
+      {/* Controls — RIGHT */}
+      <div
+        className="flex h-full items-center gap-1.5"
+        onPointerDown={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        {/* Status text or item count or active dot */}
+        {statusText ? (
+          <div className="mr-1.5 flex items-center gap-1.5">
+            <div className="h-1.5 w-1.5 rotate-45" style={{ background: "var(--color-accent)" }} />
+            <span className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+              {statusText}
+            </span>
+          </div>
+        ) : typeof itemCount === "number" ? (
+          <div className="mr-1.5 flex items-center gap-1">
+            <div className="h-1 w-1" style={{ background: "var(--color-accent)" }} />
+            <span className="text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
+              {itemCount} items
+            </span>
+          </div>
+        ) : (
+          <div
+            className="mr-1.5 h-1.5 w-1.5 rotate-45"
+            style={{ background: "var(--color-accent)" }}
+          />
+        )}
+
+        {/* Minimize */}
+        {showMinimize && (
+          <button className="window-control-btn" onClick={onMinimize} aria-label="Minimize">
+            <svg width="12" height="12" viewBox="0 0 14 14">
+              <rect x="3" y="6" width="8" height="1.8" fill="white" />
+            </svg>
+          </button>
+        )}
+
+        {/* Maximize */}
+        {showMaximize && (
+          <button className="window-control-btn maximize" onClick={onMaximize} aria-label="Maximize">
+            <svg width="12" height="12" viewBox="0 0 14 14">
+              <rect x="3" y="3" width="8" height="8" stroke="white" strokeWidth="1.5" fill="none" />
+            </svg>
+          </button>
+        )}
+
+        {/* Close */}
+        <button className="window-control-btn close" onClick={onClose} aria-label="Close">
+          <svg width="12" height="12" viewBox="0 0 14 14">
+            <line x1="3.5" y1="3.5" x2="10.5" y2="10.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="10.5" y1="3.5" x2="3.5" y2="10.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
