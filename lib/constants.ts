@@ -14,7 +14,7 @@ export const DEFAULT_THEME = {
   mode: "light" as const,
   accent: "orange" as const,
   brightness: 100,
-  wallpaperId: "cat-theme",
+  wallpaperId: "cat-pixel",
   customWallpaperUrl: null,
 };
 

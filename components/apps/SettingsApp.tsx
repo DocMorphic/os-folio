@@ -2,7 +2,7 @@
 
 import { useTheme } from "@/hooks/use-theme";
 import { ACCENT_COLORS } from "@/lib/constants";
-import { WALLPAPERS } from "@/lib/wallpapers";
+import { WALLPAPERS, resolveWallpaperUrl } from "@/lib/wallpapers";
 
 export function SettingsApp() {
   const {
@@ -99,8 +99,8 @@ export function SettingsApp() {
         <div className="grid grid-cols-3 gap-3">
           {WALLPAPERS.map((wp) => {
             const isSelected = !customWallpaperUrl && wallpaperId === wp.id;
-            // Show theme-appropriate preview
-            const previewUrl = mode === "dark" && wp.darkUrl ? wp.darkUrl : wp.url;
+            // Show theme-appropriate preview (resolves theme-cat variants)
+            const previewUrl = resolveWallpaperUrl(wp, mode, accent);
             return (
               <button
                 key={wp.id}

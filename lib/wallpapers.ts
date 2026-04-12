@@ -3,19 +3,20 @@ export interface WallpaperOption {
   label: string;
   url: string;              // used in light mode (and as default if no darkUrl)
   darkUrl?: string;         // used in dark mode
-  kind: "illustration" | "photo" | "solid" | "gradient" | "themed";
+  /**
+   * "theme-cat" = pixel cat wallpaper that auto-picks one of 8 variants
+   *  based on current accent + theme. The `url` field is a preview used in Settings.
+   */
+  kind: "illustration" | "photo" | "solid" | "gradient" | "theme-cat";
 }
 
 export const WALLPAPERS: WallpaperOption[] = [
-  // Theme-blended cat silhouette — changes color with the accent.
-  // Rendered specially in <Wallpaper /> using currentColor.
   {
-    id: "cat-theme",
-    label: "Cat (theme)",
-    url: "/wallpapers/cat-silhouette.svg",
-    kind: "themed",
+    id: "cat-pixel",
+    label: "Pixel Cat (theme)",
+    url: "/wallpapers/cat-orange-light.png", // preview for Settings
+    kind: "theme-cat",
   },
-  // User's photos
   {
     id: "wallpaper1",
     label: "Wallpaper 1",
@@ -48,4 +49,20 @@ export const WALLPAPERS: WallpaperOption[] = [
   },
 ];
 
-export const DEFAULT_WALLPAPER_ID = "cat-theme";
+export const DEFAULT_WALLPAPER_ID = "cat-pixel";
+
+/**
+ * Resolve the actual wallpaper URL for a given wallpaper + current theme + accent.
+ * For theme-cat wallpapers, this picks one of 8 variants.
+ */
+export function resolveWallpaperUrl(
+  wp: WallpaperOption,
+  mode: "light" | "dark",
+  accent: "orange" | "green" | "blue" | "purple"
+): string {
+  if (wp.kind === "theme-cat") {
+    return `/wallpapers/cat-${accent}-${mode}.png`;
+  }
+  if (mode === "dark" && wp.darkUrl) return wp.darkUrl;
+  return wp.url;
+}

@@ -53,10 +53,7 @@ export function MenuBar() {
       <div className="flex items-stretch">
         {/* Logo — click to open Site Stats */}
         <button
-          className="flex h-[34px] w-[34px] items-center justify-center border-r-2 p-0"
-          style={{
-            borderColor: "var(--color-menubar-border)",
-          }}
+          className="flex h-[34px] w-[34px] items-center justify-center p-0"
           onClick={() => openWindow("stats")}
           aria-label="Site stats"
         >
