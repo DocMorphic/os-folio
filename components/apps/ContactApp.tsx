@@ -72,7 +72,7 @@ export function ContactApp() {
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex h-full flex-col gap-3">
       {/* Heading */}
       <div>
         <h1 className="font-serif-heading text-[26px] leading-none" style={{ color: "var(--color-text)" }}>
@@ -83,8 +83,8 @@ export function ContactApp() {
         </p>
       </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
+      {/* Form — fills the remaining window height */}
+      <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col gap-2.5">
         <Field label="NAME" error={errors.name}>
           <input
             type="text"
@@ -139,16 +139,15 @@ export function ContactApp() {
           />
         </Field>
 
-        <Field label="MESSAGE" error={errors.message}>
+        <Field label="MESSAGE" error={errors.message} className="min-h-0 flex-1">
           <textarea
             value={form.message}
             onChange={(e) => {
               setForm({ ...form, message: e.target.value });
               if (errors.message) setErrors({ ...errors, message: "" });
             }}
-            rows={3}
             placeholder="Tell me a bit about your project..."
-            className="custom-scrollbar w-full resize-none border px-3 py-2.5 text-[12.5px] outline-none transition-colors"
+            className="custom-scrollbar min-h-0 w-full flex-1 resize-none border px-3 py-2.5 text-[12.5px] outline-none transition-colors"
             style={{
               background: "var(--color-input-bg)",
               borderColor: errors.message ? "var(--color-error)" : "var(--color-border)",
@@ -215,9 +214,19 @@ export function ContactApp() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  error,
+  children,
+  className,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className={`flex flex-col gap-1 ${className ?? ""}`}>
       <label
         className="text-[10px] font-semibold tracking-wider"
         style={{ color: "var(--color-text-muted)" }}
