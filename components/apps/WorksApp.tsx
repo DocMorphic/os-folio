@@ -38,12 +38,12 @@ export function WorksApp() {
       </div>
 
       {/* PROJECT LIST card */}
-      <div className="border" style={{ borderColor: "var(--color-border)" }}>
+      <div className="border" style={{ borderColor: "var(--color-border-hover)" }}>
         <div
           className="border-b px-4 py-2.5"
           style={{
             background: "var(--color-surface-alt)",
-            borderColor: "var(--color-border)",
+            borderColor: "var(--color-border-hover)",
           }}
         >
           <span className="text-[10.5px] font-semibold tracking-wider" style={{ color: "var(--color-text-muted)" }}>
@@ -57,7 +57,7 @@ export function WorksApp() {
               className={`px-4 py-2 text-[12.5px] transition-colors hover:bg-[var(--color-surface-hover)] ${
                 i !== projects.length - 1 ? "border-b" : ""
               }`}
-              style={{ borderColor: "var(--color-border)", color: "var(--color-text)" }}
+              style={{ borderColor: "var(--color-border-hover)", color: "var(--color-text)" }}
             >
               <span className="font-semibold">{p.title}</span>
               <span style={{ color: "var(--color-text-muted)" }}>
@@ -69,12 +69,12 @@ export function WorksApp() {
       </div>
 
       {/* TIMELINE card */}
-      <div className="border" style={{ borderColor: "var(--color-border)" }}>
+      <div className="border" style={{ borderColor: "var(--color-border-hover)" }}>
         <div
           className="border-b px-4 py-2.5"
           style={{
             background: "var(--color-surface-alt)",
-            borderColor: "var(--color-border)",
+            borderColor: "var(--color-border-hover)",
           }}
         >
           <span className="text-[10.5px] font-semibold tracking-wider" style={{ color: "var(--color-text-muted)" }}>
@@ -86,7 +86,7 @@ export function WorksApp() {
           {/* Year headers */}
           <div
             className="mb-0 flex border-b pb-2"
-            style={{ borderColor: "var(--color-border)" }}
+            style={{ borderColor: "var(--color-border-hover)" }}
           >
             <div className="w-[140px] shrink-0">
               <span className="text-[10px] font-semibold tracking-wider" style={{ color: "var(--color-text-muted)" }}>
@@ -152,7 +152,7 @@ export function WorksApp() {
                   className={`flex items-center py-2.5 ${
                     i !== projects.length - 1 ? "border-b" : ""
                   }`}
-                  style={{ borderColor: "var(--color-border)" }}
+                  style={{ borderColor: "var(--color-border-hover)" }}
                 >
                   <div className="w-[140px] shrink-0 pr-3">
                     <span className="truncate text-[11px]" style={{ color: "var(--color-text)" }}>
