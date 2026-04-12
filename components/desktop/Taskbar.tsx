@@ -8,14 +8,14 @@ const DOCK_APPS = DOCK_APPS_ORDER.map((id) => APP_REGISTRY[id]).filter(Boolean);
 
 const DOCK_ICONS: Record<string, React.ReactNode> = {
   about: (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
       <rect x="3" y="2" width="14" height="16" fill="none"/>
       <rect x="9" y="5" width="2" height="2" fill="white" stroke="none"/>
       <rect x="9" y="8" width="2" height="7" fill="white" stroke="none"/>
     </svg>
   ),
   blog: (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
       <rect x="4" y="2" width="12" height="16" fill="none"/>
       <line x1="7" y1="6" x2="13" y2="6"/>
       <line x1="7" y1="9" x2="13" y2="9"/>
@@ -24,13 +24,13 @@ const DOCK_ICONS: Record<string, React.ReactNode> = {
     </svg>
   ),
   contact: (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
       <rect x="2" y="5" width="16" height="11" fill="none"/>
       <path d="M2 5L10 12L18 5"/>
     </svg>
   ),
   experience: (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
       <rect x="3" y="4" width="2" height="2" fill="white" stroke="none"/>
       <line x1="7" y1="5" x2="17" y2="5"/>
       <rect x="3" y="9" width="2" height="2" fill="white" stroke="none"/>
@@ -40,33 +40,33 @@ const DOCK_ICONS: Record<string, React.ReactNode> = {
     </svg>
   ),
   help: (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
       <rect x="3" y="2" width="14" height="16" fill="none"/>
       <path d="M8 7C8 6 9 5 10 5C11 5 12 6 12 7C12 8 10 8 10 10" fill="none"/>
       <rect x="9" y="13" width="2" height="2" fill="white" stroke="none"/>
     </svg>
   ),
   search: (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
       <rect x="3" y="3" width="9" height="9" fill="none"/>
       <line x1="12" y1="12" x2="17" y2="17" strokeWidth="2"/>
     </svg>
   ),
   settings: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
   ),
   terminal: (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
       <rect x="2" y="3" width="16" height="14" fill="none"/>
       <path d="M5 7L8 10L5 13" fill="none"/>
       <line x1="10" y1="13" x2="15" y2="13"/>
     </svg>
   ),
   works: (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
       <rect x="2" y="6" width="16" height="12" fill="none"/>
       <path d="M7 6V4C7 3 8 3 8 3H12C12 3 13 3 13 4V6" fill="none"/>
     </svg>
@@ -79,7 +79,7 @@ export function Taskbar() {
   return (
     <div className="absolute bottom-2 left-1/2 z-[600] -translate-x-1/2">
       <div
-        className="flex items-center gap-1.5 border-2 px-2.5 py-1.5"
+        className="flex items-center gap-2 border-2 px-3 py-2"
         style={{
           background: "var(--color-dock-bg)",
           borderColor: "var(--color-dock-border)",
@@ -108,7 +108,7 @@ export function Taskbar() {
               </div>
 
               <button
-                className="flex h-9 w-9 items-center justify-center transition-colors"
+                className="flex h-12 w-12 items-center justify-center transition-colors"
                 style={{
                   background: isFocused ? "var(--color-button-dark-hover)" : "var(--color-button-dark)",
                 }}

@@ -80,9 +80,11 @@
   --color-error: #ff6a4a;
   --color-link: #ff9b5c;
 
-  /* === UI chrome — dark in dark mode, matches Wes === */
+  /* === UI chrome — dark in dark mode, matches Wes ===
+     menubar-border stays light so the line between top bar and wallpaper
+     reads clearly even on dark brown. */
   --color-menubar-bg: #30231b;
-  --color-menubar-border: #4a3525;
+  --color-menubar-border: #e0d0b4;
   --color-menubar-text: #e0d0b4;
   --color-menubar-hover: #4a3525;
   --color-menubar-active: #5a4230;
@@ -92,28 +94,67 @@
 }
 
 /* === Accent color mapping ===
-   Also derives --color-button-dark + --color-button-dark-hover from the
-   accent so window control buttons, menu active states, and any other
-   --color-button-dark consumer shifts with the selected accent. */
-[data-accent="orange"] {
-  --color-accent: var(--color-accent-orange);
+   Just sets --color-accent. Button backgrounds are set below in the
+   combined theme+accent rules so they can go light in light mode and
+   dark in dark mode. */
+[data-accent="orange"] { --color-accent: var(--color-accent-orange); }
+[data-accent="green"]  { --color-accent: var(--color-accent-green); }
+[data-accent="blue"]   { --color-accent: var(--color-accent-blue); }
+[data-accent="purple"] { --color-accent: var(--color-accent-purple); }
+
+/* === Button background: mode × accent ===
+   Light mode → button uses the accent at near-full saturation so it
+   pops as a vivid pill on the cream UI. Dark mode → button is a much
+   darker mix (accent × black) so it reads as a deep-shadow version of
+   the accent against the dark brown UI. */
+[data-theme="light"][data-accent="orange"] {
+  --color-button-dark: var(--color-accent-orange);
+  --color-button-dark-hover: color-mix(in srgb, var(--color-accent-orange) 85%, #000);
+  --color-close-btn: #ff6a3a;
+  --color-close-btn-hover: #ff8f5e;
+}
+[data-theme="light"][data-accent="green"] {
+  --color-button-dark: var(--color-accent-green);
+  --color-button-dark-hover: color-mix(in srgb, var(--color-accent-green) 85%, #000);
+  --color-close-btn: #ff6a3a;
+  --color-close-btn-hover: #ff8f5e;
+}
+[data-theme="light"][data-accent="blue"] {
+  --color-button-dark: var(--color-accent-blue);
+  --color-button-dark-hover: color-mix(in srgb, var(--color-accent-blue) 85%, #000);
+  --color-close-btn: #ff6a3a;
+  --color-close-btn-hover: #ff8f5e;
+}
+[data-theme="light"][data-accent="purple"] {
+  --color-button-dark: var(--color-accent-purple);
+  --color-button-dark-hover: color-mix(in srgb, var(--color-accent-purple) 85%, #000);
+  --color-close-btn: #ff6a3a;
+  --color-close-btn-hover: #ff8f5e;
+}
+
+[data-theme="dark"][data-accent="orange"] {
   --color-button-dark: color-mix(in srgb, var(--color-accent-orange) 55%, #000);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-orange) 70%, #000);
+  --color-close-btn: #c44318;
+  --color-close-btn-hover: #e05524;
 }
-[data-accent="green"] {
-  --color-accent: var(--color-accent-green);
+[data-theme="dark"][data-accent="green"] {
   --color-button-dark: color-mix(in srgb, var(--color-accent-green) 45%, #000);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-green) 60%, #000);
+  --color-close-btn: #c44318;
+  --color-close-btn-hover: #e05524;
 }
-[data-accent="blue"] {
-  --color-accent: var(--color-accent-blue);
+[data-theme="dark"][data-accent="blue"] {
   --color-button-dark: color-mix(in srgb, var(--color-accent-blue) 45%, #000);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-blue) 60%, #000);
+  --color-close-btn: #c44318;
+  --color-close-btn-hover: #e05524;
 }
-[data-accent="purple"] {
-  --color-accent: var(--color-accent-purple);
+[data-theme="dark"][data-accent="purple"] {
   --color-button-dark: color-mix(in srgb, var(--color-accent-purple) 50%, #000);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-purple) 65%, #000);
+  --color-close-btn: #c44318;
+  --color-close-btn-hover: #e05524;
 }
 
 /* === Base === */
@@ -203,10 +244,10 @@ body {
 }
 
 .window-control-btn.close {
-  background: #ef7a42;
+  background: var(--color-close-btn);
 }
 .window-control-btn.close:hover {
-  background: #ff8f55;
+  background: var(--color-close-btn-hover);
 }
 
 /* Terminal input placeholder — faint "help" hint */

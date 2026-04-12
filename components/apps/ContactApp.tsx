@@ -83,6 +83,18 @@ export function ContactApp() {
         </p>
       </div>
 
+      {/* Info box */}
+      <div
+        className="border px-3 py-2 text-[12px]"
+        style={{
+          background: "var(--color-info-box)",
+          borderColor: "var(--color-border)",
+          color: "var(--color-text-secondary)",
+        }}
+      >
+        Fill in your details and send your message directly.
+      </div>
+
       {/* Form — fills the remaining window height */}
       <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col gap-2.5">
         <Field label="NAME" error={errors.name}>

@@ -12,6 +12,16 @@ const MIN_W = 280;
 const MIN_H = 180;
 const TITLEBAR_VISIBLE_MIN = 100;
 
+// Mobile (< MOBILE_BREAKPOINT) reserves extra vertical space at the top
+// of the desktop for the horizontally-scrolling icon row.
+const MOBILE_BREAKPOINT = 768;
+const MOBILE_ICON_ROW_RESERVE = 80;
+
+function topReserve() {
+  if (typeof window === "undefined") return 0;
+  return window.innerWidth < MOBILE_BREAKPOINT ? MOBILE_ICON_ROW_RESERVE : 0;
+}
+
 /**
  * Per-window context — stores arbitrary data an app needs to render
  * (e.g. which image the ImageViewer should show).
@@ -57,7 +67,7 @@ function clampPosition(x: number, y: number, w: number, _h: number) {
   const vh = window.innerHeight;
   const minX = TITLEBAR_VISIBLE_MIN - w;
   const maxX = vw - TITLEBAR_VISIBLE_MIN;
-  const minY = 0;
+  const minY = topReserve();
   const maxY = (vh - MENUBAR_HEIGHT) - 44;
   return {
     x: Math.max(minX, Math.min(maxX, x)),
@@ -70,7 +80,7 @@ function clampSize(w: number, h: number) {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const maxW = vw - MIN_MARGIN * 2;
-  const maxH = vh - MENUBAR_HEIGHT - DOCK_HEIGHT - MIN_MARGIN * 2;
+  const maxH = vh - MENUBAR_HEIGHT - DOCK_HEIGHT - MIN_MARGIN * 2 - topReserve();
   return {
     width: Math.max(MIN_W, Math.min(maxW, w)),
     height: Math.max(MIN_H, Math.min(maxH, h)),
@@ -110,15 +120,16 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
       if (typeof window !== "undefined") {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        const contentHeight = vh - MENUBAR_HEIGHT;
+        const reserve = topReserve();
+        const contentHeight = vh - MENUBAR_HEIGHT - reserve;
         const offset = (prev.length % 5) * 24;
         defaultX = Math.max(
           MIN_MARGIN,
           Math.floor((vw - clampedSize.width) / 2) + offset
         );
         defaultY = Math.max(
-          MIN_MARGIN,
-          Math.floor((contentHeight - clampedSize.height - DOCK_HEIGHT) / 2) + offset
+          MIN_MARGIN + reserve,
+          reserve + Math.floor((contentHeight - clampedSize.height - DOCK_HEIGHT) / 2) + offset
         );
       }
 

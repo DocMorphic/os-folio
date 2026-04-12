@@ -1,7 +1,20 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useWindowManager } from "@/hooks/use-window-manager";
+
+const MOBILE_BREAKPOINT = 768;
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
 
 type IconType = "folder" | "envelope" | "file";
 
@@ -71,8 +84,41 @@ function clampPosition(x: number, y: number): IconPos {
 
 export function DesktopIcons() {
   const { openWindow } = useWindowManager();
+  const isMobile = useIsMobile();
   // Session-only state — positions reset on refresh
   const [positions, setPositions] = useState<Record<string, IconPos>>(DEFAULT_POSITIONS);
+
+  // On small screens, render icons as a horizontally scrollable row pinned
+  // to the top of the desktop area. Dragging is disabled — tapping opens.
+  if (isMobile) {
+    return (
+      <div
+        className="absolute left-0 right-0 top-0 z-[400] overflow-x-auto overflow-y-hidden"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
+        <div className="flex w-max items-start gap-2 px-3 py-2">
+          {DESKTOP_ITEMS.map((item) => (
+            <button
+              key={item.id}
+              className="flex w-[76px] shrink-0 flex-col items-center gap-1 px-1 py-1 select-none"
+              onClick={() => openWindow(item.appId)}
+            >
+              <DesktopIconSvg type={item.type} size={44} />
+              <span
+                className="w-full truncate text-center text-[10.5px] font-medium leading-[1.2]"
+                style={{
+                  color: "var(--color-desktop-label)",
+                  textShadow: "1px 1px 2px rgba(0,0,0,0.5), 0 0 3px rgba(0,0,0,0.3)",
+                }}
+              >
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -235,10 +281,11 @@ function DraggableIcon({ item, position, onOpen, onDrop }: DraggableIconProps) {
   );
 }
 
-function DesktopIconSvg({ type }: { type: IconType }) {
+function DesktopIconSvg({ type, size = 58 }: { type: IconType; size?: number }) {
+  const height = Math.round((size * 50) / 58);
   if (type === "folder") {
     return (
-      <svg width="58" height="50" viewBox="0 0 56 48" fill="none" className="pointer-events-none">
+      <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none">
         <rect x="10" y="4" width="20" height="7" fill="#e8dbc2" stroke="#3a1a06" strokeWidth="0.8" />
         <rect x="5" y="10" width="46" height="34" fill="#8b3e14" stroke="#3a1a06" strokeWidth="0.8" />
       </svg>
@@ -247,7 +294,7 @@ function DesktopIconSvg({ type }: { type: IconType }) {
 
   if (type === "envelope") {
     return (
-      <svg width="58" height="50" viewBox="0 0 56 48" fill="none" className="pointer-events-none">
+      <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none">
         <rect x="7" y="4" width="42" height="40" fill="#f5e7d0" stroke="#3a2817" strokeWidth="0.8" />
         <rect x="17" y="16" width="22" height="16" fill="none" stroke="#3a2817" strokeWidth="1" />
         <path d="M17 16L28 25L39 16" stroke="#3a2817" strokeWidth="1" fill="none" />
@@ -257,7 +304,7 @@ function DesktopIconSvg({ type }: { type: IconType }) {
 
   // file
   return (
-    <svg width="58" height="50" viewBox="0 0 56 48" fill="none" className="pointer-events-none">
+    <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none">
       <path d="M11 4 L36 4 L45 13 L45 44 L11 44 Z" fill="#f5e7d0" stroke="#3a2817" strokeWidth="0.8" />
       <path d="M36 4 L36 13 L45 13" fill="#d4c4a8" stroke="#3a2817" strokeWidth="0.8" />
       <line x1="17" y1="22" x2="39" y2="22" stroke="#9c8260" strokeWidth="0.8" />

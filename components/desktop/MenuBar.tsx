@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useClock } from "@/hooks/use-clock";
 import { useWindowManager } from "@/hooks/use-window-manager";
+import { useTheme } from "@/hooks/use-theme";
 import { BrightnessPopover } from "./BrightnessPopover";
 
 const CMD_KEY = typeof navigator !== "undefined" && /Mac/.test(navigator.platform) ? "⌘" : "Ctrl";
@@ -17,6 +18,7 @@ function resetSystem() {
 
 export function MenuBar() {
   const time = useClock();
+  const { mode } = useTheme();
   const {
     openWindow,
     closeWindow,
@@ -60,7 +62,7 @@ export function MenuBar() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/icon.png"
+            src={mode === "dark" ? "/icon_dark.png" : "/icon.png"}
             alt="Portfolio logo"
             width={26}
             height={26}
