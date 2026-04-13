@@ -280,6 +280,17 @@ body {
   display: none;
 }
 
+/* Desktop icons — promoted to their own compositor layer up front so
+   transform updates during drag don't trigger layer creation jank. */
+.desktop-icon {
+  will-change: transform;
+}
+.desktop-icon.dragging {
+  opacity: 0.6;
+  z-index: 100;
+  cursor: grabbing;
+}
+
 /* === Resize handle — visible, bigger === */
 .resize-handle {
   position: absolute;

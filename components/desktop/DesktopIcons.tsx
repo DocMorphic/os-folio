@@ -41,36 +41,28 @@ const DESKTOP_ITEMS: DesktopItem[] = [
   { id: "llm", label: "llm.txt", type: "clipboard" },
 ];
 
-// Grid cell size — icons snap to multiples of these on drop
-const GRID_COL_W = 104;
-const GRID_ROW_H = 96;
-const GRID_OFFSET_X = 12;
-const GRID_OFFSET_Y = 12;
+// Initial layout coords — used only to seed the default positions.
+// There's no grid system anymore; icons are free-positioned after first drag.
+const INITIAL_X = 12;
+const INITIAL_Y = 12;
+const INITIAL_ROW_STEP = 96;
+const INITIAL_COL_STEP = 104;
 
 const DEFAULT_POSITIONS: Record<string, IconPos> = {
-  germany: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 0 },
-  austria: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 1 },
-  india: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 2 },
-  contact: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 3 },
-  about: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 4 },
-  buildlog: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 5 },
+  germany: { x: INITIAL_X, y: INITIAL_Y + INITIAL_ROW_STEP * 0 },
+  austria: { x: INITIAL_X, y: INITIAL_Y + INITIAL_ROW_STEP * 1 },
+  india: { x: INITIAL_X, y: INITIAL_Y + INITIAL_ROW_STEP * 2 },
+  contact: { x: INITIAL_X, y: INITIAL_Y + INITIAL_ROW_STEP * 3 },
+  about: { x: INITIAL_X, y: INITIAL_Y + INITIAL_ROW_STEP * 4 },
+  buildlog: { x: INITIAL_X, y: INITIAL_Y + INITIAL_ROW_STEP * 5 },
   // llm sits at the top of column 2 so it never clips off the bottom of
   // shorter viewports (iPad landscape, narrow laptop windows).
-  llm: { x: GRID_OFFSET_X + GRID_COL_W, y: GRID_OFFSET_Y + GRID_ROW_H * 0 },
+  llm: { x: INITIAL_X + INITIAL_COL_STEP, y: INITIAL_Y + INITIAL_ROW_STEP * 0 },
 };
 
 const ICON_WIDTH = 104;
 const ICON_HEIGHT = 88;
-const DRAG_THRESHOLD_PX = 5;
-
-function snapToGrid(x: number, y: number): IconPos {
-  const col = Math.round((x - GRID_OFFSET_X) / GRID_COL_W);
-  const row = Math.round((y - GRID_OFFSET_Y) / GRID_ROW_H);
-  return {
-    x: GRID_OFFSET_X + col * GRID_COL_W,
-    y: GRID_OFFSET_Y + row * GRID_ROW_H,
-  };
-}
+const DRAG_THRESHOLD_PX = 8;
 
 function clampPosition(x: number, y: number): IconPos {
   if (typeof window === "undefined") return { x, y };
@@ -167,11 +159,11 @@ export function DesktopIcons({ llmUnlocked, onToast }: DesktopIconsProps) {
           item={item}
           position={positions[item.id] ?? DEFAULT_POSITIONS[item.id]}
           onOpen={() => handleActivate(item)}
-          onDrop={(x, y) => {
-            const snapped = snapToGrid(x, y);
+          onCommit={(x, y) => {
+            // Free positioning — just clamp so it stays on screen.
             setPositions((prev) => ({
               ...prev,
-              [item.id]: clampPosition(snapped.x, snapped.y),
+              [item.id]: clampPosition(x, y),
             }));
           }}
         />
@@ -184,39 +176,39 @@ interface DraggableIconProps {
   item: DesktopItem;
   position: IconPos;
   onOpen: () => void;
-  onDrop: (x: number, y: number) => void;
+  onCommit: (x: number, y: number) => void;
 }
 
-function DraggableIcon({ item, position, onOpen, onDrop }: DraggableIconProps) {
+function DraggableIcon({ item, position, onOpen, onCommit }: DraggableIconProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  // All drag bookkeeping lives in a ref — there are zero React state
+  // changes during an active drag. Visual feedback (dim opacity, grabbing
+  // cursor, raised z-index) is handled by toggling a CSS class via direct
+  // DOM. The icon itself is positioned with translate3d which is GPU-
+  // composited and doesn't trigger layout reflow, so motion is buttery.
   const dragState = useRef({
-    dragging: false,
-    draggedEnough: false,
-    startX: 0,
-    startY: 0,
-    offsetX: 0,
-    offsetY: 0,
+    pointerStartX: 0,
+    pointerStartY: 0,
+    baseX: 0,
+    baseY: 0,
     latestX: 0,
     latestY: 0,
+    dragging: false,
+    moved: false,
     rafPending: false,
   });
-
-  // Animating flag is React state so CSS transition can turn on/off
-  const [animating, setAnimating] = useState(false);
-  // isDragging is React state so we can apply translucent styling
-  const [isDragging, setIsDragging] = useState(false);
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       const s = dragState.current;
-      s.dragging = true;
-      s.draggedEnough = false;
-      s.startX = e.clientX;
-      s.startY = e.clientY;
-      s.offsetX = e.clientX - position.x;
-      s.offsetY = e.clientY - position.y;
+      s.pointerStartX = e.clientX;
+      s.pointerStartY = e.clientY;
+      s.baseX = position.x;
+      s.baseY = position.y;
       s.latestX = position.x;
       s.latestY = position.y;
+      s.dragging = true;
+      s.moved = false;
       try {
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {}
@@ -227,23 +219,23 @@ function DraggableIcon({ item, position, onOpen, onDrop }: DraggableIconProps) {
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     const s = dragState.current;
     if (!s.dragging) return;
-    const dx = e.clientX - s.startX;
-    const dy = e.clientY - s.startY;
-    if (!s.draggedEnough) {
+    const dx = e.clientX - s.pointerStartX;
+    const dy = e.clientY - s.pointerStartY;
+    if (!s.moved) {
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
-      s.draggedEnough = true;
-      setIsDragging(true);
+      s.moved = true;
+      // Visual feedback via direct className mutation — no React re-render
+      rootRef.current?.classList.add("dragging");
     }
-    s.latestX = e.clientX - s.offsetX;
-    s.latestY = e.clientY - s.offsetY;
-    // Direct DOM write inside rAF — no React re-render during drag
+    s.latestX = s.baseX + dx;
+    s.latestY = s.baseY + dy;
     if (!s.rafPending) {
       s.rafPending = true;
       requestAnimationFrame(() => {
         s.rafPending = false;
-        if (rootRef.current) {
-          rootRef.current.style.left = `${s.latestX}px`;
-          rootRef.current.style.top = `${s.latestY}px`;
+        const el = rootRef.current;
+        if (el) {
+          el.style.transform = `translate3d(${s.latestX}px, ${s.latestY}px, 0)`;
         }
       });
     }
@@ -252,61 +244,37 @@ function DraggableIcon({ item, position, onOpen, onDrop }: DraggableIconProps) {
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
       const s = dragState.current;
+      if (!s.dragging) return;
+      s.dragging = false;
       try {
         if (e.currentTarget && "releasePointerCapture" in e.currentTarget) {
           (e.currentTarget as Element).releasePointerCapture(e.pointerId);
         }
       } catch {}
-      const wasDragging = s.draggedEnough;
-      s.dragging = false;
-      s.draggedEnough = false;
+      rootRef.current?.classList.remove("dragging");
 
-      if (!wasDragging) {
-        // Pure click — open the window
+      if (!s.moved) {
         onOpen();
         return;
       }
-
-      // Drag ended — pop into the nearest grid cell.
-      // Enable CSS transition briefly, then commit state so React sets left/top.
-      setIsDragging(false);
-      setAnimating(true);
-      onDrop(s.latestX, s.latestY);
-      // Turn off transition after the overshoot + settle finishes
-      window.setTimeout(() => setAnimating(false), 480);
+      // Free positioning — commit exactly where the pointer was released
+      onCommit(s.latestX, s.latestY);
     },
-    [onDrop, onOpen]
+    [onCommit, onOpen]
   );
-
-  // Compose style. Normally React renders with the committed `position`
-  // from state, and direct-DOM rAF writes take over during the drag. The
-  // tricky moment is the re-render triggered by setIsDragging(true) after
-  // the drag threshold is crossed — at that point React would overwrite
-  // our rAF-written DOM left/top with the STALE `position.x/y`, causing
-  // a one-frame snap-back (the "lag"). Fix: when rendering during an
-  // active drag, read the latest X/Y from dragState.current instead of
-  // from React state so the render matches what rAF just wrote.
-  const renderX = isDragging ? dragState.current.latestX : position.x;
-  const renderY = isDragging ? dragState.current.latestY : position.y;
-  const style: React.CSSProperties = {
-    left: renderX,
-    top: renderY,
-    width: ICON_WIDTH,
-    cursor: "pointer",
-    touchAction: "none",
-    opacity: isDragging ? 0.45 : 1,
-    transition: animating
-      ? "left 0.32s cubic-bezier(0.18, 1.6, 0.42, 0.96), top 0.32s cubic-bezier(0.18, 1.6, 0.42, 0.96), transform 0.36s cubic-bezier(0.18, 1.8, 0.38, 1)"
-      : "opacity 0.1s ease-out",
-    transform: animating ? "scale(1.14)" : "scale(1)",
-    willChange: isDragging ? "left, top" : undefined,
-  };
 
   return (
     <div
       ref={rootRef}
       className="desktop-icon absolute z-10 flex flex-col items-center gap-1.5 px-2 py-2 select-none"
-      style={style}
+      style={{
+        left: 0,
+        top: 0,
+        width: ICON_WIDTH,
+        cursor: "pointer",
+        touchAction: "none",
+        transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+      }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
