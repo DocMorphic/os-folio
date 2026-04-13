@@ -5,6 +5,7 @@ export const ABOUT_TXT = `NOW
 Studying Computer Science at TU Munich.
 Freelancing full-stack work for startups in India and Germany.
 Building Lighthouse — a mobile nav app with OSM data.
+Building and refining Framed, a pvp game with a twist.
 
 Current obsessions:
 - procedural content generation

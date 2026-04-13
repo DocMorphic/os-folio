@@ -14,10 +14,11 @@
   --radius-button: 0px;
 }
 
-/* === Light theme (DEFAULT) === */
+/* === Light theme (DEFAULT) ===
+   --color-bg is set per-accent below in the [data-theme][data-accent]
+   combined rules so the html background tracks the actual wallpaper. */
 :root,
 [data-theme="light"] {
-  --color-bg: #ea580c;
   --color-surface: #f7ebd8;
   --color-surface-solid: #f7ebd8;
   --color-surface-alt: #efe0c7;
@@ -108,24 +109,28 @@
    darker mix (accent × black) so it reads as a deep-shadow version of
    the accent against the dark brown UI. */
 [data-theme="light"][data-accent="orange"] {
+  --color-bg: #ea580c;
   --color-button-dark: var(--color-accent-orange);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-orange) 85%, #000);
   --color-close-btn: #ff6a3a;
   --color-close-btn-hover: #ff8f5e;
 }
 [data-theme="light"][data-accent="green"] {
+  --color-bg: #5fa85f;
   --color-button-dark: var(--color-accent-green);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-green) 85%, #000);
   --color-close-btn: #ff6a3a;
   --color-close-btn-hover: #ff8f5e;
 }
 [data-theme="light"][data-accent="blue"] {
+  --color-bg: #5087d4;
   --color-button-dark: var(--color-accent-blue);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-blue) 85%, #000);
   --color-close-btn: #ff6a3a;
   --color-close-btn-hover: #ff8f5e;
 }
 [data-theme="light"][data-accent="purple"] {
+  --color-bg: #a172cf;
   --color-button-dark: var(--color-accent-purple);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-purple) 85%, #000);
   --color-close-btn: #ff6a3a;

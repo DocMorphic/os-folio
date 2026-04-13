@@ -143,9 +143,17 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
           MIN_MARGIN,
           Math.floor((vw - clampedSize.width) / 2) + offset
         );
+        // Top-biased: anchor windows in the upper third with a min 30px
+        // offset, so the title bar is reachable on iPad / pinch-zoomed
+        // visual viewports where the bottom can be clipped.
         defaultY = Math.max(
           MIN_MARGIN + reserve,
-          reserve + Math.floor((contentHeight - clampedSize.height - DOCK_HEIGHT) / 2) + offset
+          reserve +
+            Math.max(
+              30,
+              Math.floor((contentHeight - clampedSize.height - DOCK_HEIGHT) / 3)
+            ) +
+            offset
         );
       }
 
