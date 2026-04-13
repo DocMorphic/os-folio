@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-sans: var(--font-instrument), var(--font-newsreader), Georgia, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-serif: var(--font-instrument), var(--font-newsreader), Georgia, serif;
+  --font-hand: var(--font-kalam), "Bradley Hand", cursive;
+  --font-draft: var(--font-architect), var(--font-kalam), cursive;
 
   --color-accent-orange: #ea580c;
   --color-accent-green: #5fa85f;
@@ -14,84 +16,131 @@
   --radius-button: 0px;
 }
 
-/* === Light theme (DEFAULT) ===
-   --color-bg is set per-accent below in the [data-theme][data-accent]
-   combined rules so the html background tracks the actual wallpaper. */
+/* ============================================================
+   Field Notebook — light theme (default)
+   Palette: aged cream paper, fountain-pen ink, graphite pencil,
+   highlighter orange, rubber-stamp red. Feels like an engineer's
+   journal. "Surface" colors are the brighter paper of sticky notes
+   / index cards pinned onto the main page.
+   ============================================================ */
 :root,
 [data-theme="light"] {
-  --color-surface: #f7ebd8;
-  --color-surface-solid: #f7ebd8;
-  --color-surface-alt: #efe0c7;
-  --color-surface-hover: #ede0c7;
-  --color-border: #d4c4a8;
-  --color-border-strong: #8b5a2b;
-  --color-border-hover: #c0ae8d;
-  --color-text: #3a2817;
-  --color-text-secondary: #4a3520;
-  --color-text-muted: #7a6346;
-  --color-text-dim: #9c8260;
-  --color-tag-bg: #f0e0c3;
-  --color-tag-border: #d4c4a8;
-  --color-titlebar: #e0d0b4;
-  --color-titlebar-border: #c8b894;
-  --color-input-bg: #faf0e0;
-  --color-input-border: #d4c4a8;
-  --color-window-shadow: rgba(60, 30, 5, 0.25);
-  --color-scrollbar: #d4c4a8;
-  --color-scrollbar-hover: #b8a585;
-  --color-info-box: #e8d8bc;
-  --color-error: #9c2a14;
-  --color-link: #c04410;
+  /* Paper backgrounds — the page itself + clipped notes */
+  --color-bg: #f3ead9;               /* aged cream page */
+  --color-surface: #fff7e5;           /* index card / sticky note paper */
+  --color-surface-solid: #fff7e5;     /* same, opaque version */
+  --color-surface-alt: #f8edd1;       /* header tape / slightly yellowed */
+  --color-surface-hover: #fdf2d8;     /* hover highlight on notes */
 
-  /* === UI chrome (stays same across themes) === */
-  --color-menubar-bg: #e0d0b4;
-  --color-menubar-border: #8b5a2b;
-  --color-menubar-text: #3a2817;
-  --color-menubar-hover: #ede0c5;
-  --color-menubar-active: #faf1db;
-  --color-dock-bg: #f7ebd8;
-  --color-dock-border: #8b5a2b;
-  --color-desktop-label: #ffffff;
+  /* Ink — for borders, titles, the hand-drawn strokes */
+  --color-border: #a89a7a;            /* pencil gray-brown */
+  --color-border-strong: #3a322a;     /* fountain pen ink */
+  --color-border-hover: #5a4d3d;      /* medium ink */
+
+  /* Text — graphite + ink variations */
+  --color-text: #1a1814;              /* fountain pen ink, deep warm black */
+  --color-text-secondary: #3a322a;    /* body ink */
+  --color-text-muted: #7a6f60;        /* pencil gray-brown */
+  --color-text-dim: #a89a7a;           /* eraser smudge */
+
+  /* Tag / label chrome — looks like sticker paper */
+  --color-tag-bg: #f5e8c4;
+  --color-tag-border: #a89a7a;
+
+  /* Window chrome — "title bar" looks like masking tape */
+  --color-titlebar: #f2e0b3;           /* washi tape cream */
+  --color-titlebar-border: #a89a7a;
+
+  /* Form inputs — look like blanks written on ruled lines */
+  --color-input-bg: #fff7e5;
+  --color-input-border: #a89a7a;
+
+  /* Shadow of an index card pinned to the page — warm, soft, offset */
+  --color-window-shadow: rgba(40, 25, 5, 0.18);
+
+  /* Scrollbars — subtle pencil strokes */
+  --color-scrollbar: #c8b894;
+  --color-scrollbar-hover: #9e8c68;
+
+  /* Info boxes — light highlighter mark */
+  --color-info-box: #fdf2c8;
+
+  /* Error / destructive — rubber stamp red */
+  --color-error: #c24a2e;
+
+  /* Link — highlighter orange (preserving the original accent as a
+     through-line the user asked for) */
+  --color-link: #ea580c;
+
+  /* === Desktop chrome (menu bar, dock) ===
+     Menu bar is a "washi tape label" across the top. Dock is a
+     "bookmark ribbon" at the bottom. */
+  --color-menubar-bg: #f5e4b4;       /* masking tape cream */
+  --color-menubar-border: #3a322a;   /* ink line */
+  --color-menubar-text: #1a1814;
+  --color-menubar-hover: #f0dba0;
+  --color-menubar-active: #ead38a;
+  --color-dock-bg: #fff7e5;          /* cardstock ribbon */
+  --color-dock-border: #3a322a;      /* ink edge */
+  --color-desktop-label: #3a322a;    /* ink caption beneath icons */
 }
 
-/* === Dark theme — warm brown matching Wes's === */
+/* ============================================================
+   Field Notebook — dark theme
+   Palette: oxidized leather / night parchment. Imagine the same
+   journal but photographed under a low desk lamp. Paper goes dark
+   warm brown, ink becomes cream, highlighter stays warm amber.
+   ============================================================ */
 [data-theme="dark"] {
-  --color-bg: #1f130d;
-  --color-surface: #2a1d10;
-  --color-surface-solid: #2a1d10;
-  --color-surface-alt: #3a2918;
-  --color-surface-hover: #3a2918;
-  --color-border: #4a3525;
-  --color-border-strong: #8b5a2b;
-  --color-border-hover: #5a4230;
-  --color-text: #f0e0c3;
+  /* Paper — aged dark parchment */
+  --color-bg: #1b140b;                /* night paper */
+  --color-surface: #2a1f12;           /* index card under lamplight */
+  --color-surface-solid: #2a1f12;
+  --color-surface-alt: #352617;
+  --color-surface-hover: #3a2b1b;
+
+  /* Ink inverted — cream on dark paper */
+  --color-border: #5a4c35;
+  --color-border-strong: #d4c4a8;
+  --color-border-hover: #8a7a5a;
+
+  /* Text — off-white cream inks */
+  --color-text: #f3ead9;
   --color-text-secondary: #d4c4a8;
-  --color-text-muted: #a08968;
-  --color-text-dim: #7a6850;
-  --color-tag-bg: #3a2918;
-  --color-tag-border: #4a3525;
-  --color-titlebar: #30231b;
-  --color-titlebar-border: #4a3525;
-  --color-input-bg: #221810;
-  --color-input-border: #4a3525;
-  --color-window-shadow: rgba(0, 0, 0, 0.7);
-  --color-scrollbar: #4a3525;
-  --color-scrollbar-hover: #5a4230;
-  --color-info-box: #3a2918;
-  --color-error: #ff6a4a;
+  --color-text-muted: #a89a7a;
+  --color-text-dim: #7a6f60;
+
+  /* Tags / stickers in dark mode — darker warm paper */
+  --color-tag-bg: #352617;
+  --color-tag-border: #5a4c35;
+
+  /* Title tape — still tape-like but darker */
+  --color-titlebar: #2a1f12;
+  --color-titlebar-border: #5a4c35;
+
+  /* Form inputs */
+  --color-input-bg: #1f170c;
+  --color-input-border: #5a4c35;
+
+  --color-window-shadow: rgba(0, 0, 0, 0.75);
+
+  --color-scrollbar: #5a4c35;
+  --color-scrollbar-hover: #7a6a4a;
+
+  --color-info-box: #352617;
+
+  --color-error: #ff7a4a;
   --color-link: #ff9b5c;
 
-  /* === UI chrome — dark in dark mode, matches Wes ===
-     menubar-border stays light so the line between top bar and wallpaper
-     reads clearly even on dark brown. */
-  --color-menubar-bg: #30231b;
-  --color-menubar-border: #e0d0b4;
-  --color-menubar-text: #e0d0b4;
-  --color-menubar-hover: #4a3525;
-  --color-menubar-active: #5a4230;
-  --color-dock-bg: #30231b;
-  --color-dock-border: #4a3525;
-  --color-desktop-label: #ffffff;
+  /* Desktop chrome in dark mode */
+  --color-menubar-bg: #2a1f12;
+  --color-menubar-border: #f3ead9;
+  --color-menubar-text: #f3ead9;
+  --color-menubar-hover: #3a2b1b;
+  --color-menubar-active: #4a3725;
+  --color-dock-bg: #2a1f12;
+  --color-dock-border: #5a4c35;
+  --color-desktop-label: #f3ead9;
 }
 
 /* === Accent color mapping ===
@@ -108,33 +157,33 @@
    pops as a vivid pill on the cream UI. Dark mode → button is a much
    darker mix (accent × black) so it reads as a deep-shadow version of
    the accent against the dark brown UI. */
+/* Light + accent combined rules:
+   In the Field Notebook theme, --color-bg (the paper color) is fixed
+   cream regardless of accent — only the highlighter / link / button-dark
+   colors change when the visitor flips accents. */
 [data-theme="light"][data-accent="orange"] {
-  --color-bg: #ea580c;
   --color-button-dark: var(--color-accent-orange);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-orange) 85%, #000);
-  --color-close-btn: #ff6a3a;
-  --color-close-btn-hover: #ff8f5e;
+  --color-close-btn: #c24a2e;
+  --color-close-btn-hover: #d85c3b;
 }
 [data-theme="light"][data-accent="green"] {
-  --color-bg: #5fa85f;
   --color-button-dark: var(--color-accent-green);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-green) 85%, #000);
-  --color-close-btn: #ff6a3a;
-  --color-close-btn-hover: #ff8f5e;
+  --color-close-btn: #c24a2e;
+  --color-close-btn-hover: #d85c3b;
 }
 [data-theme="light"][data-accent="blue"] {
-  --color-bg: #5087d4;
   --color-button-dark: var(--color-accent-blue);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-blue) 85%, #000);
-  --color-close-btn: #ff6a3a;
-  --color-close-btn-hover: #ff8f5e;
+  --color-close-btn: #c24a2e;
+  --color-close-btn-hover: #d85c3b;
 }
 [data-theme="light"][data-accent="purple"] {
-  --color-bg: #a172cf;
   --color-button-dark: var(--color-accent-purple);
   --color-button-dark-hover: color-mix(in srgb, var(--color-accent-purple) 85%, #000);
-  --color-close-btn: #ff6a3a;
-  --color-close-btn-hover: #ff8f5e;
+  --color-close-btn: #c24a2e;
+  --color-close-btn-hover: #d85c3b;
 }
 
 [data-theme="dark"][data-accent="orange"] {
@@ -177,21 +226,36 @@ html {
 }
 
 body {
-  font-family: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  /* Body text is now editorial serif by default — feels like reading
+     a bound book, not a sans-serif web app. Components that explicitly
+     want mono or handwritten override this. */
+  font-family: var(--font-instrument), var(--font-newsreader), Georgia, serif;
   background: var(--color-bg);
   color: var(--color-text);
   max-width: 100vw;
   overflow: hidden;
   overscroll-behavior: none;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 13.5px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Field Notebook font helper classes — used by components to switch
+   into the handwritten, engineering-draftsman, or mono voices. */
+.font-hand {
+  font-family: var(--font-kalam), "Bradley Hand", cursive;
+}
+.font-draft {
+  font-family: var(--font-architect), var(--font-kalam), cursive;
+}
+.font-mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
 /* === Headings === */
 .font-serif-heading {
-  font-family: var(--font-newsreader), Georgia, serif;
+  font-family: var(--font-instrument), var(--font-newsreader), Georgia, serif;
   font-weight: 400;
   letter-spacing: -0.015em;
 }

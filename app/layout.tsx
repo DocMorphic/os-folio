@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Newsreader, Geist_Mono } from "next/font/google";
+import {
+  DM_Sans,
+  Newsreader,
+  Geist_Mono,
+  Kalam,
+  Instrument_Serif,
+  Architects_Daughter,
+} from "next/font/google";
 import { StatsTracker } from "@/components/StatsTracker";
 import "./globals.css";
 
@@ -26,6 +33,31 @@ const geistMono = Geist_Mono({
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Field Notebook fonts — warm editorial serif for body reading,
+// Kalam for confident handwriting (titles, labels), Architects Daughter
+// for the "engineer's draftsman" voice (uppercase labels, annotations).
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const kalam = Kalam({
+  variable: "--font-kalam",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+});
+
+const architectsDaughter = Architects_Daughter({
+  variable: "--font-architect",
+  subsets: ["latin"],
+  weight: ["400"],
   display: "swap",
 });
 
@@ -69,7 +101,7 @@ export default function RootLayout({
       data-theme="light"
       data-accent="green"
       suppressHydrationWarning
-      className={`${dmSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${geistMono.variable} ${newsreader.variable} ${instrumentSerif.variable} ${kalam.variable} ${architectsDaughter.variable} h-full antialiased`}
     >
       <head>
         <script
