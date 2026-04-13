@@ -6,7 +6,14 @@ import { APP_REGISTRY } from "@/lib/constants";
 
 // Reserved zones
 const MENUBAR_HEIGHT = 34;
-const DOCK_HEIGHT = 72;
+// Dock visual footprint from the viewport bottom (includes bottom offset
+// + padding + button height + border). On mobile the dock is bigger AND
+// sits higher off the bottom edge (bottom-5 vs desktop bottom-2), so its
+// real footprint is ~88px; we reserve 100 to leave a clear buffer so
+// windows never tuck under the dock on viewports where Safari's URL bar
+// jitters during scroll.
+const DOCK_HEIGHT_DESKTOP = 72;
+const DOCK_HEIGHT_MOBILE = 100;
 const MIN_MARGIN = 12;
 const MIN_W = 280;
 const MIN_H = 180;
@@ -20,6 +27,10 @@ const MOBILE_ICON_ROW_RESERVE = 96;
 function isMobileViewport() {
   if (typeof window === "undefined") return false;
   return window.innerWidth < MOBILE_BREAKPOINT;
+}
+
+function dockFootprint() {
+  return isMobileViewport() ? DOCK_HEIGHT_MOBILE : DOCK_HEIGHT_DESKTOP;
 }
 
 function topReserve() {
@@ -89,7 +100,7 @@ function clampSize(w: number, h: number) {
   const vh = window.innerHeight;
   const mobile = isMobileViewport();
   const maxW = vw - MIN_MARGIN * 2;
-  const maxH = vh - MENUBAR_HEIGHT - DOCK_HEIGHT - MIN_MARGIN * 2 - topReserve();
+  const maxH = vh - MENUBAR_HEIGHT - dockFootprint() - MIN_MARGIN * 2 - topReserve();
   // On mobile, force windows to the viewport width regardless of default.
   // Min is loosened so small phones (<300px) still get a usable window.
   const minW = mobile ? Math.min(240, maxW) : MIN_W;
@@ -151,7 +162,7 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
           reserve +
             Math.max(
               30,
-              Math.floor((contentHeight - clampedSize.height - DOCK_HEIGHT) / 3)
+              Math.floor((contentHeight - clampedSize.height - dockFootprint()) / 3)
             ) +
             offset
         );
@@ -256,7 +267,7 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
       prev.map((w) => {
         if (w.appId !== appId) return w;
         const x = Math.floor((vw - w.size.width) / 2);
-        const y = Math.floor((contentHeight - w.size.height - DOCK_HEIGHT) / 2);
+        const y = Math.floor((contentHeight - w.size.height - dockFootprint()) / 2);
         return { ...w, position: clampPosition(x, y, w.size.width, w.size.height) };
       })
     );
@@ -289,7 +300,7 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
         // is to cover the icon row (dock is still visible at the bottom).
         const size = {
           width: vw - MIN_MARGIN * 2,
-          height: vh - MENUBAR_HEIGHT - DOCK_HEIGHT - MIN_MARGIN * 2,
+          height: vh - MENUBAR_HEIGHT - dockFootprint() - MIN_MARGIN * 2,
         };
         return {
           ...w,
