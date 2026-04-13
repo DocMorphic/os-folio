@@ -38,10 +38,10 @@ export const metadata: Metadata = {
     "CS student at TU Munich, freelance full-stack developer, and builder of weird and wonderful web and mobile products.",
   icons: {
     icon: [
-      { url: "/favicon.png?v=3", type: "image/png", sizes: "any" },
+      { url: "/favicon.png?v=4", type: "image/png", sizes: "any" },
     ],
-    shortcut: "/favicon.png?v=3",
-    apple: "/favicon.png?v=3",
+    shortcut: "/favicon.png?v=4",
+    apple: "/favicon.png?v=4",
   },
   openGraph: {
     title: "Dharmay Dave | Portfolio",
