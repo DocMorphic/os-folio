@@ -74,6 +74,7 @@ export async function sendContactEmail(payload: ContactPayload): Promise<SendRes
 </html>`;
 
   try {
+    console.log("[contact] sending via Resend; key length:", RESEND_API_KEY.length);
     const res = await fetch(RESEND_API_URL, {
       method: "POST",
       headers: {
@@ -92,13 +93,28 @@ export async function sendContactEmail(payload: ContactPayload): Promise<SendRes
 
     if (!res.ok) {
       const errBody = await res.text().catch(() => "");
-      console.error("Resend error:", res.status, errBody);
-      return { ok: false, error: `email service returned ${res.status}` };
+      console.error("[contact] Resend error", res.status, errBody);
+      // Try to extract the human-readable message from Resend's JSON
+      // response so it bubbles up to the contact form UI.
+      let detail = errBody;
+      try {
+        const parsed = JSON.parse(errBody) as { message?: string; name?: string };
+        if (parsed.message) detail = parsed.message;
+        if (parsed.name && parsed.message) detail = `${parsed.name}: ${parsed.message}`;
+      } catch {
+        /* not JSON */
+      }
+      return {
+        ok: false,
+        error: `Resend ${res.status}: ${detail || "unknown error"}`,
+      };
     }
 
+    const okBody = await res.json().catch(() => ({}));
+    console.log("[contact] Resend accepted", okBody);
     return { ok: true };
   } catch (err) {
-    console.error("Resend fetch error:", err);
+    console.error("[contact] Resend fetch error:", err);
     return { ok: false, error: "network error while sending email" };
   }
 }
