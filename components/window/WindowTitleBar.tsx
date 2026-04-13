@@ -39,23 +39,29 @@ export function WindowTitleBar({
 
   return (
     <div
-      className={`flex h-9 shrink-0 items-center justify-between border-b-2 pl-3 pr-1.5 ${
+      className={`notebook-tape relative flex h-10 shrink-0 items-center justify-between border-b pl-4 pr-1.5 ${
         draggable ? "cursor-move" : "cursor-default"
       }`}
       style={{
         background: "var(--color-titlebar)",
-        borderColor: "var(--color-border-strong)",
+        borderColor: "var(--color-border)",
+        // Tape has a subtle vertical gradient like a piece of masking
+        // tape catching light, plus an irregular faint stripe across.
+        backgroundImage:
+          "linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,0.04) 100%), repeating-linear-gradient(88deg, transparent 0 22px, rgba(0,0,0,0.018) 22px 23px)",
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
     >
-      {/* Title — LEFT */}
+      {/* Title — LEFT, in handwritten Kalam */}
       <span
-        className="pointer-events-none truncate text-[12px]"
+        className="pointer-events-none truncate text-[14px]"
         style={{
-          color: isFocused ? "var(--color-text)" : "var(--color-text-dim)",
-          fontWeight: 500,
+          fontFamily: "var(--font-kalam), cursive",
+          color: isFocused ? "var(--color-text)" : "var(--color-text-muted)",
+          fontWeight: 700,
+          letterSpacing: "0.01em",
         }}
       >
         {title}

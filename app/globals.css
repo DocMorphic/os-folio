@@ -295,31 +295,37 @@ body {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* === Window control buttons — distinct squares ===
-   Min/max buttons are intentionally static — they never track theme or
-   accent. Only the close button flips with theme. */
+/* === Window control buttons — hand-drawn ink dots ===
+   In the Field Notebook theme these are round ink circles, not
+   rectangles. Each one has a warm stamped look with a subtle inner
+   shadow. Close stays a distinct stamp-red. */
 .window-control-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  background: #6b3410;
-  color: #ffffff;
-  transition: background 0.12s;
+  width: 22px;
+  height: 22px;
+  background: #3a322a;
+  color: #fdf6e3;
+  transition: background 0.12s, transform 0.12s;
   cursor: pointer;
-  border: 1.5px solid var(--color-border-strong);
+  border: 1.2px solid #1a1814;
+  border-radius: 50%;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.35) inset,
+    0 0.5px 0 rgba(255, 255, 255, 0.4) inset;
 }
 
 .window-control-btn:hover {
-  background: #823d14;
+  background: #1a1814;
+  transform: translateY(-1px);
 }
 
 .window-control-btn.maximize {
-  background: #8a7560;
+  background: #6a5d48;
 }
 .window-control-btn.maximize:hover {
-  background: #9a8470;
+  background: #4a4032;
 }
 
 .window-control-btn.close {

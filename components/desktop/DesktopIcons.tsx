@@ -135,10 +135,12 @@ export function DesktopIcons({ llmUnlocked, onToast }: DesktopIconsProps) {
               >
                 <DesktopIconSvg type={item.type} size={60} />
                 <span
-                  className="w-full truncate text-center text-[12px] font-medium leading-[1.2]"
+                  className="w-full truncate text-center text-[13px] leading-[1.15]"
                   style={{
+                    fontFamily: "var(--font-kalam), cursive",
                     color: "var(--color-desktop-label)",
-                    textShadow: "1px 1px 2px rgba(0,0,0,0.5), 0 0 3px rgba(0,0,0,0.3)",
+                    fontWeight: 700,
+                    letterSpacing: "0.01em",
                   }}
                 >
                   {item.label}
@@ -281,11 +283,13 @@ function DraggableIcon({ item, position, onOpen, onCommit }: DraggableIconProps)
     >
       <DesktopIconSvg type={item.type} />
       <span
-        className="pointer-events-none text-center text-[12.5px] font-medium leading-[1.2]"
+        className="pointer-events-none text-center text-[14px] leading-[1.15]"
         style={{
+          fontFamily: "var(--font-kalam), cursive",
           color: "var(--color-desktop-label)",
-          textShadow: "1px 1px 2px rgba(0,0,0,0.5), 0 0 3px rgba(0,0,0,0.3)",
+          fontWeight: 700,
           whiteSpace: "pre-line",
+          letterSpacing: "0.01em",
         }}
       >
         {item.label}
@@ -294,50 +298,123 @@ function DraggableIcon({ item, position, onOpen, onCommit }: DraggableIconProps)
   );
 }
 
+/**
+ * Hand-drawn SVG icons — every path is a wobbly, imperfect ink stroke.
+ * Curves are slightly uneven, corners don't meet cleanly, fills are
+ * warm cream paper. Meant to look like someone sketched them in a
+ * notebook margin rather than a designer vector-drew them.
+ */
 function DesktopIconSvg({ type, size = 58 }: { type: IconType; size?: number }) {
   const height = Math.round((size * 50) / 58);
+  const INK = "#1a1814";        // fountain pen
+  const PENCIL = "#6a5d48";     // pencil stroke for secondary lines
+  const PAPER = "#fff7e5";      // cream fill
+  const WARM = "#e8c98f";       // warm highlight for folder bodies
+  const RED = "#c24a2e";        // occasional stamp/mark
+
   if (type === "folder") {
     return (
-      <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none">
-        <rect x="10" y="4" width="20" height="7" fill="#e8dbc2" stroke="#3a1a06" strokeWidth="0.8" />
-        <rect x="5" y="10" width="46" height="34" fill="#8b3e14" stroke="#3a1a06" strokeWidth="0.8" />
+      <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none" style={{ overflow: "visible" }}>
+        {/* Folder tab — wobbly rectangle */}
+        <path
+          d="M9 10 Q 11 4, 14 5 L 27 4 Q 31 6, 32 9 L 32 12 L 9 12 Z"
+          fill={WARM}
+          stroke={INK}
+          strokeWidth="1.2"
+          strokeLinejoin="round"
+        />
+        {/* Folder body — wobbly square with slight imperfection */}
+        <path
+          d="M5 12 Q 4 14, 5 16 L 5 42 Q 7 45, 10 44 L 49 44 Q 52 43, 51 40 L 51 14 Q 50 11, 47 12 L 9 12 Q 6 11, 5 12 Z"
+          fill={WARM}
+          stroke={INK}
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+        />
+        {/* A tiny inside line suggesting papers inside */}
+        <line x1="14" y1="22" x2="42" y2="22" stroke={PENCIL} strokeWidth="0.6" opacity="0.7" />
       </svg>
     );
   }
 
   if (type === "envelope") {
     return (
-      <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none">
-        <rect x="7" y="4" width="42" height="40" fill="#f5e7d0" stroke="#3a2817" strokeWidth="0.8" />
-        <rect x="17" y="16" width="22" height="16" fill="none" stroke="#3a2817" strokeWidth="1" />
-        <path d="M17 16L28 25L39 16" stroke="#3a2817" strokeWidth="1" fill="none" />
+      <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none" style={{ overflow: "visible" }}>
+        {/* Envelope body — slightly imperfect rectangle */}
+        <path
+          d="M7 8 Q 6 10, 7 12 L 7 40 Q 8 44, 12 43 L 45 43 Q 50 42, 49 38 L 49 10 Q 48 7, 45 8 L 10 8 Q 7 7, 7 8 Z"
+          fill={PAPER}
+          stroke={INK}
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+        />
+        {/* The flap — pen stroke triangle */}
+        <path
+          d="M7 10 Q 17 20, 28 25 Q 39 20, 49 10"
+          stroke={INK}
+          strokeWidth="1.2"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {/* Wax seal — red stamp dot */}
+        <circle cx="40" cy="34" r="3.5" fill={RED} opacity="0.85" />
+        <circle cx="40" cy="34" r="3.5" stroke={INK} strokeWidth="0.8" fill="none" />
       </svg>
     );
   }
 
   if (type === "clipboard") {
     return (
-      <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none">
-        {/* Clipboard base */}
-        <rect x="11" y="8" width="30" height="36" fill="#f5e7d0" stroke="#3a2817" strokeWidth="0.8" />
-        {/* Clip at the top */}
-        <rect x="19" y="4" width="14" height="6" fill="#8b5a2b" stroke="#3a2817" strokeWidth="0.8" />
-        {/* Text lines */}
-        <line x1="16" y1="18" x2="36" y2="18" stroke="#9c8260" strokeWidth="0.8" />
-        <line x1="16" y1="23" x2="34" y2="23" stroke="#9c8260" strokeWidth="0.8" />
-        <line x1="16" y1="28" x2="36" y2="28" stroke="#9c8260" strokeWidth="0.8" />
-        <line x1="16" y1="33" x2="30" y2="33" stroke="#9c8260" strokeWidth="0.8" />
+      <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none" style={{ overflow: "visible" }}>
+        {/* Clipboard base — a slightly wobbly paper rectangle */}
+        <path
+          d="M11 10 Q 10 12, 11 14 L 11 44 Q 12 46, 14 45 L 39 45 Q 42 44, 41 42 L 41 13 Q 40 10, 38 11 L 13 11 Q 11 10, 11 10 Z"
+          fill={PAPER}
+          stroke={INK}
+          strokeWidth="1.3"
+          strokeLinejoin="round"
+        />
+        {/* Clip at the top — pinched rectangle */}
+        <path
+          d="M19 4 L 33 4 Q 35 5, 35 7 L 35 11 L 17 11 L 17 7 Q 17 4, 19 4 Z"
+          fill={WARM}
+          stroke={INK}
+          strokeWidth="1.2"
+          strokeLinejoin="round"
+        />
+        {/* Hand-drawn lines inside */}
+        <path d="M16 20 Q 25 19, 36 20" stroke={PENCIL} strokeWidth="0.9" fill="none" strokeLinecap="round" />
+        <path d="M16 26 Q 25 25, 34 26" stroke={PENCIL} strokeWidth="0.9" fill="none" strokeLinecap="round" />
+        <path d="M16 32 Q 24 31, 32 33" stroke={PENCIL} strokeWidth="0.9" fill="none" strokeLinecap="round" />
+        <path d="M16 38 Q 22 37, 28 38" stroke={PENCIL} strokeWidth="0.9" fill="none" strokeLinecap="round" />
       </svg>
     );
   }
 
-  // file
+  // file — sketched single sheet with a dog-ear corner
   return (
-    <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none">
-      <path d="M11 4 L36 4 L45 13 L45 44 L11 44 Z" fill="#f5e7d0" stroke="#3a2817" strokeWidth="0.8" />
-      <path d="M36 4 L36 13 L45 13" fill="#d4c4a8" stroke="#3a2817" strokeWidth="0.8" />
-      <line x1="17" y1="22" x2="39" y2="22" stroke="#9c8260" strokeWidth="0.8" />
-      <line x1="17" y1="28" x2="33" y2="28" stroke="#9c8260" strokeWidth="0.8" />
+    <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none" style={{ overflow: "visible" }}>
+      {/* Paper outline */}
+      <path
+        d="M12 4 Q 11 5, 11 7 L 11 44 Q 12 46, 14 45 L 42 45 Q 45 44, 45 42 L 45 14 L 36 4 Q 35 3, 33 4 L 13 4 Q 12 4, 12 4 Z"
+        fill={PAPER}
+        stroke={INK}
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+      {/* Folded corner — the dog-ear */}
+      <path
+        d="M36 4 L 36 13 Q 37 15, 39 14 L 45 14"
+        stroke={INK}
+        strokeWidth="1.2"
+        fill="none"
+        strokeLinejoin="round"
+      />
+      {/* Content lines — wobbly pencil */}
+      <path d="M17 22 Q 26 21, 39 22" stroke={PENCIL} strokeWidth="0.9" fill="none" strokeLinecap="round" />
+      <path d="M17 28 Q 24 27, 34 28" stroke={PENCIL} strokeWidth="0.9" fill="none" strokeLinecap="round" />
+      <path d="M17 34 Q 22 33, 30 34" stroke={PENCIL} strokeWidth="0.9" fill="none" strokeLinecap="round" />
     </svg>
   );
 }

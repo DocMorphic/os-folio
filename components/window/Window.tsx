@@ -211,10 +211,15 @@ export function Window({
 
   if (!windowState || !appDef) return null;
 
+  // Each window gets a small stable rotation derived from its appId so
+  // it feels "placed" on the page, not grid-aligned. Deterministic so
+  // the same window always tilts the same way across renders.
+  const tiltDeg = ((appId.charCodeAt(0) + appId.length * 13) % 7) / 5 - 0.7;
+
   return (
     <div
       ref={rootRef}
-      className="window-enter absolute flex flex-col overflow-hidden border-2"
+      className="window-enter notebook-window absolute flex flex-col overflow-hidden"
       style={{
         left: windowState.position.x,
         top: windowState.position.y,
@@ -222,8 +227,16 @@ export function Window({
         height: windowState.size.height,
         zIndex: windowState.zIndex,
         background: "var(--color-surface-solid)",
-        borderColor: "var(--color-border-strong)",
-        boxShadow: "4px 4px 0 rgba(60, 30, 5, 0.25)",
+        // Hand-drawn ink border via SVG filter so the rectangle edges
+        // are slightly wobbly like a pen stroke. Falls back to a flat
+        // border if the filter fails.
+        border: "1.5px solid var(--color-border-strong)",
+        // Irregular multi-offset shadow — not a clean box-shadow, more
+        // like a paper card resting on graph paper
+        boxShadow:
+          "2px 3px 0 var(--color-window-shadow), 5px 7px 14px rgba(60, 30, 5, 0.14), 0 1px 0 rgba(255, 255, 255, 0.4) inset",
+        transform: windowState.isMaximized ? "none" : `rotate(${tiltDeg}deg)`,
+        transformOrigin: "center center",
       }}
       onMouseDown={() => focusWindow(appId)}
       role="dialog"

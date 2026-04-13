@@ -20,69 +20,82 @@ function useIsMobile() {
   return isMobile;
 }
 
+// Hand-drawn wobbly dock icons. Each is a few pen strokes, slightly
+// imperfect, with tiny inside details. Stroke is cream (for contrast
+// against the brown-ink dock button fill). Everything has round linecaps
+// so strokes end softly like a real pen lift.
+const STROKE = "#f3ead9";
+const STROKE_ATTRS = {
+  fill: "none",
+  stroke: STROKE,
+  strokeWidth: "1.5",
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
 const DOCK_ICONS: Record<string, React.ReactNode> = {
   about: (
-    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
-      <rect x="3" y="2" width="14" height="16" fill="none"/>
-      <rect x="9" y="5" width="2" height="2" fill="white" stroke="none"/>
-      <rect x="9" y="8" width="2" height="7" fill="white" stroke="none"/>
+    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_ATTRS}>
+      {/* Person bust — wobbly oval head + shoulders */}
+      <path d="M12 4 Q 14.5 4, 14.5 7 Q 14.5 10, 12 10 Q 9.5 10, 9.5 7 Q 9.5 4, 12 4 Z" />
+      <path d="M5 20 Q 5 14, 12 13.5 Q 19 14, 19 20" />
     </svg>
   ),
   blog: (
-    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
-      <rect x="4" y="2" width="12" height="16" fill="none"/>
-      <line x1="7" y1="6" x2="13" y2="6"/>
-      <line x1="7" y1="9" x2="13" y2="9"/>
-      <line x1="7" y1="12" x2="13" y2="12"/>
-      <line x1="7" y1="15" x2="11" y2="15"/>
+    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_ATTRS}>
+      {/* Open book */}
+      <path d="M4 6 Q 4 4, 6 4 L 11 5 L 11 20 L 6 19 Q 4 19, 4 17 Z" />
+      <path d="M20 6 Q 20 4, 18 4 L 13 5 L 13 20 L 18 19 Q 20 19, 20 17 Z" />
     </svg>
   ),
   contact: (
-    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
-      <rect x="2" y="5" width="16" height="11" fill="none"/>
-      <path d="M2 5L10 12L18 5"/>
+    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_ATTRS}>
+      {/* Envelope with flap line */}
+      <path d="M3 6 Q 3 5, 4 5 L 20 5 Q 21 5, 21 6 L 21 18 Q 21 19, 20 19 L 4 19 Q 3 19, 3 18 Z" />
+      <path d="M3 6 Q 12 13, 21 6" />
     </svg>
   ),
   experience: (
-    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
-      <rect x="3" y="4" width="2" height="2" fill="white" stroke="none"/>
-      <line x1="7" y1="5" x2="17" y2="5"/>
-      <rect x="3" y="9" width="2" height="2" fill="white" stroke="none"/>
-      <line x1="7" y1="10" x2="17" y2="10"/>
-      <rect x="3" y="14" width="2" height="2" fill="white" stroke="none"/>
-      <line x1="7" y1="15" x2="17" y2="15"/>
+    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_ATTRS}>
+      {/* Briefcase + handle */}
+      <path d="M9 6 Q 9 4, 11 4 L 13 4 Q 15 4, 15 6" />
+      <path d="M3 8 Q 3 7, 4 7 L 20 7 Q 21 7, 21 8 L 21 18 Q 21 19, 20 19 L 4 19 Q 3 19, 3 18 Z" />
+      <path d="M3 12 Q 12 14, 21 12" />
     </svg>
   ),
   help: (
-    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
-      <rect x="3" y="2" width="14" height="16" fill="none"/>
-      <path d="M8 7C8 6 9 5 10 5C11 5 12 6 12 7C12 8 10 8 10 10" fill="none"/>
-      <rect x="9" y="13" width="2" height="2" fill="white" stroke="none"/>
+    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_ATTRS}>
+      {/* Round question mark */}
+      <path d="M12 4 Q 18 4, 18 10 Q 18 13, 15 14 Q 12 15, 12 17" />
+      <path d="M12 19.5 Q 12.5 19.5, 12.5 20 Q 12.5 20.5, 12 20.5 Q 11.5 20.5, 11.5 20 Q 11.5 19.5, 12 19.5 Z" fill={STROKE} strokeWidth="0" />
     </svg>
   ),
   search: (
-    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
-      <rect x="3" y="3" width="9" height="9" fill="none"/>
-      <line x1="12" y1="12" x2="17" y2="17" strokeWidth="2"/>
+    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_ATTRS}>
+      {/* Magnifying glass — wobbly circle + handle */}
+      <path d="M10 4 Q 15.5 4, 15.5 10 Q 15.5 16, 10 16 Q 4.5 16, 4.5 10 Q 4.5 4, 10 4 Z" />
+      <path d="M14.5 14.5 L 20 20" />
     </svg>
   ),
   settings: (
-    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_ATTRS}>
+      {/* Gear — six simple teeth, center circle */}
+      <path d="M12 9 Q 15 9, 15 12 Q 15 15, 12 15 Q 9 15, 9 12 Q 9 9, 12 9 Z" />
+      <path d="M12 3 L 12 6 M 12 18 L 12 21 M 3 12 L 6 12 M 18 12 L 21 12 M 5.5 5.5 L 7.5 7.5 M 16.5 16.5 L 18.5 18.5 M 5.5 18.5 L 7.5 16.5 M 16.5 7.5 L 18.5 5.5" />
     </svg>
   ),
   terminal: (
-    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
-      <rect x="2" y="3" width="16" height="14" fill="none"/>
-      <path d="M5 7L8 10L5 13" fill="none"/>
-      <line x1="10" y1="13" x2="15" y2="13"/>
+    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_ATTRS}>
+      {/* CLI box with chevron + underscore */}
+      <path d="M4 5 Q 3 5, 3 6 L 3 18 Q 3 19, 4 19 L 20 19 Q 21 19, 21 18 L 21 6 Q 21 5, 20 5 Z" />
+      <path d="M7 9 L 10 12 L 7 15 M 12 16 L 17 16" />
     </svg>
   ),
   works: (
-    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5">
-      <rect x="2" y="6" width="16" height="12" fill="none"/>
-      <path d="M7 6V4C7 3 8 3 8 3H12C12 3 13 3 13 4V6" fill="none"/>
+    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_ATTRS}>
+      {/* Folder-ish portfolio with handle */}
+      <path d="M4 8 L 20 8 Q 21 8, 21 9 L 21 19 Q 21 20, 20 20 L 4 20 Q 3 20, 3 19 L 3 9 Q 3 8, 4 8 Z" />
+      <path d="M8 8 Q 8 6, 10 6 L 14 6 Q 16 6, 16 8" />
     </svg>
   ),
 };
@@ -93,14 +106,24 @@ export function Taskbar() {
   const apps = isMobile ? DOCK_APPS_MOBILE : DOCK_APPS;
 
   return (
-    <div className="absolute bottom-5 left-1/2 z-[600] -translate-x-1/2 md:bottom-2">
+    <div
+      className="notebook-dock absolute bottom-5 left-1/2 z-[600] -translate-x-1/2 md:bottom-3"
+      style={{
+        // The entire dock tilts a tiny amount so it looks placed, not
+        // rendered. Deterministic so every reload is the same.
+        transform: "translateX(-50%) rotate(-0.4deg)",
+      }}
+    >
       <div
-        className="flex items-center justify-center gap-1.5 border-2 px-3 py-3 md:w-auto md:gap-1.5 md:px-2.5 md:py-1.5"
+        className="flex items-center justify-center gap-1.5 border px-3 py-3 md:w-auto md:gap-2 md:px-3 md:py-2"
         style={{
           background: "var(--color-dock-bg)",
-          borderColor: "var(--color-dock-border)",
+          borderColor: "var(--color-border-strong)",
           width: isMobile ? "calc(100vw - 16px)" : undefined,
           maxWidth: "calc(100vw - 12px)",
+          // Paper card shadow — slightly irregular offset + soft spread
+          boxShadow:
+            "2px 4px 0 rgba(40,25,5,0.14), 5px 8px 16px rgba(40,25,5,0.18), 0 1px 0 rgba(255,255,255,0.5) inset",
         }}
       >
         {apps.map((app) => {

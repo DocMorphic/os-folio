@@ -46,10 +46,20 @@ export function MenuBar() {
   return (
     <div
       ref={menuRef}
-      className="relative z-[600] flex h-[34px] items-stretch justify-between border-b pr-3"
+      className="notebook-tape relative z-[600] flex h-[38px] items-stretch justify-between border-b pr-3"
       style={{
         background: "var(--color-menubar-bg)",
         borderColor: "var(--color-menubar-border)",
+        // Washi-tape treatment:
+        //  - vertical gradient (like tape catching light from above)
+        //  - faint repeating vertical stripes (tape fibers)
+        //  - drop shadow underneath (the tape is "above" the page)
+        //  - slight negative rotation (tape stuck down a hair crooked)
+        backgroundImage:
+          "linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.05) 100%), repeating-linear-gradient(90deg, transparent 0 18px, rgba(0,0,0,0.022) 18px 19px)",
+        boxShadow:
+          "0 3px 0 rgba(40,25,5,0.08), 0 6px 14px rgba(40,25,5,0.14)",
+        fontFamily: "var(--font-kalam), cursive",
       }}
     >
       {/* Left: Logo + Portfolio menu + File + View */}
