@@ -297,6 +297,23 @@ export function TerminalApp() {
       s.snake.unshift(nextHead);
       s.score += 1;
       s.food = spawnFood(s.snake);
+
+      // Speed up gradually: every 3 points, knock 8ms off the tick.
+      // Floor at 55ms so it never goes faster than ~18 cells/s.
+      const SPEED_UP_EVERY = 3;
+      const SPEED_UP_AMOUNT = 8;
+      const MIN_SPEED_MS = 55;
+      if (
+        s.score % SPEED_UP_EVERY === 0 &&
+        s.speedMs > MIN_SPEED_MS
+      ) {
+        s.speedMs = Math.max(MIN_SPEED_MS, s.speedMs - SPEED_UP_AMOUNT);
+        // Restart the interval so the next tick fires at the new cadence.
+        if (snakeTickRef.current != null) {
+          window.clearInterval(snakeTickRef.current);
+          snakeTickRef.current = window.setInterval(tickSnake, s.speedMs);
+        }
+      }
     } else {
       s.snake.unshift(nextHead);
       s.snake.pop();

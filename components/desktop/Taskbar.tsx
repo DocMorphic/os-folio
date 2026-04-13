@@ -95,7 +95,7 @@ export function Taskbar() {
   return (
     <div className="absolute bottom-5 left-1/2 z-[600] -translate-x-1/2 md:bottom-2">
       <div
-        className="flex items-center justify-center gap-1.5 border-2 px-3 py-3 md:w-auto md:gap-2 md:px-3 md:py-2"
+        className="flex items-center justify-center gap-1.5 border-2 px-3 py-3 md:w-auto md:gap-1.5 md:px-2.5 md:py-1.5"
         style={{
           background: "var(--color-dock-bg)",
           borderColor: "var(--color-dock-border)",
@@ -126,7 +126,7 @@ export function Taskbar() {
               </div>
 
               <button
-                className="flex h-10 w-10 items-center justify-center border-2 transition-colors md:h-12 md:w-12"
+                className="flex h-10 w-10 items-center justify-center border-2 transition-colors md:h-10 md:w-10"
                 style={{
                   background: isFocused ? "var(--color-button-dark-hover)" : "var(--color-button-dark)",
                   borderColor: "var(--color-border-strong)",
@@ -144,7 +144,7 @@ export function Taskbar() {
                 }}
                 aria-label={app.title}
               >
-                <span className="scale-[0.8] md:scale-100">
+                <span className="scale-[0.8] md:scale-[0.9]">
                   {DOCK_ICONS[app.id] || <span className="text-sm text-white">{app.icon}</span>}
                 </span>
               </button>
