@@ -4,6 +4,8 @@ interface WindowTitleBarProps {
   title: string;
   isFocused: boolean;
   isMaximized?: boolean;
+  /** When false, cursor falls back to default (no drag affordance). */
+  draggable?: boolean;
   itemCount?: number;
   statusText?: string;
   showMinimize?: boolean;
@@ -20,6 +22,7 @@ export function WindowTitleBar({
   title,
   isFocused,
   isMaximized = false,
+  draggable = true,
   itemCount,
   statusText,
   showMinimize = true,
@@ -36,7 +39,9 @@ export function WindowTitleBar({
 
   return (
     <div
-      className="flex h-9 shrink-0 cursor-move items-center justify-between border-b-2 pl-3 pr-1.5"
+      className={`flex h-9 shrink-0 items-center justify-between border-b-2 pl-3 pr-1.5 ${
+        draggable ? "cursor-move" : "cursor-default"
+      }`}
       style={{
         background: "var(--color-titlebar)",
         borderColor: "var(--color-border-strong)",

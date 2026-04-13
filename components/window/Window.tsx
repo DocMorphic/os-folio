@@ -1,10 +1,23 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useWindowManager } from "@/hooks/use-window-manager";
 import { APP_REGISTRY } from "@/lib/constants";
 import { WindowTitleBar } from "./WindowTitleBar";
 import { WindowContent } from "./WindowContent";
+
+const MOBILE_BREAKPOINT = 768;
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
 
 interface WindowProps {
   appId: string;
@@ -59,11 +72,18 @@ export function Window({
 
   const isFocused = getFocusedAppId() === appId;
   const statusText = windowStatuses[appId];
+  const isMobile = useIsMobile();
 
   // === Drag handlers — direct DOM writes during move ===
   const handleDragDown = useCallback(
     (e: React.PointerEvent) => {
       if (!windowState) return;
+      // Mobile: windows are forced full-screen anyway, and letting users
+      // accidentally drag them off-screen is broken UX. Just focus + bail.
+      if (isMobile) {
+        focusWindow(appId);
+        return;
+      }
       dragState.current.dragging = true;
       dragState.current.startX = e.clientX;
       dragState.current.startY = e.clientY;
@@ -76,7 +96,7 @@ export function Window({
       } catch {}
       focusWindow(appId);
     },
-    [appId, focusWindow, windowState]
+    [appId, focusWindow, windowState, isMobile]
   );
 
   const handleDragMove = useCallback((e: React.PointerEvent) => {
@@ -213,6 +233,7 @@ export function Window({
         title={appDef.title}
         isFocused={isFocused}
         isMaximized={windowState.isMaximized}
+        draggable={!isMobile}
         itemCount={itemCount}
         statusText={statusText}
         showMinimize={showMinimize}

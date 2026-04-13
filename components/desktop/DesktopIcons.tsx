@@ -54,7 +54,9 @@ const DEFAULT_POSITIONS: Record<string, IconPos> = {
   contact: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 3 },
   about: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 4 },
   buildlog: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 5 },
-  llm: { x: GRID_OFFSET_X, y: GRID_OFFSET_Y + GRID_ROW_H * 6 },
+  // llm sits at the top of column 2 so it never clips off the bottom of
+  // shorter viewports (iPad landscape, narrow laptop windows).
+  llm: { x: GRID_OFFSET_X + GRID_COL_W, y: GRID_OFFSET_Y + GRID_ROW_H * 0 },
 };
 
 const ICON_WIDTH = 104;
@@ -276,21 +278,27 @@ function DraggableIcon({ item, position, onOpen, onDrop }: DraggableIconProps) {
     [onDrop, onOpen]
   );
 
-  // Compose style: during drag, position is written directly to DOM (rAF)
-  // and we only toggle opacity. On drop, React sets the snapped left/top
-  // and the `animating` class adds a transition so it "pops" into place
-  // with a bouncy spring-ish overshoot.
+  // Compose style. Normally React renders with the committed `position`
+  // from state, and direct-DOM rAF writes take over during the drag. The
+  // tricky moment is the re-render triggered by setIsDragging(true) after
+  // the drag threshold is crossed — at that point React would overwrite
+  // our rAF-written DOM left/top with the STALE `position.x/y`, causing
+  // a one-frame snap-back (the "lag"). Fix: when rendering during an
+  // active drag, read the latest X/Y from dragState.current instead of
+  // from React state so the render matches what rAF just wrote.
+  const renderX = isDragging ? dragState.current.latestX : position.x;
+  const renderY = isDragging ? dragState.current.latestY : position.y;
   const style: React.CSSProperties = {
-    left: position.x,
-    top: position.y,
+    left: renderX,
+    top: renderY,
     width: ICON_WIDTH,
     cursor: "pointer",
     touchAction: "none",
     opacity: isDragging ? 0.45 : 1,
     transition: animating
-      ? "left 0.38s cubic-bezier(0.18, 1.6, 0.42, 0.96), top 0.38s cubic-bezier(0.18, 1.6, 0.42, 0.96), transform 0.42s cubic-bezier(0.18, 1.8, 0.38, 1)"
+      ? "left 0.32s cubic-bezier(0.18, 1.6, 0.42, 0.96), top 0.32s cubic-bezier(0.18, 1.6, 0.42, 0.96), transform 0.36s cubic-bezier(0.18, 1.8, 0.38, 1)"
       : "opacity 0.1s ease-out",
-    transform: animating ? "scale(1.18)" : "scale(1)",
+    transform: animating ? "scale(1.14)" : "scale(1)",
     willChange: isDragging ? "left, top" : undefined,
   };
 
