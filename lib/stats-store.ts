@@ -89,28 +89,34 @@ async function countRows(filter?: string): Promise<number> {
 }
 
 /**
- * Count distinct session_ids with an optional timestamp filter.
- * Uses GET with a specific query to get distinct counts.
+ * Count distinct session_ids since a given timestamp (or all-time if omitted).
+ *
+ * Calls the `count_distinct_sessions(since timestamptz)` Postgres function
+ * via PostgREST's RPC endpoint. Server-side COUNT(DISTINCT) — exact, cheap,
+ * no row-limit cliff.
+ *
+ * If the function doesn't exist in Supabase yet (404), returns 0 and the
+ * Site Stats UI will show zeros for unique visitors until you paste the
+ * SQL from CONTENT_MAP.md into the SQL editor.
  */
-async function countDistinctSessions(filter?: string): Promise<number> {
+async function countDistinctSessions(sinceIso?: string): Promise<number> {
   if (!isConfigured()) return 0;
 
-  // PostgREST doesn't expose COUNT(DISTINCT) directly — fetch distinct session_ids
-  // and count client-side. For a personal portfolio this is fine; for large volumes
-  // you'd create a postgres function.
-  const qs = filter ? `&${filter}` : "";
-  const url = `${SUPABASE_URL}/rest/v1/${TABLE}?select=session_id${qs}&session_id=not.is.null`;
-
+  const url = `${SUPABASE_URL}/rest/v1/rpc/count_distinct_sessions`;
   try {
     const res = await fetch(url, {
-      method: "GET",
+      method: "POST",
       headers: authHeaders(),
+      body: JSON.stringify({ since: sinceIso ?? null }),
       cache: "no-store",
     });
     if (!res.ok) return 0;
-    const rows: Array<{ session_id: string }> = await res.json();
-    const unique = new Set(rows.map((r) => r.session_id));
-    return unique.size;
+    const result = await res.json();
+    // RPC returns a bare number (bigint serializes as JSON number for
+    // values that fit in a JS number, which portfolio-scale is fine)
+    if (typeof result === "number") return result;
+    if (typeof result === "string") return parseInt(result, 10) || 0;
+    return 0;
   } catch {
     return 0;
   }
@@ -147,12 +153,12 @@ export async function getStats(): Promise<StatsResult> {
       countRows(`created_at=gte.${d30Iso}`),
     ]);
 
-    // Unique visitors (distinct session_id)
+    // Unique visitors (distinct session_id) — RPC handles the time filter
     const [uvAll, uvToday, uv7, uv30] = await Promise.all([
-      countDistinctSessions(""),
-      countDistinctSessions(`created_at=gte.${todayIso}`),
-      countDistinctSessions(`created_at=gte.${d7Iso}`),
-      countDistinctSessions(`created_at=gte.${d30Iso}`),
+      countDistinctSessions(),
+      countDistinctSessions(todayIso),
+      countDistinctSessions(d7Iso),
+      countDistinctSessions(d30Iso),
     ]);
 
     return {

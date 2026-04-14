@@ -164,6 +164,31 @@ The contact form is wired to a real backend via `/api/contact` route that uses R
 Database table: `portfolio_visits` (created via SQL editor, RLS policies set).
 Keep-alive: GitHub Action runs every 3 days (`.github/workflows/supabase-keepalive.yml`) to prevent Supabase from pausing the project.
 
+**Dedup semantics (as of the localStorage fix):**
+- The client stores a persistent `visitor-id` UUID in `localStorage` — same device = same ID across tabs, refreshes, and days
+- Tracking fires at most once per (visitor, calendar day). Same visitor refreshing, opening new tabs, or bouncing around during one day creates at most one row
+- "Unique visitors" in Site Stats = `COUNT(DISTINCT session_id)` server-side
+- "Page views" in Site Stats = one row per (visitor, day) pair — a proxy for daily sessions, not raw navigations
+
+**Required one-time SQL (paste into the Supabase SQL editor):**
+
+```sql
+create or replace function count_distinct_sessions(since timestamptz default null)
+returns bigint
+language sql
+security definer
+as $$
+  select count(distinct session_id)
+  from portfolio_visits
+  where session_id is not null
+    and (since is null or created_at >= since);
+$$;
+
+grant execute on function count_distinct_sessions(timestamptz) to anon;
+```
+
+Without this function, the Site Stats unique-visitor numbers show zero. With it, the RPC returns an exact count server-side — no 1000-row PostgREST cap to worry about.
+
 **To swap backend later:** Edit the bodies of `getStats()` and `trackVisit()` in `lib/stats-store.ts`. API routes and UI won't need changes.
 
 ---
