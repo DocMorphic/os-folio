@@ -11,7 +11,7 @@ export const projects: Project[] = [
     category: "Personal",
     year: "2026",
     startDate: "Feb 2026",
-    endDate: "Now",
+    endDate: "Feb 2026",
     github: "https://github.com/DocMorphic/lighthouse",
   },
   {
@@ -24,7 +24,7 @@ export const projects: Project[] = [
     category: "Personal",
     year: "2025",
     startDate: "May 2025",
-    endDate: "May 2025",
+    endDate: "Jun 2025",
   },
   {
     id: "hashi",
@@ -47,9 +47,9 @@ export const projects: Project[] = [
     tags: ["Godot", "GDScript", "Blender", "Game Design"],
     role: "Solo",
     category: "Personal",
-    year: "2025",
-    startDate: "Feb 2025",
-    endDate: "Feb 2025",
+    year: "2026",
+    startDate: "Feb 2026",
+    endDate: "Now",
   },
   {
     id: "os-folio",
