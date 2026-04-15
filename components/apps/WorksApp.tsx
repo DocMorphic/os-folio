@@ -2,13 +2,23 @@
 
 import { projects } from "@/content/projects";
 
-// Map "Sept 2025" / "Nov 2024" / "Now" into a number of months since Jan 2024
+// Map "Sept 2025" / "Nov 2024" / "Now" into a number of months since Jan of START_YEAR
 const MONTH_NAMES: Record<string, number> = {
   jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
   jul: 6, aug: 7, sept: 8, sep: 8, oct: 9, nov: 10, dec: 11,
 };
 const START_YEAR = 2025;
-const TOTAL_MONTHS = 24; // 2 years: 2025, 2026
+const END_YEAR = 2027;
+const TOTAL_MONTHS = (END_YEAR - START_YEAR + 1) * 12; // 36 — 2025, 2026, 2027
+const YEARS = Array.from(
+  { length: END_YEAR - START_YEAR + 1 },
+  (_, i) => START_YEAR + i
+);
+
+// Month offset → CSS percent across the timeline. All positioning is
+// percent-based so the Gantt fills whatever container width the Works
+// window gives it — no horizontal scroll, no dead space on the right.
+const pct = (months: number) => `${(months / TOTAL_MONTHS) * 100}%`;
 
 function toMonthIndex(dateStr: string): number {
   if (dateStr.toLowerCase() === "now") {
@@ -23,7 +33,6 @@ function toMonthIndex(dateStr: string): number {
 
 export function WorksApp() {
   const todayIndex = toMonthIndex("Now");
-  const todayPct = (todayIndex / TOTAL_MONTHS) * 100;
 
   return (
     <div className="flex flex-col gap-5">
@@ -68,23 +77,21 @@ export function WorksApp() {
         </div>
       </div>
 
-      {/* TIMELINE card — fixed names column + horizontally scrolling grid */}
+      {/* TIMELINE card — fixed names column + percent-based grid that
+          fills the available width. */}
       <TimelineCard todayIndex={todayIndex} />
     </div>
   );
 }
 
-// Timeline visual constants
-const MONTH_WIDTH = 32; // px per month in the scrollable strip
+// Timeline visual constants — vertical metrics stay in pixels, horizontal
+// positioning is percent-based via the pct() helper.
 const NAMES_WIDTH = 120; // px — fixed left column for project titles
-const HEADER_H = 32; // px — year header row
-const ROW_H = 34; // px — each project row
-const BAR_H = 22; // px — project bar inside each row (leaves 6px above/below)
+const HEADER_H = 32;     // px — year header row
+const ROW_H = 34;        // px — each project row
+const BAR_H = 22;        // px — project bar inside each row
 
 function TimelineCard({ todayIndex }: { todayIndex: number }) {
-  const totalWidth = TOTAL_MONTHS * MONTH_WIDTH;
-  const todayX = todayIndex * MONTH_WIDTH;
-
   return (
     <div className="border" style={{ borderColor: "var(--color-border-hover)" }}>
       {/* Card header */}
@@ -99,7 +106,7 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
           className="text-[10.5px] font-semibold tracking-wider"
           style={{ color: "var(--color-text-muted)" }}
         >
-          TIMELINE (FROM 2025)
+          TIMELINE ({START_YEAR}–{END_YEAR})
         </span>
       </div>
 
@@ -143,130 +150,133 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
           ))}
         </div>
 
-        {/* RIGHT: horizontally scrolling timeline */}
-        <div className="custom-scrollbar flex-1 overflow-x-auto">
-          <div className="relative" style={{ width: totalWidth }}>
-            {/* Year header row */}
-            <div
-              className="relative border-b"
-              style={{
-                height: HEADER_H,
-                borderColor: "var(--color-border-hover)",
-                background: "var(--color-surface-alt)",
-              }}
-            >
-              {["2025", "2026"].map((year, i) => (
-                <span
-                  key={year}
-                  className="absolute top-1/2 -translate-y-1/2 text-[10.5px] font-semibold tracking-wider"
-                  style={{
-                    color: "var(--color-text-muted)",
-                    left: i * 12 * MONTH_WIDTH + 8,
-                  }}
-                >
-                  {year}
-                </span>
-              ))}
-            </div>
+        {/* RIGHT: percent-based timeline that fills the remaining width.
+            Year labels, grid lines, today marker and bars are all
+            positioned in % of TOTAL_MONTHS. */}
+        <div className="relative flex-1 overflow-hidden">
+          {/* Year header row */}
+          <div
+            className="relative border-b"
+            style={{
+              height: HEADER_H,
+              borderColor: "var(--color-border-hover)",
+              background: "var(--color-surface-alt)",
+            }}
+          >
+            {YEARS.map((year, i) => (
+              <span
+                key={year}
+                className="absolute top-1/2 -translate-y-1/2 text-[10.5px] font-semibold tracking-wider"
+                style={{
+                  color: "var(--color-text-muted)",
+                  left: `calc(${pct(i * 12)} + 8px)`,
+                }}
+              >
+                {year}
+              </span>
+            ))}
+          </div>
 
-            {/* Rows (bars) — one row per project, stacked. The VERTICAL
-                grid lines are drawn across all rows via absolute positioning
-                below. */}
-            <div className="relative">
-              {/* Vertical grid — year boundaries (stronger) */}
-              {[0, 1, 2].map((i) => (
+          {/* Rows (bars) + vertical grid lines */}
+          <div className="relative">
+            {/* Year boundary lines — every 12 months, skipping the 0 edge */}
+            {YEARS.slice(1).map((_, idx) => {
+              const i = idx + 1;
+              return (
                 <div
                   key={`y-${i}`}
                   className="pointer-events-none absolute top-0 bottom-0 w-px"
                   style={{
-                    left: i * 12 * MONTH_WIDTH,
+                    left: pct(i * 12),
                     background: "var(--color-border-hover)",
                   }}
                 />
+              );
+            })}
+
+            {/* Quarter boundary lines — subtler, skipping year boundaries */}
+            {Array.from(
+              { length: Math.floor((TOTAL_MONTHS - 1) / 3) },
+              (_, i) => (i + 1) * 3
+            )
+              .filter((m) => m % 12 !== 0 && m < TOTAL_MONTHS)
+              .map((m) => (
+                <div
+                  key={`q-${m}`}
+                  className="pointer-events-none absolute top-0 bottom-0 w-px"
+                  style={{
+                    left: pct(m),
+                    background: "var(--color-border)",
+                    opacity: 0.6,
+                  }}
+                />
               ))}
-              {/* Vertical grid — quarter boundaries (more subtle) */}
-              {Array.from({ length: 8 })
-                .map((_, i) => (i + 1) * 3)
-                .filter((m) => m % 12 !== 0 && m < TOTAL_MONTHS)
-                .map((m) => (
+
+            {/* Today marker line */}
+            <div
+              className="pointer-events-none absolute top-0 bottom-0"
+              style={{
+                left: pct(todayIndex),
+                width: "2px",
+                background: "var(--color-accent)",
+                opacity: 0.85,
+                zIndex: 2,
+              }}
+            />
+            {/* Today label pinned to top of the marker */}
+            <div
+              className="pointer-events-none absolute"
+              style={{
+                left: pct(todayIndex),
+                top: 2,
+                transform: "translateX(-50%)",
+                background: "var(--color-tag-bg)",
+                color: "var(--color-accent)",
+                fontSize: "9.5px",
+                padding: "1px 6px",
+                border: "1px solid var(--color-accent)",
+                zIndex: 3,
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Today
+            </div>
+
+            {projects.map((p, i) => {
+              const start = toMonthIndex(p.startDate || `Jan ${START_YEAR}`);
+              const end = toMonthIndex(p.endDate || "Now");
+              // Instant projects (start === end) still get a full-month
+              // worth of visible width — reads as "this happened here"
+              // rather than a pinprick next to Lighthouse's multi-month bar.
+              const durationMonths = Math.max(1, Math.abs(end - start));
+
+              return (
+                <div
+                  key={p.id}
+                  className={`relative ${
+                    i !== projects.length - 1 ? "border-b" : ""
+                  }`}
+                  style={{
+                    height: ROW_H,
+                    borderColor: "var(--color-border-hover)",
+                  }}
+                >
                   <div
-                    key={`q-${m}`}
-                    className="pointer-events-none absolute top-0 bottom-0 w-px"
+                    className="absolute"
                     style={{
-                      left: m * MONTH_WIDTH,
-                      background: "var(--color-border)",
+                      left: pct(Math.min(start, end)),
+                      top: (ROW_H - BAR_H) / 2,
+                      width: pct(durationMonths),
+                      height: BAR_H,
+                      background: "var(--color-button-dark)",
                       opacity: 0.6,
+                      zIndex: 1,
                     }}
                   />
-                ))}
-
-              {/* Today marker line */}
-              <div
-                className="pointer-events-none absolute top-0 bottom-0"
-                style={{
-                  left: todayX,
-                  width: "2px",
-                  background: "var(--color-accent)",
-                  opacity: 0.85,
-                  zIndex: 2,
-                }}
-              />
-              {/* Today label pinned to top of the marker */}
-              <div
-                className="pointer-events-none absolute"
-                style={{
-                  left: todayX,
-                  top: 2,
-                  transform: "translateX(-50%)",
-                  background: "var(--color-tag-bg)",
-                  color: "var(--color-accent)",
-                  fontSize: "9.5px",
-                  padding: "1px 6px",
-                  border: "1px solid var(--color-accent)",
-                  zIndex: 3,
-                  fontWeight: 500,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Today
-              </div>
-
-              {projects.map((p, i) => {
-                const start = toMonthIndex(p.startDate || "Jan 2024");
-                const end = toMonthIndex(p.endDate || "Now");
-                const barLeft = Math.min(start, end) * MONTH_WIDTH;
-                // Instant projects (start === end) still get a full-month
-                // worth of visible width — a 10 px dot was misleading, a
-                // full month-block reads as "this happened here".
-                const barWidth = Math.max(MONTH_WIDTH, Math.abs(end - start) * MONTH_WIDTH);
-
-                return (
-                  <div
-                    key={p.id}
-                    className={`relative ${
-                      i !== projects.length - 1 ? "border-b" : ""
-                    }`}
-                    style={{
-                      height: ROW_H,
-                      borderColor: "var(--color-border-hover)",
-                    }}
-                  >
-                    <div
-                      className="absolute"
-                      style={{
-                        left: barLeft,
-                        top: (ROW_H - BAR_H) / 2,
-                        width: barWidth,
-                        height: BAR_H,
-                        background: "var(--color-button-dark)",
-                        opacity: 0.6,
-                        zIndex: 1,
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
