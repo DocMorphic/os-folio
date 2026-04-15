@@ -5,7 +5,7 @@ export const projects: Project[] = [
     id: "lighthouse",
     title: "Lighthouse",
     description:
-      "A mobile navigation app using open-source geospatial data. React Native + Expo for cross-platform, integrating OpenStreetMap to render interactive, scalable maps. In active development.",
+      "A mobile navigation app using open-source geospatial data. React Native + Expo for cross-platform, integrating OpenStreetMap to render interactive, scalable maps. A short focused build shipped in February 2026.",
     tags: ["React Native", "Expo", "OpenStreetMap", "TypeScript"],
     role: "Solo builder",
     category: "Personal",
