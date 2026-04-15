@@ -76,9 +76,10 @@ export function WorksApp() {
 
 // Timeline visual constants
 const MONTH_WIDTH = 32; // px per month in the scrollable strip
-const NAMES_WIDTH = 140; // px — fixed left column for project titles
-const HEADER_H = 36; // px — year header row
-const ROW_H = 42; // px — each project row
+const NAMES_WIDTH = 120; // px — fixed left column for project titles
+const HEADER_H = 32; // px — year header row
+const ROW_H = 34; // px — each project row
+const BAR_H = 22; // px — project bar inside each row (leaves 6px above/below)
 
 function TimelineCard({ todayIndex }: { todayIndex: number }) {
   const totalWidth = TOTAL_MONTHS * MONTH_WIDTH;
@@ -98,15 +99,15 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
           className="text-[10.5px] font-semibold tracking-wider"
           style={{ color: "var(--color-text-muted)" }}
         >
-          TIMELINE (FROM 2024)
+          TIMELINE (FROM 2025)
         </span>
       </div>
 
       <div className="flex">
         {/* LEFT: fixed names column */}
         <div
-          className="w-[140px] shrink-0 border-r"
-          style={{ borderColor: "var(--color-border-hover)" }}
+          className="shrink-0 border-r"
+          style={{ width: NAMES_WIDTH, borderColor: "var(--color-border-hover)" }}
         >
           {/* Names header — matches year header height */}
           <div
@@ -234,7 +235,10 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
                 const start = toMonthIndex(p.startDate || "Jan 2024");
                 const end = toMonthIndex(p.endDate || "Now");
                 const barLeft = Math.min(start, end) * MONTH_WIDTH;
-                const barWidth = Math.max(10, Math.abs(end - start) * MONTH_WIDTH);
+                // Instant projects (start === end) still get a full-month
+                // worth of visible width — a 10 px dot was misleading, a
+                // full month-block reads as "this happened here".
+                const barWidth = Math.max(MONTH_WIDTH, Math.abs(end - start) * MONTH_WIDTH);
 
                 return (
                   <div
@@ -251,9 +255,9 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
                       className="absolute"
                       style={{
                         left: barLeft,
-                        top: (ROW_H - 20) / 2,
+                        top: (ROW_H - BAR_H) / 2,
                         width: barWidth,
-                        height: 20,
+                        height: BAR_H,
                         background: "var(--color-button-dark)",
                         opacity: 0.6,
                         zIndex: 1,
