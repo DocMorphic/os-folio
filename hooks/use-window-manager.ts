@@ -80,14 +80,22 @@ export function useWindowManager(): WindowManagerContextValue {
   return ctx;
 }
 
-function clampPosition(x: number, y: number, w: number, _h: number) {
+function clampPosition(x: number, y: number, w: number, h: number) {
   if (typeof window === "undefined") return { x, y };
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const minX = TITLEBAR_VISIBLE_MIN - w;
   const maxX = vw - TITLEBAR_VISIBLE_MIN;
   const minY = topReserve();
-  const maxY = (vh - MENUBAR_HEIGHT) - 44;
+  // Cap y so the window's bottom always clears the dock + a margin.
+  // Previously this was `(vh - MENUBAR_HEIGHT) - 44`, which let drag
+  // push windows' bodies under the taskbar. Now we subtract the dock
+  // footprint plus the window's own height so the bottom edge stops
+  // above the dock with a small margin.
+  const maxY = Math.max(
+    minY,
+    vh - MENUBAR_HEIGHT - dockFootprint() - h - MIN_MARGIN
+  );
   return {
     x: Math.max(minX, Math.min(maxX, x)),
     y: Math.max(minY, Math.min(maxY, y)),
@@ -166,6 +174,14 @@ export function useWindowManagerProvider(): WindowManagerContextValue {
             ) +
             offset
         );
+
+        // Cap defaultY so the window bottom always clears the dock, even
+        // if the cascade `offset` pushed us down. Previously the 4th/5th
+        // window in a stack could land with its bottom tucked behind the
+        // taskbar on desktop (offset = 72px, 96px).
+        const maxDefaultY =
+          vh - MENUBAR_HEIGHT - dockFootprint() - clampedSize.height - MIN_MARGIN;
+        defaultY = Math.min(defaultY, Math.max(MIN_MARGIN + reserve, maxDefaultY));
       }
 
       const pos = clampPosition(defaultX, defaultY, clampedSize.width, clampedSize.height);
