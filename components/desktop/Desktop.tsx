@@ -107,6 +107,12 @@ export function Desktop() {
 
   useFolderImagePreload();
 
+  // Auto-open the About window so first-time visitors land on the bio.
+  useEffect(() => {
+    windowManager.openWindow("about");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Type ↑ ↑ ↓ ↓ anywhere on the page (outside of inputs) to unlock
   // llm.txt so the viewer window opens on click.
   useEffect(() => {
