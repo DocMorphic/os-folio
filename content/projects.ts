@@ -15,6 +15,20 @@ export const projects: Project[] = [
     github: "https://github.com/DocMorphic/lighthouse",
   },
   {
+    id: "aliquot",
+    title: "Aliquot",
+    description:
+      "An AI-powered experiment planner that turns plain-language scientific hypotheses into operational experiment plans — protocols with citations, verified reagent catalog numbers, equipment lists, budgets, timelines, and per-claim confidence scores. Built on a desktop-OS interface where each experiment is its own workspace.",
+    tags: ["Next.js", "Claude AI", "Supabase", "Tavily"],
+    role: "Solo",
+    category: "Personal",
+    year: "2026",
+    startDate: "Apr 2026",
+    endDate: "Apr 2026",
+    github: "https://github.com/DocMorphic/aliquot",
+    link: "https://aliquot-pi.vercel.app",
+  },
+  {
     id: "freelance-ez",
     title: "Freelance-ez",
     description:
