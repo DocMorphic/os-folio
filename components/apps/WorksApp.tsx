@@ -1,6 +1,7 @@
 "use client";
 
 import { projects } from "@/content/projects";
+import { useWindowManager } from "@/hooks/use-window-manager";
 
 // Map "Sept 2025" / "Nov 2024" / "Now" into a number of months since Jan of START_YEAR
 const MONTH_NAMES: Record<string, number> = {
@@ -32,6 +33,7 @@ function toMonthIndex(dateStr: string): number {
 }
 
 export function WorksApp() {
+  const { openWindow } = useWindowManager();
   const todayIndex = toMonthIndex("Now");
 
   return (
@@ -61,18 +63,19 @@ export function WorksApp() {
         </div>
         <div>
           {projects.map((p, i) => (
-            <div
+            <button
               key={p.id}
-              className={`px-4 py-2 text-[12.5px] transition-colors hover:bg-[var(--color-surface-hover)] ${
+              className={`block w-full cursor-pointer px-4 py-2 text-left text-[12.5px] transition-colors hover:bg-[var(--color-surface-hover)] ${
                 i !== projects.length - 1 ? "border-b" : ""
               }`}
               style={{ borderColor: "var(--color-border-hover)", color: "var(--color-text)" }}
+              onClick={() => openWindow("project-detail", { projectId: p.id, projectSlide: 0 })}
             >
               <span className="font-semibold">{p.title}</span>
               <span style={{ color: "var(--color-text-muted)" }}>
                 {" "}· {p.role} · {p.startDate} – {p.endDate} · {p.category}
               </span>
-            </div>
+            </button>
           ))}
         </div>
       </div>
@@ -92,6 +95,7 @@ const ROW_H = 34;        // px — each project row
 const BAR_H = 22;        // px — project bar inside each row
 
 function TimelineCard({ todayIndex }: { todayIndex: number }) {
+  const { openWindow } = useWindowManager();
   return (
     <div className="border" style={{ borderColor: "var(--color-border-hover)" }}>
       {/* Card header */}
@@ -262,8 +266,8 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
                     borderColor: "var(--color-border-hover)",
                   }}
                 >
-                  <div
-                    className="absolute"
+                  <button
+                    className="absolute cursor-pointer transition-opacity hover:opacity-80"
                     style={{
                       left: pct(Math.min(start, end)),
                       top: (ROW_H - BAR_H) / 2,
@@ -273,6 +277,8 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
                       opacity: 0.6,
                       zIndex: 1,
                     }}
+                    onClick={() => openWindow("project-detail", { projectId: p.id, projectSlide: 0 })}
+                    aria-label={`View ${p.title} details`}
                   />
                 </div>
               );
