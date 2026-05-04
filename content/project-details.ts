@@ -44,7 +44,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       },
     ],
     visuals: [
-      // User will add screenshots of aliquot-pi.vercel.app
+      { type: "image", src: "/projects/aliquot/desktop.png", caption: "Hypothesis input with desktop workspace" },
     ],
     references: [
       { label: "Live Demo", href: "https://aliquot-pi.vercel.app" },
@@ -98,7 +98,8 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       },
     ],
     visuals: [
-      // User will provide screenshots or skip
+      { type: "image", src: "/projects/freelance-ez/landing.png", caption: "Landing page" },
+      { type: "image", src: "/projects/freelance-ez/create.png", caption: "Sign in" },
     ],
   },
 
@@ -123,7 +124,8 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       },
     ],
     visuals: [
-      // Will capture from hashiii.vercel.app
+      { type: "image", src: "/projects/hashi/puzzle.png", caption: "Puzzle grid with numbered islands" },
+      { type: "image", src: "/projects/hashi/landing.png", caption: "Landing with difficulty selection" },
     ],
     references: [
       { label: "Play Hashi", href: "https://hashiii.vercel.app" },
