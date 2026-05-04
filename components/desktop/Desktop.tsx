@@ -62,6 +62,7 @@ import {
 } from "@/components/apps/TextEditorApp";
 import { SiteStatsApp } from "@/components/apps/SiteStatsApp";
 import { ImageViewerApp } from "@/components/apps/ImageViewerApp";
+import { ProjectDetailApp } from "@/components/apps/ProjectDetailApp";
 
 const APP_COMPONENTS: Record<string, React.ComponentType> = {
   about: AboutApp,
@@ -84,6 +85,7 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
   "austria-notes": AustriaNotesApp,
   "india-notes": IndiaNotesApp,
   "image-viewer": ImageViewerApp,
+  "project-detail": ProjectDetailApp,
   stats: SiteStatsApp,
 };
 

@@ -213,6 +213,17 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     showInExplorer: false,
     showInTaskbar: true,
   },
+  "project-detail": {
+    id: "project-detail",
+    title: "Project",
+    icon: "📋",
+    defaultWidth: 1080,
+    defaultHeight: 680,
+    defaultX: 120,
+    defaultY: 40,
+    showInExplorer: false,
+    showInTaskbar: true,
+  },
   "search-result": {
     id: "search-result",
     title: "Search action complete",

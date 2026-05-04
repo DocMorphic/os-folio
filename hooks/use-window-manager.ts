@@ -51,6 +51,10 @@ export interface WindowContext {
   searchMessage?: string;
   /** Original query that was searched. */
   searchQuery?: string;
+  /** Which project the project-detail window should display. */
+  projectId?: string;
+  /** Current slide index in the project-detail visual carousel. */
+  projectSlide?: number;
 }
 
 interface WindowManagerContextValue {
