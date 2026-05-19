@@ -8,6 +8,17 @@ export const currentFocus: string[] = [
 
 export const experience: ExperienceEntry[] = [
   {
+    id: "stealth-startup",
+    company: "Stealth Startup",
+    role: "SWE Intern",
+    employmentType: "Internship",
+    location: "Germany",
+    startDate: "May 2026",
+    endDate: "Present",
+    description: "Making visible change with voice AI.",
+    tags: ["Voice AI", "Software Engineering"],
+  },
+  {
     id: "scaile",
     company: "SCAILE",
     role: "Working Student",
@@ -15,19 +26,19 @@ export const experience: ExperienceEntry[] = [
     location: "Germany",
     locationType: "Remote",
     startDate: "Mar 2026",
-    endDate: "Present",
+    endDate: "May 2026",
     description: "Building products curated to client requests.",
     tags: ["Next.js", "TypeScript", "React"],
   },
   {
     id: "freelance",
     company: "Independent",
-    role: "Freelance Full-Stack Engineer",
+    role: "Freelance Web Dev",
     employmentType: "Freelance",
     location: "India & Germany",
     locationType: "Remote",
     startDate: "May 2025",
-    endDate: "Present",
+    endDate: "Mar 2026",
     description:
       "Designing and building websites for small local startups — focused on responsiveness, speed, and accessibility. Delivering custom solutions in React, Next.js, Java, Python, and Node.js for clients in education and retail.",
     tags: ["React", "Next.js", "Python", "Node.js"],
@@ -35,7 +46,7 @@ export const experience: ExperienceEntry[] = [
   {
     id: "sigment-ai",
     company: "Sigment AI",
-    role: "Software Engineering Intern",
+    role: "SWE Intern",
     employmentType: "Internship",
     locationType: "Remote",
     startDate: "Jul 2025",
