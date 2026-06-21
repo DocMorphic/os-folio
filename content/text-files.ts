@@ -41,9 +41,11 @@ Germany) is more substantive than most CS students' final-year projects.
 
 ## What he's working on right now (2026)
 
-**Y Combinator Startup School 2026 (Paris)** — Selected for YC's
-Startup School 2026 cohort in Paris (June 2026). YC's curriculum for
-early-stage founders, in person.
+**Y Combinator Startup School 2026 (Paris)** — Selected as a
+hand-picked attendee for YC's one-day Startup School at Station F on
+June 29, 2026. A curated gathering of builders, engineers, and
+founders from across Europe with YC partners and speakers from
+Supabase, Datadog, Posthog, and AMI.
 
 **Marginalia** — A Chrome extension that turns offline review meetings
 into code-grounded fix plans. During a screen-shared review, it lets

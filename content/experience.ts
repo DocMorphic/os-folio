@@ -89,14 +89,14 @@ export const education: ExperienceEntry[] = [
     id: "yc-startup-school-2026",
     company: "Y Combinator",
     role: "Startup School 2026",
-    employmentType: "Founder Program",
+    employmentType: "Hand-picked Attendee",
     location: "Paris, France",
     locationType: "On-site",
     startDate: "Jun 2026",
     endDate: "Jun 2026",
     description:
-      "Selected for Y Combinator's Startup School 2026 cohort, Paris edition — YC's curriculum for early-stage founders covering company building, product, fundraising, and team formation.",
-    tags: ["Y Combinator", "Founder", "Startup School"],
+      "Selected as a hand-picked attendee for YC's one-day Startup School at Station F on June 29, 2026 — a curated gathering of builders, engineers, and founders from across Europe, with talks and sessions from YC partners and founders of Supabase, Datadog, Posthog, AMI, and others.",
+    tags: ["Y Combinator", "Founder", "Startup School", "Station F"],
   },
   {
     id: "tum",
