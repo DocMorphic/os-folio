@@ -17,13 +17,15 @@ function useIsMobile() {
   return isMobile;
 }
 
-type IconType = "folder" | "envelope" | "file" | "clipboard";
+type IconType = "folder" | "envelope" | "file" | "clipboard" | "pdf";
 
 interface DesktopItem {
   id: string;
   label: string;
   type: IconType;
   appId?: string;
+  downloadHref?: string;
+  downloadName?: string;
 }
 
 interface IconPos {
@@ -39,6 +41,13 @@ const DESKTOP_ITEMS: DesktopItem[] = [
   { id: "about", label: "about.txt", type: "file", appId: "about-txt" },
   { id: "buildlog", label: "build-log.md", type: "file", appId: "build-log-md" },
   { id: "llm", label: "llm.txt", type: "clipboard" },
+  {
+    id: "cv",
+    label: "CV.pdf",
+    type: "pdf",
+    downloadHref: "/cv.pdf",
+    downloadName: "Dharmay Dave CV.pdf",
+  },
 ];
 
 // Initial layout coords — used only to seed the default positions.
@@ -58,6 +67,7 @@ const DEFAULT_POSITIONS: Record<string, IconPos> = {
   // llm sits at the top of column 2 so it never clips off the bottom of
   // shorter viewports (iPad landscape, narrow laptop windows).
   llm: { x: INITIAL_X + INITIAL_COL_STEP, y: INITIAL_Y + INITIAL_ROW_STEP * 0 },
+  cv: { x: INITIAL_X + INITIAL_COL_STEP, y: INITIAL_Y + INITIAL_ROW_STEP * 1 },
 };
 
 const ICON_WIDTH = 104;
@@ -107,6 +117,18 @@ export function DesktopIcons({ llmUnlocked, onToast }: DesktopIconsProps) {
           })
           .catch(() => onToast("clipboard blocked"));
         if (llmUnlocked) openWindow("llm-txt");
+        return;
+      }
+      // Downloadable files (e.g. the CV) trigger a browser download.
+      if (item.downloadHref) {
+        const a = document.createElement("a");
+        a.href = item.downloadHref;
+        a.download = item.downloadName ?? "";
+        a.rel = "noopener";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        onToast(`${item.label} downloaded`);
         return;
       }
       if (item.appId) openWindow(item.appId);
@@ -327,6 +349,33 @@ function DesktopIconSvg({ type, size = 58 }: { type: IconType; size?: number }) 
         <line x1="16" y1="23" x2="34" y2="23" stroke="#9c8260" strokeWidth="0.8" />
         <line x1="16" y1="28" x2="36" y2="28" stroke="#9c8260" strokeWidth="0.8" />
         <line x1="16" y1="33" x2="30" y2="33" stroke="#9c8260" strokeWidth="0.8" />
+      </svg>
+    );
+  }
+
+  if (type === "pdf") {
+    return (
+      <svg width={size} height={height} viewBox="0 0 56 48" fill="none" className="pointer-events-none">
+        {/* Document silhouette with corner fold, same palette as the file icon */}
+        <path d="M11 4 L36 4 L45 13 L45 44 L11 44 Z" fill="#f5e7d0" stroke="#3a2817" strokeWidth="0.8" />
+        <path d="M36 4 L36 13 L45 13" fill="#d4c4a8" stroke="#3a2817" strokeWidth="0.8" />
+        {/* Faint text lines hinting at body copy */}
+        <line x1="17" y1="22" x2="34" y2="22" stroke="#9c8260" strokeWidth="0.8" />
+        <line x1="17" y1="26" x2="32" y2="26" stroke="#9c8260" strokeWidth="0.8" />
+        {/* Red PDF badge stamped at the bottom */}
+        <rect x="14" y="33" width="22" height="9" fill="#c93030" stroke="#3a2817" strokeWidth="0.8" />
+        <text
+          x="25"
+          y="40"
+          textAnchor="middle"
+          fontFamily="ui-monospace, Menlo, monospace"
+          fontSize="6.6"
+          fontWeight="700"
+          fill="#ffffff"
+          letterSpacing="0.5"
+        >
+          PDF
+        </text>
       </svg>
     );
   }

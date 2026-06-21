@@ -232,6 +232,26 @@ export function Desktop() {
                     </Window>
                   );
                 })}
+
+              {/* Backdrop blur while Search is open. Sits just below the
+                  Search window so wallpaper + other windows blur, but the
+                  Search window itself stays sharp. */}
+              {(() => {
+                const searchWin = windowManager.windows.find(
+                  (w) => w.appId === "search" && w.isOpen && !w.isMinimized
+                );
+                if (!searchWin) return null;
+                return (
+                  <div
+                    className="pointer-events-none absolute inset-0 backdrop-blur-md"
+                    style={{
+                      zIndex: searchWin.zIndex - 1,
+                      background: "rgba(0, 0, 0, 0.08)",
+                    }}
+                    aria-hidden="true"
+                  />
+                );
+              })()}
             </div>
           </div>
 

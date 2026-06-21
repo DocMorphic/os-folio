@@ -78,4 +78,30 @@ export const projects: Project[] = [
     endDate: "Now",
     github: "https://github.com/DocMorphic/os-folio",
   },
+  {
+    id: "marginalia",
+    title: "Marginalia",
+    description:
+      "Turns offline review meetings into code-grounded fix plans. A Chrome extension listens during a screen-shared review, lets the reviewer circle UI elements with their mouse, and grounds each circle to the exact file and line that rendered it. At meeting end, Marginalia synthesizes a structured fix plan ready to hand to Claude Code.",
+    tags: ["Chrome Extension", "WXT", "React 19", "Claude Opus 4.7", "Vite Plugin"],
+    role: "Solo",
+    category: "Personal",
+    year: "2026",
+    startDate: "May 2026",
+    endDate: "Now",
+    github: "https://github.com/DocMorphic/marginalia",
+  },
+  {
+    id: "pyra",
+    title: "Pyra",
+    description:
+      "A digital-twin O&M console for utility-scale solar plants. Doesn't just detect underperformance — explains it, quantifies the euros lost (curtailment-adjusted), and turns each finding into an actionable maintenance ticket. Built around a per-inverter ML model that learns each unit's healthy behavior and a Claude-powered Copilot grounded on validated analytics.",
+    tags: ["Next.js 16", "Python", "scikit-learn", "Claude Sonnet 4.6", "pvlib", "DuckDB"],
+    role: "Solo (Hackathon)",
+    category: "Personal",
+    year: "2026",
+    startDate: "Jun 2026",
+    endDate: "Jun 2026",
+    github: "https://github.com/DocMorphic/pyra",
+  },
 ];

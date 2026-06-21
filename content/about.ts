@@ -9,8 +9,9 @@ export const aboutData = {
   ],
   currentFocus: [
     "Computer Science at TU Munich (Studienkolleg).",
-    "Freelance full-stack work for startups in Germany and India.",
-    "Building Lighthouse — a React Native navigation app using OpenStreetMap.",
+    "Heading to Y Combinator Startup School 2026 in Paris (June 2026).",
+    "Building Marginalia — a Chrome extension that grounds review-meeting feedback to the exact source line of code.",
+    "Building Pyra — a digital-twin O&M console for utility-scale solar plants.",
   ],
   socials: {
     github: "https://github.com/DocMorphic",

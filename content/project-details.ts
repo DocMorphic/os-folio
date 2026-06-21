@@ -132,6 +132,78 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     ],
   },
 
+  marginalia: {
+    projectId: "marginalia",
+    tasks: ["Chrome Extension", "Vite Plugin", "Synthesis Engine", "Developer Tooling"],
+    sections: [
+      {
+        title: "Origin",
+        content:
+          "Every review meeting I sat in on had the same problem. The reviewer points at the screen, circles things with their cursor, says \"this card needs more breathing room\" — and by the time everyone is back at their desks, half the context is gone. The Loom recording exists, but nobody re-watches it. I wanted the act of circling something on a live page to produce a fix the engineer could actually run with — grounded in the exact file and line that rendered the element being pointed at.",
+      },
+      {
+        title: "What It Does",
+        content:
+          "Marginalia is a Chrome and Edge extension that runs during a screen-shared review meeting. The reviewer's mouse becomes a pencil — they draw circles directly on the page being reviewed. The extension records each circle along with the live mic transcript, then maps every circle to the exact source file and line that produced the DOM element underneath it. At meeting end, Marginalia produces a FixPlan.md with one entry per circle, ready to paste straight into Claude Code.",
+      },
+      {
+        title: "Architecture",
+        content:
+          "Built as a pnpm monorepo. The Chrome extension (WXT + React 19) handles the live drawing overlay, transcription, and meeting lifecycle. A Vite plugin wraps react-dev-inspector to inject __source attributes into every JSX element so each circle can be traced back to a specific line of code. An agent dev CLI auto-patches the target app's build config and exposes a local WebSocket. At meeting end, a synthesis package built on Claude Opus 4.7 (1M context, prompt-cached) takes the circles + transcript + source attribution and produces the final structured fix plan.",
+      },
+      {
+        title: "Stack",
+        content:
+          "Chrome/Edge extension built with WXT, React 19, TypeScript. CLI in Node + TypeScript. Synthesis powered by Claude Opus 4.7 with prompt caching. Vite plugin wrapping @react-dev-inspector/babel-plugin. pnpm monorepo, Biome for lint/format, vitest for tests. A separate phase-b repo stress-tests srcLoc attribution against diverse JSX patterns.",
+      },
+    ],
+    visuals: [
+      // Phase 0 — UI screenshots forthcoming.
+    ],
+    references: [
+      { label: "GitHub", href: "https://github.com/DocMorphic/marginalia" },
+    ],
+  },
+
+  pyra: {
+    projectId: "pyra",
+    tasks: ["ML Pipeline", "Data Engineering", "AI Copilot", "Financial Modeling"],
+    sections: [
+      {
+        title: "Origin",
+        content:
+          "Built in 48 hours for the Invertix Energy × AI Hackathon, specifically the EnerParc \"Digital Twins of Solar Plants\" challenge. Most underperformance dashboards in solar O&M tell you something is wrong but stop there. I wanted a console that explained why, quantified the loss in euros, and handed the operator a ready-to-action work order.",
+      },
+      {
+        title: "What It Does",
+        content:
+          "PyraOS is a desktop-OS-style console with six views: Plant Map (geographic + status), Loss Ledger (euros lost per inverter, curtailment-adjusted, validated against grid meter), Inverter Inspector (deep-dive on a single unit with what-if forecasts), Fault Timeline (operator-readable history), O&M Copilot (Claude-powered assistant grounded on validated analytics), and Executive Report (auto-generated narrative for plant managers). On the Plant A demo: 65 inverters, ~€122k / 944 MWh lost-energy recovered, 30 of 46 maintenance tickets preceded by a 3-day median lead time. Upload any PV monitoring CSV/Parquet/XLSX and the pipeline auto-detects column roles and runs server-side.",
+      },
+      {
+        title: "Architecture",
+        content:
+          "Python pipeline (pandas, pyarrow, duckdb, pvlib, scikit-learn) trains a per-inverter HistGradientBoosting model on each unit's healthy year, then benchmarks the full 10-year history. Output is compact JSON artifacts that the Next.js UI streams over server-sent events. The Copilot uses Anthropic's SDK with prompt caching, and is grounded only on the validated analytics layer — never raw data — so it can't hallucinate inverter IDs or fault codes that don't exist. IEC 61724 reconciliation against grid meter prevents over-claiming.",
+      },
+      {
+        title: "Stack",
+        content:
+          "Next.js 16 + React 19 + Tailwind 4 + TypeScript on the frontend with uplot for the charts. Node.js SSE runner for the pipeline. Python 3.9 for analytics (pandas, pyarrow, duckdb, scikit-learn, pvlib, scipy). Claude Sonnet 4.6 for the O&M Copilot with prompt caching enabled.",
+      },
+    ],
+    visuals: [
+      { type: "video", src: "/projects/pyra/pyra-demo.webm", caption: "Pyra walkthrough — Plant Map to Executive Report" },
+      { type: "image", src: "/projects/pyra/plant-map.png", caption: "Plant Map — 65 inverters, 1.79 MWp, live status" },
+      { type: "image", src: "/projects/pyra/loss-ledger.png", caption: "Loss Ledger — €121k / 944 MWh lost-energy recovered" },
+      { type: "image", src: "/projects/pyra/inverter-inspector.png", caption: "Inverter Inspector — per-unit deep-dive vs expected" },
+      { type: "image", src: "/projects/pyra/fault-timeline.png", caption: "Fault Timeline — operator-readable history" },
+      { type: "image", src: "/projects/pyra/copilot.png", caption: "O&M Copilot — Claude grounded on validated analytics" },
+      { type: "image", src: "/projects/pyra/executive-report.png", caption: "Executive Report — auto-generated narrative for plant managers" },
+    ],
+    references: [
+      { label: "GitHub", href: "https://github.com/DocMorphic/pyra" },
+    ],
+  },
+
   framed: {
     projectId: "framed",
     tasks: ["Game Design", "Physics Engine", "3D Modeling", "Combat System"],

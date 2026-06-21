@@ -2,8 +2,9 @@ import type { ExperienceEntry } from "@/lib/types";
 
 export const currentFocus: string[] = [
   "Computer Science at TU Munich (Studienkolleg).",
-  "Freelance full-stack work for startups in Germany and India.",
-  "Building Lighthouse — a React Native navigation app using OpenStreetMap.",
+  "Heading to Y Combinator Startup School 2026 in Paris (June 2026).",
+  "Building Marginalia — a Chrome extension that grounds review-meeting feedback to the exact source line of code.",
+  "Building Pyra — a digital-twin O&M console for utility-scale solar plants.",
 ];
 
 export const experience: ExperienceEntry[] = [
@@ -84,6 +85,19 @@ export const experience: ExperienceEntry[] = [
 ];
 
 export const education: ExperienceEntry[] = [
+  {
+    id: "yc-startup-school-2026",
+    company: "Y Combinator",
+    role: "Startup School 2026",
+    employmentType: "Founder Program",
+    location: "Paris, France",
+    locationType: "On-site",
+    startDate: "Jun 2026",
+    endDate: "Jun 2026",
+    description:
+      "Selected for Y Combinator's Startup School 2026 cohort, Paris edition — YC's curriculum for early-stage founders covering company building, product, fundraising, and team formation.",
+    tags: ["Y Combinator", "Founder", "Startup School"],
+  },
   {
     id: "tum",
     company: "Technical University of Munich",
