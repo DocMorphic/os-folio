@@ -104,10 +104,10 @@ export const education: ExperienceEntry[] = [
     role: "Computer Science",
     employmentType: "Studienkolleg",
     location: "Munich, Germany",
-    startDate: "Oct 2025",
-    endDate: "Present",
+    startDate: "Sep 2025",
+    endDate: "Jun 2026",
     description:
-      "Preparing for the CS undergraduate program. Coursework includes Advanced Mathematics, Higher Physics, Linear Algebra, Calculus, and Introduction to Programming.",
+      "Studienkolleg (the mandatory preparatory year for non-EU students) for the Computer Science undergraduate program. Finished with Note 1.0 (GPA 4.0) — Valedictorian. Coursework in Advanced Mathematics, Higher Physics, Linear Algebra, Calculus, and Introduction to Programming.",
     tags: ["Mathematics", "Physics", "Programming"],
   },
   {
