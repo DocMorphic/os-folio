@@ -3,7 +3,7 @@
 export const ABOUT_TXT = `NOW
 
 Studying Computer Science at TU Munich.
-Heading to Y Combinator Startup School 2026 in Paris.
+Just back from Y Combinator Startup School 2026 in Paris.
 Building Marginalia — a Chrome extension that grounds review-meeting feedback to source code.
 Building Pyra — a digital-twin O&M console for utility-scale solar plants.
 Building and refining Framed, a pvp game with a twist.

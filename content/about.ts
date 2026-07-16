@@ -9,7 +9,7 @@ export const aboutData = {
   ],
   currentFocus: [
     "Computer Science at TU Munich (Studienkolleg).",
-    "Heading to Y Combinator Startup School 2026 in Paris (June 2026).",
+    "Just back from Y Combinator Startup School 2026 in Paris.",
     "Building Marginalia — a Chrome extension that grounds review-meeting feedback to the exact source line of code.",
     "Building Pyra — a digital-twin O&M console for utility-scale solar plants.",
   ],
