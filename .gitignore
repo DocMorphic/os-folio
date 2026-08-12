@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# personal session handoffs — contain private contact details, keep local
+claude-handoff-*.md
