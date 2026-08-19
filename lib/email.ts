@@ -29,6 +29,68 @@ export function isEmailConfigured(): boolean {
   return !!RESEND_API_KEY;
 }
 
+export interface NewBlogPayload {
+  title: string;
+  url: string;
+}
+
+export async function sendNewBlogEmail(payload: NewBlogPayload): Promise<SendResult> {
+  if (!RESEND_API_KEY) {
+    return { ok: false, error: "email backend not configured (missing RESEND_API_KEY)" };
+  }
+
+  const text = [`New blog link submitted on your portfolio`, "", `Title: ${payload.title}`, `URL: ${payload.url}`].join(
+    "\n"
+  );
+
+  const html = `<!DOCTYPE html>
+<html>
+<body style="font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; color: #2c2418;">
+  <div style="max-width: 560px; margin: 0 auto; padding: 24px;">
+    <h2 style="margin: 0 0 16px; font-size: 18px; color: #3a2817;">New blog link submitted</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+      <tr>
+        <td style="padding: 6px 0; font-weight: 600; width: 60px; color: #7a6346;">Title</td>
+        <td style="padding: 6px 0;">${escapeHtml(payload.title)}</td>
+      </tr>
+      <tr>
+        <td style="padding: 6px 0; font-weight: 600; color: #7a6346;">URL</td>
+        <td style="padding: 6px 0;"><a href="${escapeHtml(payload.url)}">${escapeHtml(payload.url)}</a></td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>`;
+
+  try {
+    const res = await fetch(RESEND_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: SENDER,
+        to: [OWNER_EMAIL],
+        subject: `[Portfolio Blog] New link: ${payload.title}`,
+        text,
+        html,
+      }),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => "");
+      console.error("[blog-notify] Resend error", res.status, errBody);
+      return { ok: false, error: `Resend ${res.status}: ${errBody || "unknown error"}` };
+    }
+
+    return { ok: true };
+  } catch (err) {
+    console.error("[blog-notify] Resend fetch error:", err);
+    return { ok: false, error: "network error while sending email" };
+  }
+}
+
 export async function sendContactEmail(payload: ContactPayload): Promise<SendResult> {
   if (!RESEND_API_KEY) {
     return { ok: false, error: "email backend not configured (missing RESEND_API_KEY)" };

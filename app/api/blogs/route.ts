@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { addBlog, listBlogs } from "@/lib/blogs-store";
+import { sendNewBlogEmail } from "@/lib/email";
 
 const MAX_URL_LEN = 1000;
 const MAX_TITLE_LEN = 200;
@@ -72,6 +73,9 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
+
+  // Best-effort notification — a failed email should never fail the submission.
+  sendNewBlogEmail({ title: entry.title, url: entry.url }).catch(() => {});
 
   return NextResponse.json({ blog: entry });
 }

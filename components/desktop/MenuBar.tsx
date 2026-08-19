@@ -87,7 +87,7 @@ export function MenuBar() {
             onClick={() => { openWindow("about"); setOpenMenu(null); }}
           />
           <MenuItem
-            label="Contact Wes"
+            label="Contact Me"
             shortcut={`${CMD_KEY}+Opt+K`}
             onClick={() => { openWindow("contact"); setOpenMenu(null); }}
           />
