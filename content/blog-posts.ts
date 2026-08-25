@@ -2,16 +2,6 @@ import type { BlogPost } from "@/lib/types";
 
 export const blogPosts: BlogPost[] = [
   {
-    id: "lighthouse",
-    title: "Building Lighthouse: A Navigation App with Open-Source Maps",
-    date: "Mar 2026",
-    readingTime: "{{TODO: X min read}}",
-    description:
-      "How I'm building Lighthouse — a React Native + Expo mobile app that ditches Google Maps in favor of OpenStreetMap. Tile rendering, offline caching, and why open-source geospatial data is underrated.",
-    tags: ["react-native", "openstreetmap", "mobile"],
-    slug: "lighthouse-osm",
-  },
-  {
     id: "hashi-graphs",
     title: "Bridge Validation in Hashi: Graph Algorithms in the Browser",
     date: "Feb 2025",

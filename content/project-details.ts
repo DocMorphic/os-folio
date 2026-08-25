@@ -52,57 +52,6 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     ],
   },
 
-  lighthouse: {
-    projectId: "lighthouse",
-    tasks: ["Mobile Development", "Maps Integration", "Offline Caching"],
-    sections: [
-      {
-        title: "Origin",
-        content:
-          "I was curious whether you could build a usable navigation app without depending on Google Maps or Apple Maps. OpenStreetMap has incredibly detailed map data that is completely free and open, but most mobile apps that use it feel like afterthoughts. I wanted to build something that felt native and responsive, using open-source geospatial data as the foundation.",
-      },
-      {
-        title: "What It Does",
-        content:
-          "Lighthouse is a mobile navigation app built with React Native and Expo. It renders interactive, scalable maps using OpenStreetMap tile data. The app handles real-time positioning, map rendering at multiple zoom levels, and basic routing. The focus was on making the map experience feel as smooth as commercial alternatives while keeping the entire data layer open-source.",
-      },
-      {
-        title: "Technical Details",
-        content:
-          "Built with React Native and Expo for cross-platform support on iOS and Android. The map rendering integrates OpenStreetMap tile servers with custom styling. Offline tile caching lets the app work without connectivity for areas you have visited before. The whole thing was a focused weekend build to prove the concept works.",
-      },
-    ],
-    visuals: [
-      // User will provide React Native app screenshots
-    ],
-  },
-
-  "freelance-ez": {
-    projectId: "freelance-ez",
-    tasks: ["AI Integration", "Frontend", "Backend", "Website Generation"],
-    sections: [
-      {
-        title: "Origin",
-        content:
-          "While freelancing for small businesses in India and Germany, I kept running into the same problem: clients wanted a website but did not have the budget for a full development cycle. Tools like Wix and Squarespace exist, but they still require the user to make dozens of design decisions. I wanted to build something where you just describe your business and get a complete website back.",
-      },
-      {
-        title: "What It Does",
-        content:
-          "Freelance-ez is an AI-powered website builder for small and medium businesses. The user inputs their company details, what they do, and the vibe they want. The AI generates a complete multi-page website with copy, layout, and styling. Think Lovable, but specifically targeted at small local businesses that just need something online fast.",
-      },
-      {
-        title: "Technical Details",
-        content:
-          "Built with Next.js and TypeScript on the frontend. Uses Google Gemini 2.5 Pro for content generation and layout decisions. Supabase handles data persistence and user accounts. The generation pipeline produces responsive HTML/CSS that the user can tweak and publish directly.",
-      },
-    ],
-    visuals: [
-      { type: "image", src: "/projects/freelance-ez/landing.png", caption: "Landing page" },
-      { type: "image", src: "/projects/freelance-ez/create.png", caption: "Sign in" },
-    ],
-  },
-
   hashi: {
     projectId: "hashi",
     tasks: ["Algorithms", "Frontend", "Game Logic"],
@@ -129,39 +78,6 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     ],
     references: [
       { label: "Play Hashi", href: "https://hashiii.vercel.app" },
-    ],
-  },
-
-  marginalia: {
-    projectId: "marginalia",
-    tasks: ["Chrome Extension", "Vite Plugin", "Synthesis Engine", "Developer Tooling"],
-    sections: [
-      {
-        title: "Origin",
-        content:
-          "Every review meeting I sat in on had the same problem. The reviewer points at the screen, circles things with their cursor, says \"this card needs more breathing room\" — and by the time everyone is back at their desks, half the context is gone. The Loom recording exists, but nobody re-watches it. I wanted the act of circling something on a live page to produce a fix the engineer could actually run with — grounded in the exact file and line that rendered the element being pointed at.",
-      },
-      {
-        title: "What It Does",
-        content:
-          "Marginalia is a Chrome and Edge extension that runs during a screen-shared review meeting. The reviewer's mouse becomes a pencil — they draw circles directly on the page being reviewed. The extension records each circle along with the live mic transcript, then maps every circle to the exact source file and line that produced the DOM element underneath it. At meeting end, Marginalia produces a FixPlan.md with one entry per circle, ready to paste straight into Claude Code.",
-      },
-      {
-        title: "Architecture",
-        content:
-          "Built as a pnpm monorepo. The Chrome extension (WXT + React 19) handles the live drawing overlay, transcription, and meeting lifecycle. A Vite plugin wraps react-dev-inspector to inject __source attributes into every JSX element so each circle can be traced back to a specific line of code. An agent dev CLI auto-patches the target app's build config and exposes a local WebSocket. At meeting end, a synthesis package built on Claude Opus 4.7 (1M context, prompt-cached) takes the circles + transcript + source attribution and produces the final structured fix plan.",
-      },
-      {
-        title: "Stack",
-        content:
-          "Chrome/Edge extension built with WXT, React 19, TypeScript. CLI in Node + TypeScript. Synthesis powered by Claude Opus 4.7 with prompt caching. Vite plugin wrapping @react-dev-inspector/babel-plugin. pnpm monorepo, Biome for lint/format, vitest for tests. A separate phase-b repo stress-tests srcLoc attribution against diverse JSX patterns.",
-      },
-    ],
-    visuals: [
-      // Phase 0 — UI screenshots forthcoming.
-    ],
-    references: [
-      { label: "GitHub", href: "https://github.com/DocMorphic/marginalia" },
     ],
   },
 

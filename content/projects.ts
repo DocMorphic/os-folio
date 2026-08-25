@@ -2,19 +2,6 @@ import type { Project } from "@/lib/types";
 
 export const projects: Project[] = [
   {
-    id: "lighthouse",
-    title: "Lighthouse",
-    description:
-      "A mobile navigation app using open-source geospatial data. React Native + Expo for cross-platform, integrating OpenStreetMap to render interactive, scalable maps. A short focused build shipped in February 2026.",
-    tags: ["React Native", "Expo", "OpenStreetMap", "TypeScript"],
-    role: "Solo builder",
-    category: "Personal",
-    year: "2026",
-    startDate: "Feb 2026",
-    endDate: "Feb 2026",
-    github: "https://github.com/DocMorphic/lighthouse",
-  },
-  {
     id: "aliquot",
     title: "Aliquot",
     description:
@@ -27,18 +14,6 @@ export const projects: Project[] = [
     endDate: "Apr 2026",
     github: "https://github.com/DocMorphic/aliquot",
     link: "https://aliquot-pi.vercel.app",
-  },
-  {
-    id: "freelance-ez",
-    title: "Freelance-ez",
-    description:
-      "AI-powered website builder for SMEs. Users input their company details and AI generates a complete multi-page website. Like Lovable, but for a targeted audience.",
-    tags: ["Next.js", "TypeScript", "Gemini 2.5 Pro", "Supabase"],
-    role: "Solo",
-    category: "Personal",
-    year: "2025",
-    startDate: "May 2025",
-    endDate: "Jun 2025",
   },
   {
     id: "hashi",
@@ -74,22 +49,9 @@ export const projects: Project[] = [
     role: "Solo",
     category: "Personal",
     year: "2026",
-    startDate: "Apr 2026",
-    endDate: "Now",
-    github: "https://github.com/DocMorphic/os-folio",
-  },
-  {
-    id: "marginalia",
-    title: "Marginalia",
-    description:
-      "Turns offline review meetings into code-grounded fix plans. A Chrome extension listens during a screen-shared review, lets the reviewer circle UI elements with their mouse, and grounds each circle to the exact file and line that rendered it. At meeting end, Marginalia synthesizes a structured fix plan ready to hand to Claude Code.",
-    tags: ["Chrome Extension", "WXT", "React 19", "Claude Opus 4.7", "Vite Plugin"],
-    role: "Solo",
-    category: "Personal",
-    year: "2026",
     startDate: "May 2026",
     endDate: "Now",
-    github: "https://github.com/DocMorphic/marginalia",
+    github: "https://github.com/DocMorphic/os-folio",
   },
   {
     id: "pyra",

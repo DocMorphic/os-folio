@@ -138,8 +138,6 @@ function renderWithLinks(paragraph: string, openWindow: (id: string) => void): R
   const linkMap: Record<string, string> = {
     "game theory": "blog",
     "procedural content generation": "blog",
-    "Lighthouse": "works",
-    "OpenStreetMap": "works",
   };
 
   const keys = Object.keys(linkMap);

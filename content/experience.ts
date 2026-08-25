@@ -1,35 +1,50 @@
 import type { ExperienceEntry } from "@/lib/types";
 
 export const currentFocus: string[] = [
-  "Computer Science at TU Munich (Studienkolleg).",
-  "Visited Y Combinator Startup School 2026 in Paris.",
-  "Building Marginalia — a Chrome extension that grounds review-meeting feedback to the exact source line of code.",
-  "Building Pyra — a digital-twin O&M console for utility-scale solar plants.",
+  "Software Engineering Intern at Lyceum — serverless inference & GPU VMs at scale.",
+  "Incoming BSc Computer Science student at TU Munich, starting Oct 2026.",
+  "Building Framed — a PvP game where the OS's own windows are the arena.",
 ];
 
 export const experience: ExperienceEntry[] = [
   {
-    id: "stealth-startup",
-    company: "Stealth Startup",
-    role: "SWE Intern",
+    id: "lyceum",
+    company: "Lyceum",
+    role: "Software Engineering Intern",
     employmentType: "Internship",
-    location: "Germany",
-    startDate: "May 2026",
+    location: "Munich, Germany",
+    locationType: "On-site",
+    startDate: "Aug 2026",
     endDate: "Present",
-    description: "Making visible change with voice AI.",
-    tags: ["Voice AI", "Software Engineering"],
+    description:
+      "Providing serverless inference and GPU VMs at scale. Focused on resolving the various issues flagged by customers.",
+    tags: ["GPU Infra", "Serverless", "Platform"],
+  },
+  {
+    id: "clar-ai",
+    company: "Clar AI",
+    role: "Software Engineering Intern",
+    employmentType: "Internship",
+    location: "Munich, Germany",
+    locationType: "On-site",
+    startDate: "May 2026",
+    endDate: "Aug 2026",
+    description:
+      "Built infrastructure for Voice AI. Focused on the accuracy and latency of new voice agent workflows.",
+    tags: ["Voice AI", "Infrastructure", "Latency"],
   },
   {
     id: "scaile",
     company: "SCAILE",
-    role: "Working Student",
-    employmentType: "Working Student",
-    location: "Germany",
-    locationType: "Remote",
-    startDate: "Mar 2026",
-    endDate: "May 2026",
-    description: "Building products curated to client requests.",
-    tags: ["Next.js", "TypeScript", "React"],
+    role: "Software Engineering Intern",
+    employmentType: "Internship",
+    location: "Munich, Germany",
+    locationType: "On-site",
+    startDate: "Feb 2026",
+    endDate: "Apr 2026",
+    description:
+      "Worked on GEO (Generative Engine Optimization) for clients — humanizing output and reducing hallucination during mass blog generation.",
+    tags: ["GEO", "Content AI", "SEO"],
   },
   {
     id: "freelance",
@@ -41,20 +56,20 @@ export const experience: ExperienceEntry[] = [
     startDate: "May 2025",
     endDate: "Mar 2026",
     description:
-      "Designing and building websites for small local startups — focused on responsiveness, speed, and accessibility. Delivering custom solutions in React, Next.js, Java, Python, and Node.js for clients in education and retail.",
+      "Designing and building websites for small local businesses, making sure the UX is accessible for the client. Delivering custom solutions in React, Next.js, Java, Python, and Node.js.",
     tags: ["React", "Next.js", "Python", "Node.js"],
   },
   {
     id: "sigment-ai",
     company: "Sigment AI",
-    role: "SWE Intern",
+    role: "Software Engineering Intern",
     employmentType: "Internship",
+    location: "Munich, Germany",
     locationType: "Remote",
     startDate: "Jul 2025",
     endDate: "Sep 2025",
-    description:
-      "Contributed to a unified marketplace platform that simplifies the integration and deployment of autonomous AI agents for business operations.",
-    tags: ["AI Agents", "Platform", "Full-Stack"],
+    description: "Helped build an AI research analyst for hedge funds.",
+    tags: ["AI Agents", "Fintech", "Research"],
   },
   {
     id: "cs-tutor-intern",
@@ -66,37 +81,35 @@ export const experience: ExperienceEntry[] = [
     startDate: "Apr 2025",
     endDate: "Jul 2025",
     description:
-      "Taught programming fundamentals and algorithms to high school students. Helped students prepare for national-level coding competitions and board examinations. Simplified complex CS concepts through real-world analogies and project-based learning.",
-    tags: ["Teaching", "Algorithms", "Mentoring"],
-  },
-  {
-    id: "private-tutor",
-    company: "S. N. Kansagra School",
-    role: "Private Tutor",
-    employmentType: "Part-time",
-    location: "Rajkot, India",
-    locationType: "On-site",
-    startDate: "Sep 2024",
-    endDate: "Dec 2024",
-    description:
-      "Provided personalized tutoring in Mathematics, Physics, and English to secondary school students. Developed structured learning materials and adapted sessions to different learning styles.",
-    tags: ["Teaching", "Math", "Physics"],
+      "Taught programming fundamentals, algorithms, linear algebra, and statistics & probability to high school students. Helped students prepare for national-level coding competitions and board examinations.",
+    tags: ["Teaching", "Algorithms", "Mathematics"],
   },
 ];
 
 export const education: ExperienceEntry[] = [
   {
+    id: "tum-bsc",
+    company: "Technical University of Munich",
+    role: "BSc Computer Science",
+    employmentType: "Incoming Student",
+    location: "Munich, Germany",
+    startDate: "Oct 2026",
+    endDate: "Oct 2026",
+    description: "Incoming first-semester student in the Computer Science bachelor's program.",
+    tags: ["Computer Science", "TU Munich"],
+  },
+  {
     id: "yc-startup-school-2026",
     company: "Y Combinator",
     role: "Startup School 2026",
-    employmentType: "Hand-picked Attendee",
+    employmentType: "Attendee",
     location: "Paris, France",
     locationType: "On-site",
     startDate: "Jun 2026",
     endDate: "Jun 2026",
     description:
-      "Selected as a hand-picked attendee for YC's one-day Startup School at Station F on June 29, 2026 — a curated gathering of builders, engineers, and founders from across Europe, with talks and sessions from YC partners and founders of Supabase, Datadog, Posthog, AMI, and others.",
-    tags: ["Y Combinator", "Founder", "Startup School", "Station F"],
+      "Super inspired by talks from Alexandre Lebrun (CEO at AMI) and James Hawkins (CEO at PostHog).",
+    tags: ["Y Combinator", "Startup School", "Paris"],
   },
   {
     id: "tum",
@@ -105,7 +118,7 @@ export const education: ExperienceEntry[] = [
     employmentType: "Studienkolleg",
     location: "Munich, Germany",
     startDate: "Sep 2025",
-    endDate: "Jun 2026",
+    endDate: "Jul 2026",
     description:
       "Studienkolleg (the mandatory preparatory year for non-EU students) for the Computer Science undergraduate program. Finished with Note 1.0 (GPA 4.0) — Valedictorian. Coursework in Advanced Mathematics, Higher Physics, Linear Algebra, Calculus, and Introduction to Programming.",
     tags: ["Mathematics", "Physics", "Programming"],

@@ -252,7 +252,7 @@ function TimelineCard({ todayIndex }: { todayIndex: number }) {
               const end = toMonthIndex(p.endDate || "Now");
               // Instant projects (start === end) still get a full-month
               // worth of visible width — reads as "this happened here"
-              // rather than a pinprick next to Lighthouse's multi-month bar.
+              // rather than a pinprick next to a multi-month bar.
               const durationMonths = Math.max(1, Math.abs(end - start));
 
               return (
