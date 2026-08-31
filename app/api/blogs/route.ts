@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { addBlog, listBlogs } from "@/lib/blogs-store";
 import { sendNewBlogEmail } from "@/lib/email";
 
@@ -17,7 +18,14 @@ function validateUrl(raw: string): URL | null {
 
 export async function GET() {
   const blogs = await listBlogs();
-  return NextResponse.json({ blogs });
+  return NextResponse.json(
+    { blogs },
+    {
+      headers: {
+        "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+      },
+    }
+  );
 }
 
 export async function POST(req: Request) {
@@ -73,6 +81,8 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
+
+  revalidateTag("blogs", "max");
 
   // Best-effort notification — a failed email should never fail the submission.
   sendNewBlogEmail({ title: entry.title, url: entry.url }).catch(() => {});

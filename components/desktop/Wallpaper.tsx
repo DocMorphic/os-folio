@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTheme } from "@/hooks/use-theme";
 import {
   WALLPAPERS,
@@ -35,6 +36,20 @@ export function Wallpaper() {
   }
 
   // Standard image wallpaper
-  const url = resolveWallpaperUrl(wp, mode, accent);
-  return <div className="desktop-wallpaper" style={{ backgroundImage: `url(${url})` }} />;
+  const url = resolveWallpaperUrl(wp, mode);
+  return (
+    <div className="desktop-wallpaper" aria-hidden="true">
+      <Image
+        key={url}
+        src={url}
+        alt=""
+        fill
+        sizes="100vw"
+        unoptimized
+        loading="eager"
+        fetchPriority="high"
+        style={{ objectFit: "cover", objectPosition: "center" }}
+      />
+    </div>
+  );
 }

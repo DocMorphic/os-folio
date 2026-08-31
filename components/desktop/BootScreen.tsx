@@ -12,10 +12,10 @@ const BOOT_LINES = [
   "dharmay@portfolio:~$ ready",
 ];
 
-const LINE_STAGGER_MS = 180;
-const WELCOME_DELAY_MS = BOOT_LINES.length * LINE_STAGGER_MS + 100;
-const FADE_DELAY_MS = WELCOME_DELAY_MS + 500;
-const UNMOUNT_DELAY_MS = FADE_DELAY_MS + 500;
+const LINE_STAGGER_MS = 55;
+const WELCOME_DELAY_MS = BOOT_LINES.length * LINE_STAGGER_MS + 50;
+const FADE_DELAY_MS = WELCOME_DELAY_MS + 150;
+const UNMOUNT_DELAY_MS = FADE_DELAY_MS + 200;
 
 export function BootScreen() {
   const [visible, setVisible] = useState(true);

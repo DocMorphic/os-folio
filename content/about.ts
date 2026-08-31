@@ -4,8 +4,8 @@ export const aboutData = {
   title: "CS Student & Full-Stack Developer",
   location: "Munich, Germany",
   intro: [
-    "I'm a Computer Science student at the Technical University of Munich, currently working as a Software Engineering Intern at Lyceum. I've previously interned at Clar AI, SCAILE, and Sigment AI, and freelanced building web products for startups in India and Germany. I'm into game theory, procedural content generation, and anything that sits at the edge of human–computer interaction.",
-    "I'm originally from Rajkot, India — valedictorian of my high school, a national-level volleyball and squash player, and now based in Munich. Outside of code, you'll find me on a court, sketching a game mechanic, or prototyping something weird. I don't have a ton of experience yet, but I'm a fast learner and I just want to learn from and work with the best people.",
+    "Based in Munich, I'm a Computer Science student at TU Munich and a software engineer building reliable AI and web products. Right now I work on serverless inference and GPU infrastructure at Lyceum.",
+    "Outside of code, I play volleyball and squash, sketch game mechanics, and prototype strange little ideas.",
   ],
   currentFocus: [
     "Software Engineering Intern at Lyceum — serverless inference & GPU VMs at scale.",

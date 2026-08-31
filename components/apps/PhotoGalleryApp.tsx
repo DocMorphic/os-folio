@@ -133,17 +133,21 @@ function TextFileIcon() {
 
 function ImageFileIcon({ src }: { src?: string }) {
   if (src) {
+    const thumbnailSrc = src.replace(
+      /^\/photos\/([^/]+)\/([^/.]+)\.[^.]+$/,
+      "/photos/thumbnails/$1/$2.webp"
+    );
     return (
       <div
         className="relative h-[26px] w-[26px] overflow-hidden rounded-sm border"
         style={{ borderColor: "var(--color-border)" }}
       >
         <Image
-          src={src}
+          src={thumbnailSrc}
           alt=""
           fill
           sizes="32px"
-          quality={60}
+          unoptimized
           style={{ objectFit: "cover" }}
         />
       </div>

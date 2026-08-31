@@ -95,8 +95,9 @@ export function ImageViewerApp() {
             alt={name}
             fill
             sizes="(max-width: 900px) 90vw, 900px"
-            quality={82}
-            priority
+            unoptimized
+            loading="eager"
+            fetchPriority="high"
             style={{ objectFit: "contain" }}
           />
         </div>

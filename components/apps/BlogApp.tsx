@@ -5,9 +5,34 @@ import type { BlogEntry } from "@/lib/blogs-store";
 
 type SubmitState = "idle" | "sending" | "success" | "error";
 
+let cachedBlogs: BlogEntry[] | null = null;
+let pendingBlogs: Promise<BlogEntry[]> | null = null;
+
+async function loadBlogs(): Promise<BlogEntry[]> {
+  if (cachedBlogs) return cachedBlogs;
+  if (pendingBlogs) return pendingBlogs;
+
+  pendingBlogs = fetch("/api/blogs")
+    .then(async (res) => {
+      if (!res.ok) throw new Error(`Failed to load blogs (${res.status})`);
+      const data = (await res.json()) as { blogs: BlogEntry[] };
+      cachedBlogs = data.blogs ?? [];
+      return cachedBlogs;
+    })
+    .finally(() => {
+      pendingBlogs = null;
+    });
+
+  return pendingBlogs;
+}
+
+export function preloadBlogs() {
+  void loadBlogs().catch(() => {});
+}
+
 export function BlogApp() {
-  const [blogs, setBlogs] = useState<BlogEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [blogs, setBlogs] = useState<BlogEntry[]>(cachedBlogs ?? []);
+  const [loading, setLoading] = useState(cachedBlogs === null);
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
@@ -15,10 +40,8 @@ export function BlogApp() {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch("/api/blogs", { cache: "no-store" });
-      if (!res.ok) return;
-      const data = (await res.json()) as { blogs: BlogEntry[] };
-      setBlogs(data.blogs ?? []);
+      const nextBlogs = await loadBlogs();
+      setBlogs(nextBlogs);
     } catch {
       // silent — UI still shows whatever's in state
     } finally {
@@ -65,7 +88,11 @@ export function BlogApp() {
         return;
       }
       // Optimistic prepend
-      setBlogs((prev) => [data.blog!, ...prev]);
+      setBlogs((prev) => {
+        const nextBlogs = [data.blog!, ...prev];
+        cachedBlogs = nextBlogs;
+        return nextBlogs;
+      });
       setUrl("");
       setTitle("");
       setSubmitState("success");
@@ -91,7 +118,7 @@ export function BlogApp() {
           style={{ color: "var(--color-text-secondary)" }}
         >
           A shared list of posts worth reading. Found something cool? Drop the
-          link below — it'll show up for everyone.
+          link below — it&apos;ll show up for everyone.
         </p>
       </div>
 

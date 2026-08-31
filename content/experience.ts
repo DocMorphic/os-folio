@@ -94,7 +94,7 @@ export const education: ExperienceEntry[] = [
     employmentType: "Incoming Student",
     location: "Munich, Germany",
     startDate: "Oct 2026",
-    endDate: "Oct 2026",
+    endDate: "Aug 2028",
     description: "Incoming first-semester student in the Computer Science bachelor's program.",
     tags: ["Computer Science", "TU Munich"],
   },

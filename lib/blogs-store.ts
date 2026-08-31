@@ -58,7 +58,8 @@ export async function listBlogs(): Promise<BlogEntry[]> {
     const res = await fetch(url, {
       method: "GET",
       headers: authHeaders(),
-      cache: "no-store",
+      cache: "force-cache",
+      next: { revalidate: 300, tags: ["blogs"] },
     });
     if (!res.ok) return [];
     const rows = (await res.json()) as BlogRow[];

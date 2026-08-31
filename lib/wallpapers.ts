@@ -72,12 +72,17 @@ export const THEME_SOLID_DARK: Record<string, string> = {
  */
 export function resolveWallpaperUrl(
   wp: WallpaperOption,
-  mode: "light" | "dark",
-  _accent: "orange" | "green" | "blue" | "purple"
+  mode: "light" | "dark"
 ): string {
   if (wp.kind === "theme-solid") return "";
   if (mode === "dark" && wp.darkUrl) return wp.darkUrl;
   return wp.url;
+}
+
+/** Lossless, display-sized preview. The full wallpaper always uses the original file. */
+export function resolveWallpaperThumbnailUrl(url: string): string {
+  const fileName = url.split("/").pop()?.replace(/\.[^.]+$/, ".webp");
+  return fileName ? `/wallpapers/thumbnails/${fileName}` : url;
 }
 
 /**

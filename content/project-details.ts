@@ -14,6 +14,10 @@ export interface ProjectDetail {
   tasks: string[];
   sections: ProjectSection[];
   visuals: ProjectVisual[];
+  diagram?: {
+    title: string;
+    nodes: string[];
+  };
   references?: { label: string; href: string }[];
 }
 
@@ -46,6 +50,17 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     visuals: [
       { type: "image", src: "/projects/aliquot/desktop.png", caption: "Hypothesis input with desktop workspace" },
     ],
+    diagram: {
+      title: "Experiment planning pipeline",
+      nodes: [
+        "Hypothesis",
+        "Validate & classify",
+        "Literature check",
+        "Vendor search",
+        "Plan synthesis",
+        "Confidence verification",
+      ],
+    },
     references: [
       { label: "Live Demo", href: "https://aliquot-pi.vercel.app" },
       { label: "GitHub", href: "https://github.com/DocMorphic/aliquot" },
@@ -76,6 +91,16 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       { type: "image", src: "/projects/hashi/puzzle.png", caption: "Puzzle grid with numbered islands" },
       { type: "image", src: "/projects/hashi/landing.png", caption: "Landing with difficulty selection" },
     ],
+    diagram: {
+      title: "Puzzle validation flow",
+      nodes: [
+        "Puzzle state",
+        "Constraint graph",
+        "Degree validation",
+        "Connectivity check",
+        "Solved state",
+      ],
+    },
     references: [
       { label: "Play Hashi", href: "https://hashiii.vercel.app" },
     ],
@@ -115,6 +140,16 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       { type: "image", src: "/projects/pyra/copilot.png", caption: "O&M Copilot — Claude grounded on validated analytics" },
       { type: "image", src: "/projects/pyra/executive-report.png", caption: "Executive Report — auto-generated narrative for plant managers" },
     ],
+    diagram: {
+      title: "Validated analytics architecture",
+      nodes: [
+        "Monitoring files",
+        "Schema detector",
+        "Per-inverter ML",
+        "Validated analytics",
+        "Copilot & reports",
+      ],
+    },
     references: [
       { label: "GitHub", href: "https://github.com/DocMorphic/pyra" },
     ],
@@ -142,6 +177,52 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     ],
     visuals: [
       // User will provide from their other laptop
+    ],
+    diagram: {
+      title: "Combat simulation loop",
+      nodes: [
+        "Player input",
+        "Combat state",
+        "Dynamic window bounds",
+        "Collision resolution",
+        "Rendered arena",
+      ],
+    },
+  },
+
+  "os-folio": {
+    projectId: "os-folio",
+    tasks: ["Product Design", "Frontend", "Window Management", "Analytics"],
+    sections: [
+      {
+        title: "Origin",
+        content:
+          "I wanted a portfolio that behaved like a place you could explore, not a stack of sections. The desktop metaphor makes projects, writing, photos, settings, and contact details feel like small tools instead of navigation destinations.",
+      },
+      {
+        title: "What It Does",
+        content:
+          "The site provides draggable, resizable, minimizable windows; keyboard shortcuts; a taskbar and menu bar; searchable content; theme and wallpaper controls; a working terminal; and Supabase-backed site statistics and shared blog links.",
+      },
+      {
+        title: "Architecture",
+        content:
+          "A typed app registry defines every window and its default bounds. A React window-manager hook owns focus, z-index, position, size, and per-window context. Content stays in TypeScript modules while small Next.js route handlers connect the contact, blog, title-fetching, and analytics features to external services.",
+      },
+    ],
+    visuals: [],
+    diagram: {
+      title: "Desktop application flow",
+      nodes: [
+        "Next.js shell",
+        "App registry",
+        "Window manager",
+        "Desktop apps",
+        "Supabase APIs",
+      ],
+    },
+    references: [
+      { label: "GitHub", href: "https://github.com/DocMorphic/os-folio" },
     ],
   },
 };

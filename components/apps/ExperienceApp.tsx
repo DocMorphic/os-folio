@@ -34,20 +34,20 @@ export function ExperienceApp() {
 
       {/* CAREER TIMELINE card */}
       <Card label="CAREER TIMELINE">
-        <div className="p-4">
-          {experience.map((entry, i) => (
-            <TimelineEntry key={entry.id} entry={entry} isLast={i === experience.length - 1} />
+        <TimelineList>
+          {experience.map((entry) => (
+            <TimelineEntry key={entry.id} entry={entry} />
           ))}
-        </div>
+        </TimelineList>
       </Card>
 
       {/* EDUCATION card */}
       <Card label="EDUCATION">
-        <div className="p-4">
-          {education.map((entry, i) => (
-            <TimelineEntry key={entry.id} entry={entry} isLast={i === education.length - 1} />
+        <TimelineList>
+          {education.map((entry) => (
+            <TimelineEntry key={entry.id} entry={entry} />
           ))}
-        </div>
+        </TimelineList>
       </Card>
     </div>
   );
@@ -75,19 +75,41 @@ function Card({ label, children }: { label: string; children: React.ReactNode })
   );
 }
 
-function TimelineEntry({ entry, isLast }: { entry: ExperienceEntry; isLast: boolean }) {
+function TimelineList({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative flex flex-col gap-3 p-4 pl-9">
+      <div
+        className="pointer-events-none absolute bottom-5 left-[19px] top-5 w-px"
+        style={{ background: "var(--color-border-strong)" }}
+        aria-hidden="true"
+      />
+      {children}
+    </div>
+  );
+}
+
+function TimelineEntry({ entry }: { entry: ExperienceEntry }) {
   return (
     <div
-      className={`flex gap-3 py-3 ${isLast ? "" : "border-b"}`}
-      style={{ borderColor: "var(--color-border)" }}
+      className="relative border px-4 py-3"
+      style={{
+        borderColor: "var(--color-border)",
+        background: "var(--color-surface-solid)",
+      }}
     >
-      {/* Orange dot */}
-      <div className="mt-2 shrink-0">
-        <div className="h-2 w-2" style={{ background: "var(--color-accent)" }} />
-      </div>
+      {/* Timeline marker, centered over the shared rail. */}
+      <div
+        className="absolute left-[-25px] top-[20px] h-3 w-3 border-2"
+        style={{
+          background: "var(--color-accent)",
+          borderColor: "var(--color-surface-solid)",
+          borderRadius: "999px",
+        }}
+        aria-hidden="true"
+      />
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0">
         {/* Row 1: Role · Company · Employment · Current */}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="text-[12.5px] font-semibold" style={{ color: "var(--color-text)" }}>

@@ -13,35 +13,13 @@ import { Wallpaper } from "./Wallpaper";
 import { DesktopIcons } from "./DesktopIcons";
 import { Window } from "@/components/window/Window";
 import { APP_REGISTRY } from "@/lib/constants";
-import { FOLDER_CONTENTS, type FolderItem } from "@/content/folder-files";
+import { FOLDER_CONTENTS } from "@/content/folder-files";
 import { LLM_TXT } from "@/content/text-files";
-
-// Kick off image preloading right after the desktop mounts so thumbnails
-// are cached by the time the user opens a folder window.
-function useFolderImagePreload() {
-  useEffect(() => {
-    const srcs: string[] = [];
-    Object.values(FOLDER_CONTENTS).forEach((folder) => {
-      folder.items.forEach((it: FolderItem) => {
-        if (it.type === "image" && it.src) srcs.push(it.src);
-      });
-    });
-    // Defer past the first paint so boot animation isn't jankier than it
-    // already is.
-    const handle = window.setTimeout(() => {
-      srcs.forEach((src) => {
-        const img = new Image();
-        img.src = src;
-      });
-    }, 300);
-    return () => window.clearTimeout(handle);
-  }, []);
-}
 
 import { AboutApp } from "@/components/apps/AboutApp";
 import { WorksApp } from "@/components/apps/WorksApp";
 import { ExperienceApp } from "@/components/apps/ExperienceApp";
-import { BlogApp } from "@/components/apps/BlogApp";
+import { BlogApp, preloadBlogs } from "@/components/apps/BlogApp";
 import { ContactApp } from "@/components/apps/ContactApp";
 import { TerminalApp } from "@/components/apps/TerminalApp";
 import { SettingsApp } from "@/components/apps/SettingsApp";
@@ -107,7 +85,13 @@ export function Desktop() {
     toastTimerRef.current = window.setTimeout(() => setToast(null), 2200);
   };
 
-  useFolderImagePreload();
+  // Warm the tiny blog payload once the initial desktop paint is complete.
+  // Country images stay lazy: eagerly downloading every original photo here
+  // used to saturate the connection as soon as the site opened.
+  useEffect(() => {
+    const handle = window.setTimeout(preloadBlogs, 600);
+    return () => window.clearTimeout(handle);
+  }, []);
 
   // Auto-open the About window so first-time visitors land on the bio.
   useEffect(() => {
