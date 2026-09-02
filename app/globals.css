@@ -456,6 +456,12 @@ body {
   display: block;
 }
 
+.pixel-cat-facing {
+  display: block;
+  width: 112px;
+  transform-origin: center;
+}
+
 .pixel-companion--walking .pixel-cat {
   animation: pixelCatWalkBob 0.36s steps(4, end) infinite;
 }

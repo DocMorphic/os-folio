@@ -9,22 +9,22 @@ export function AboutApp() {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="flex min-h-0 flex-1 flex-col gap-2.5">
+      <div className="flex min-h-0 flex-1 flex-col gap-3">
         <div>
           <h1
-            className="font-serif-heading flex flex-nowrap items-center gap-x-3 whitespace-nowrap text-[clamp(34px,5vw,48px)] leading-[0.95]"
+            className="font-serif-heading flex flex-nowrap items-center gap-x-3 whitespace-nowrap text-[clamp(48px,5vw,64px)] leading-[0.95]"
             style={{ color: "var(--color-text)" }}
           >
             <span>{aboutData.firstName}</span>
             <span
-              className="h-[2px] w-8 sm:w-12"
+              className="h-[2px] min-w-6 flex-1 sm:max-w-20"
               style={{ background: "var(--color-accent)" }}
               aria-hidden="true"
             />
             <span>{aboutData.lastName}</span>
           </h1>
           <p
-            className="mt-2 text-[9px] font-semibold uppercase tracking-[0.14em]"
+            className="mt-3 text-[11px] font-semibold uppercase tracking-[0.16em]"
             style={{ color: "var(--color-text-muted)" }}
           >
             {aboutData.title} · {aboutData.location}
@@ -32,7 +32,7 @@ export function AboutApp() {
         </div>
 
         <div
-          className="flex max-w-[74ch] flex-col gap-1.5 text-[10.5px] leading-[1.45]"
+          className="flex max-w-[68ch] flex-col gap-2 text-[13px] leading-[1.5]"
           style={{ color: "var(--color-text-secondary)" }}
         >
           <p>{aboutData.intro[0]}</p>
@@ -69,7 +69,7 @@ export function AboutApp() {
 
         <section className="border" style={{ borderColor: "var(--color-border)" }}>
           <h2
-            className="border-b px-3 py-1.5 text-[9px] font-semibold tracking-[0.14em]"
+            className="border-b px-3 py-2 text-[10.5px] font-semibold tracking-[0.16em]"
             style={{
               background: "var(--color-surface-alt)",
               borderColor: "var(--color-border)",
@@ -78,15 +78,15 @@ export function AboutApp() {
           >
             CURRENT FOCUS
           </h2>
-          <ul className="flex flex-col gap-1.5 px-3 py-2">
+          <ul className="flex flex-col gap-1.5 px-3 py-2.5">
             {aboutData.currentFocus.map((item) => (
               <li
                 key={item}
-                className="flex items-start gap-2 text-[10px] leading-[1.4]"
+                className="flex items-start gap-2.5 text-[12px] leading-[1.4]"
                 style={{ color: "var(--color-text-secondary)" }}
               >
                 <span
-                  className="mt-[4px] h-1.5 w-1.5 shrink-0 rounded-full"
+                  className="mt-[5px] h-2 w-2 shrink-0 rounded-full"
                   style={{ background: "var(--color-accent)" }}
                   aria-hidden="true"
                 />
@@ -98,19 +98,19 @@ export function AboutApp() {
 
         <section>
           <h2
-            className="text-[9px] font-semibold tracking-[0.14em]"
+            className="text-[10.5px] font-semibold tracking-[0.16em]"
             style={{ color: "var(--color-text-muted)" }}
           >
             FULL TIMELINE
           </h2>
           <p
-            className="mt-1 text-[10px] leading-[1.4]"
+            className="mt-1.5 text-[12.5px] leading-[1.45]"
             style={{ color: "var(--color-text-secondary)" }}
           >
             The complete work and education story, with the useful details left in.
           </p>
           <button
-            className="mt-2 border px-3 py-1.5 text-[10px] font-medium text-white transition-colors"
+            className="mt-2 border px-4 py-2 text-[12px] font-medium text-white transition-colors"
             style={{
               background: "var(--color-button-dark)",
               borderColor: "var(--color-border-strong)",
@@ -299,11 +299,20 @@ function PixelCompanion() {
           {isSleeping ? (
             <SleepingCat />
           ) : (
-            <StandingCat
-              facingRight={cat.facingRight}
-              walking={cat.behavior === "walking"}
-              walkFrame={cat.walkFrame}
-            />
+            <span
+              className="pixel-cat-facing"
+              style={{
+                display: "block",
+                width: 112,
+                transform: cat.facingRight ? "scaleX(1)" : "scaleX(-1)",
+                transformOrigin: "center",
+              }}
+            >
+              <StandingCat
+                walking={cat.behavior === "walking"}
+                walkFrame={cat.walkFrame}
+              />
+            </span>
           )}
         </button>
       </div>
@@ -312,11 +321,9 @@ function PixelCompanion() {
 }
 
 function StandingCat({
-  facingRight,
   walking,
   walkFrame,
 }: {
-  facingRight: boolean;
   walking: boolean;
   walkFrame: number;
 }) {
@@ -335,7 +342,6 @@ function StandingCat({
       viewBox="0 0 64 40"
       fill="none"
       shapeRendering="crispEdges"
-      style={{ transform: facingRight ? undefined : "scaleX(-1)" }}
       aria-hidden="true"
     >
       <g className="pixel-cat-tail" fill="var(--color-text-muted)">
@@ -354,15 +360,26 @@ function StandingCat({
         <rect x="56" y="14" width="5" height="7" />
       </g>
       <g fill="var(--color-text-muted)">
+        <rect x="4" y="3" width="3" height="2" />
+        <rect x="7" y="5" width="4" height="2" />
         <rect x="19" y="16" width="5" height="4" />
         <rect x="27" y="14" width="4" height="5" />
         <rect x="36" y="17" width="5" height="4" />
         <rect x="48" y="4" width="2" height="4" />
         <rect x="54" y="3" width="2" height="5" />
       </g>
-      <rect x="48" y="12" width="2" height="3" fill="var(--color-surface)" />
-      <rect x="55" y="12" width="2" height="3" fill="var(--color-surface)" />
+      <g fill="var(--color-surface-alt)">
+        <rect x="46" y="4" width="3" height="4" />
+        <rect x="54" y="3" width="3" height="5" />
+        <rect x="22" y="21" width="16" height="5" />
+      </g>
+      <rect x="47" y="11" width="4" height="4" fill="var(--color-text)" />
+      <rect x="54" y="11" width="4" height="4" fill="var(--color-text)" />
+      <rect x="48" y="12" width="2" height="2" fill="var(--color-surface)" />
+      <rect x="55" y="12" width="2" height="2" fill="var(--color-surface)" />
       <rect x="58" y="17" width="3" height="2" fill="var(--color-accent)" />
+      <rect x="43" y="22" width="14" height="2" fill="var(--color-accent)" />
+      <rect x="50" y="24" width="3" height="3" fill="var(--color-border-strong)" />
       <g stroke="var(--color-text-muted)" strokeWidth="1">
         <path d="M57 19H63M57 21H64M54 19H48M54 21H47" />
       </g>
@@ -371,12 +388,16 @@ function StandingCat({
         <rect x="42" y="37" width="9" height="3" />
         <rect x="19" y="28" width="5" height="10" />
         <rect x="17" y="37" width="9" height="3" />
+        <rect x="46" y="38" width="3" height="1" fill="var(--color-surface-alt)" />
+        <rect x="19" y="38" width="3" height="1" fill="var(--color-surface-alt)" />
       </g>
       <g fill="var(--color-text-dim)" style={{ transform: backLegTransform }}>
         <rect x="35" y="28" width="5" height="10" />
         <rect x="33" y="37" width="9" height="3" />
         <rect x="25" y="29" width="5" height="9" />
         <rect x="24" y="37" width="8" height="3" />
+        <rect x="36" y="38" width="3" height="1" fill="var(--color-surface-alt)" />
+        <rect x="26" y="38" width="3" height="1" fill="var(--color-surface-alt)" />
       </g>
     </svg>
   );
@@ -408,8 +429,16 @@ function SleepingCat() {
         <rect x="24" y="16" width="6" height="5" />
         <rect x="32" y="13" width="5" height="5" />
       </g>
+      <g fill="var(--color-surface-alt)">
+        <rect x="8" y="8" width="3" height="4" />
+        <rect x="17" y="8" width="3" height="4" />
+        <rect x="23" y="21" width="12" height="4" />
+      </g>
       <path d="M8 15H12M15 15H19" stroke="var(--color-surface)" strokeWidth="1" />
       <rect x="12" y="18" width="3" height="2" fill="var(--color-accent)" />
+      <rect x="20" y="12" width="3" height="2" fill="var(--color-accent)" />
+      <rect x="43" y="9" width="3" height="2" fill="var(--color-surface-alt)" />
+      <rect x="49" y="13" width="3" height="2" fill="var(--color-surface-alt)" />
     </svg>
   );
 }
