@@ -470,10 +470,6 @@ body {
   transform-origin: center;
 }
 
-.pixel-companion--walking .pixel-cat {
-  animation: pixelCatWalkBob 0.36s steps(4, end) infinite;
-}
-
 .pixel-companion--idle .pixel-cat-tail,
 .pixel-companion--walking .pixel-cat-tail {
   transform-origin: 28px 35px;
@@ -598,11 +594,6 @@ body {
 
 .pixel-companion--facing-left .pixel-cat-steps--1 {
   box-shadow: 10px 1px 0 var(--color-border);
-}
-
-@keyframes pixelCatWalkBob {
-  0%, 50%, 100% { transform: translateY(0); }
-  25%, 75% { transform: translateY(-3px); }
 }
 
 @keyframes pixelCatTail {

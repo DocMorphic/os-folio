@@ -138,7 +138,6 @@ function PixelCompanion() {
   const [showHeart, setShowHeart] = useState(false);
   const [showSpeech, setShowSpeech] = useState(false);
   const xRef = useRef(cat.x);
-  const restartRef = useRef<(() => void) | null>(null);
   const speechTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -147,7 +146,7 @@ function PixelCompanion() {
     }
 
     let active = true;
-    let generation = 0;
+    const generation = 0;
     let timeout: ReturnType<typeof setTimeout> | undefined;
     let frame: number | undefined;
 
@@ -179,7 +178,7 @@ function PixelCompanion() {
         return;
       }
 
-      const duration = Math.max(620, distance * 30);
+      const duration = Math.max(680, distance * 32);
       const startedAt = performance.now();
       update({
         behavior: "walking",
@@ -192,7 +191,7 @@ function PixelCompanion() {
         const travelled = Math.abs(currentX - start);
         update({
           x: currentX,
-          walkFrame: Math.floor(travelled / 3.5) % 2,
+          walkFrame: Math.floor(travelled / 6.25) % 2,
         });
         if (progress < 1) {
           frame = requestAnimationFrame(move);
@@ -208,6 +207,8 @@ function PixelCompanion() {
     const jumpTo = (
       target: number,
       facingRight: boolean,
+      startJumpY: number,
+      endJumpY: number,
       done: () => void,
       run = generation,
     ) => {
@@ -215,20 +216,21 @@ function PixelCompanion() {
       const start = xRef.current;
       const duration = 720;
       const startedAt = performance.now();
-      update({ behavior: "jumping", facingRight, jumpY: 0 });
+      update({ behavior: "jumping", facingRight, jumpY: startJumpY });
 
       const jump = (now: number) => {
         if (!active || run !== generation) return;
         const progress = Math.min(1, (now - startedAt) / duration);
         const currentX = start + (target - start) * progress;
-        const jumpY = Math.sin(Math.PI * progress) * 45;
+        const landingHeight = startJumpY + (endJumpY - startJumpY) * progress;
+        const jumpY = landingHeight + Math.sin(Math.PI * progress) * 28;
         update({ x: currentX, jumpY });
 
         if (progress < 1) {
           frame = requestAnimationFrame(jump);
         } else {
           frame = undefined;
-          update({ x: target, jumpY: 0 });
+          update({ x: target, jumpY: endJumpY });
           done();
         }
       };
@@ -242,10 +244,10 @@ function PixelCompanion() {
 
       if (choice < 0.22) {
         wander(68, () => {
-          jumpTo(78, true, () => {
+          jumpTo(78, true, -27, 45, () => {
             update({ behavior: "boxed" });
             wait(3200 + Math.random() * 2400, () => {
-              jumpTo(70, false, () => {
+              jumpTo(70, false, 45, -27, () => {
                 update({ behavior: "idle", jumpY: 0 });
                 wander(30, () => {
                   update({ behavior: "idle" });
@@ -273,21 +275,6 @@ function PixelCompanion() {
       }, run);
     };
 
-    restartRef.current = () => {
-      generation += 1;
-      clearTimeout(timeout);
-      stopWalking();
-      update({ behavior: "stretching" });
-      const run = generation;
-      wait(700, () => {
-        const target = xRef.current > 48 ? 20 : 68;
-        wander(target, () => {
-          update({ behavior: "idle" });
-          wait(1000, () => chooseNext(run), run);
-        }, run);
-      }, run);
-    };
-
     wait(350, () => {
       const run = generation;
       wander(64, () => {
@@ -298,7 +285,6 @@ function PixelCompanion() {
 
     return () => {
       active = false;
-      restartRef.current = null;
       clearTimeout(timeout);
       if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
       if (frame !== undefined) cancelAnimationFrame(frame);
