@@ -29,6 +29,13 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
+const newsreaderLight = Newsreader({
+  variable: "--font-newsreader-light",
+  subsets: ["latin"],
+  weight: "300",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
@@ -69,7 +76,7 @@ export default function RootLayout({
       data-theme="light"
       data-accent="green"
       suppressHydrationWarning
-      className={`${dmSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${geistMono.variable} ${newsreader.variable} ${newsreaderLight.variable} h-full antialiased`}
     >
       <head>
         <script

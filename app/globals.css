@@ -197,6 +197,7 @@ body {
 }
 
 .about-name-heading {
+  font-family: var(--font-newsreader-light), Georgia, serif;
   font-weight: 300;
   letter-spacing: normal;
 }
