@@ -8,23 +8,23 @@ export function AboutApp() {
   const { openWindow } = useWindowManager();
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <div className="custom-scrollbar flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col gap-2.5">
         <div>
           <h1
-            className="font-serif-heading flex flex-wrap items-center gap-x-4 text-[clamp(38px,8vw,64px)] leading-[0.95]"
+            className="font-serif-heading flex flex-nowrap items-center gap-x-3 whitespace-nowrap text-[clamp(34px,5vw,48px)] leading-[0.95]"
             style={{ color: "var(--color-text)" }}
           >
             <span>{aboutData.firstName}</span>
             <span
-              className="h-[2px] w-12 sm:w-20"
+              className="h-[2px] w-8 sm:w-12"
               style={{ background: "var(--color-accent)" }}
               aria-hidden="true"
             />
             <span>{aboutData.lastName}</span>
           </h1>
           <p
-            className="mt-3 text-[11px] font-semibold uppercase tracking-[0.16em]"
+            className="mt-2 text-[9px] font-semibold uppercase tracking-[0.14em]"
             style={{ color: "var(--color-text-muted)" }}
           >
             {aboutData.title} · {aboutData.location}
@@ -32,7 +32,7 @@ export function AboutApp() {
         </div>
 
         <div
-          className="flex max-w-[68ch] flex-col gap-3 text-[13px] leading-[1.65]"
+          className="flex max-w-[74ch] flex-col gap-1.5 text-[10.5px] leading-[1.45]"
           style={{ color: "var(--color-text-secondary)" }}
         >
           <p>{aboutData.intro[0]}</p>
@@ -69,7 +69,7 @@ export function AboutApp() {
 
         <section className="border" style={{ borderColor: "var(--color-border)" }}>
           <h2
-            className="border-b px-4 py-2.5 text-[10.5px] font-semibold tracking-[0.16em]"
+            className="border-b px-3 py-1.5 text-[9px] font-semibold tracking-[0.14em]"
             style={{
               background: "var(--color-surface-alt)",
               borderColor: "var(--color-border)",
@@ -78,15 +78,15 @@ export function AboutApp() {
           >
             CURRENT FOCUS
           </h2>
-          <ul className="flex flex-col gap-2.5 p-4">
+          <ul className="flex flex-col gap-1.5 px-3 py-2">
             {aboutData.currentFocus.map((item) => (
               <li
                 key={item}
-                className="flex items-start gap-3 text-[12.5px] leading-[1.55]"
+                className="flex items-start gap-2 text-[10px] leading-[1.4]"
                 style={{ color: "var(--color-text-secondary)" }}
               >
                 <span
-                  className="mt-[7px] h-2 w-2 shrink-0 rounded-full"
+                  className="mt-[4px] h-1.5 w-1.5 shrink-0 rounded-full"
                   style={{ background: "var(--color-accent)" }}
                   aria-hidden="true"
                 />
@@ -98,19 +98,19 @@ export function AboutApp() {
 
         <section>
           <h2
-            className="text-[10.5px] font-semibold tracking-[0.16em]"
+            className="text-[9px] font-semibold tracking-[0.14em]"
             style={{ color: "var(--color-text-muted)" }}
           >
             FULL TIMELINE
           </h2>
           <p
-            className="mt-2 text-[12.5px] leading-[1.55]"
+            className="mt-1 text-[10px] leading-[1.4]"
             style={{ color: "var(--color-text-secondary)" }}
           >
             The complete work and education story, with the useful details left in.
           </p>
           <button
-            className="mt-3 border px-4 py-2 text-[12px] font-medium text-white transition-colors"
+            className="mt-2 border px-3 py-1.5 text-[10px] font-medium text-white transition-colors"
             style={{
               background: "var(--color-button-dark)",
               borderColor: "var(--color-border-strong)",
@@ -179,7 +179,7 @@ function PixelCompanion() {
         return;
       }
 
-      const duration = Math.max(700, distance * 42);
+      const duration = Math.max(620, distance * 30);
       const startedAt = performance.now();
       update({
         behavior: "walking",
@@ -211,7 +211,7 @@ function PixelCompanion() {
       if (!active || run !== generation) return;
       const choice = Math.random();
 
-      if (choice < 0.28) {
+      if (choice < 0.22) {
         wander(78, () => {
           update({ behavior: "sleeping", facingRight: true });
           wait(3200 + Math.random() * 2800, () => {
@@ -222,13 +222,15 @@ function PixelCompanion() {
         return;
       }
 
-      if (choice < 0.48) {
+      if (choice < 0.34) {
         update({ behavior: "stretching" });
         wait(900, () => chooseNext(run), run);
         return;
       }
 
-      const target = 8 + Math.random() * 68;
+      const target = xRef.current > 47
+        ? 13 + Math.random() * 22
+        : 62 + Math.random() * 19;
       wander(target, () => {
         update({ behavior: "idle" });
         wait(900 + Math.random() * 1700, () => chooseNext(run), run);
@@ -276,14 +278,17 @@ function PixelCompanion() {
   const isSleeping = cat.behavior === "sleeping";
 
   return (
-    <div className="pixel-companion-stage mt-3 h-[148px] shrink-0 overflow-hidden" aria-label="Interactive pixel cat area">
+    <div className="pixel-companion-stage mt-2 h-[116px] shrink-0 overflow-hidden" aria-label="Interactive pixel cat area">
       <div className="pixel-cat-bed" aria-hidden="true" />
       <div
-        className={`pixel-companion pixel-companion--${cat.behavior}`}
+        className={`pixel-companion pixel-companion--${cat.behavior} pixel-companion--facing-${cat.facingRight ? "right" : "left"}`}
         style={{ left: `${cat.x}%` }}
       >
         {isSleeping && <span className="pixel-cat-zzz" aria-hidden="true">zZz</span>}
         {showHeart && <span className="pixel-cat-heart" aria-hidden="true">♥</span>}
+        {cat.behavior === "walking" && (
+          <span className={`pixel-cat-steps pixel-cat-steps--${cat.walkFrame}`} aria-hidden="true" />
+        )}
         <button
           type="button"
           className="pixel-cat-button"
@@ -315,8 +320,12 @@ function StandingCat({
   walking: boolean;
   walkFrame: number;
 }) {
-  const frontLegY = walking && walkFrame === 0 ? -2 : 0;
-  const backLegY = walking && walkFrame === 1 ? -2 : 0;
+  const frontLegTransform = walking
+    ? walkFrame === 0 ? "translate(2px, -3px)" : "translate(-1px, 0)"
+    : undefined;
+  const backLegTransform = walking
+    ? walkFrame === 1 ? "translate(2px, -3px)" : "translate(-1px, 0)"
+    : undefined;
 
   return (
     <svg
@@ -357,13 +366,13 @@ function StandingCat({
       <g stroke="var(--color-text-muted)" strokeWidth="1">
         <path d="M57 19H63M57 21H64M54 19H48M54 21H47" />
       </g>
-      <g fill="var(--color-text-muted)" style={{ transform: `translateY(${frontLegY}px)` }}>
+      <g fill="var(--color-text-muted)" style={{ transform: frontLegTransform }}>
         <rect x="42" y="27" width="5" height="11" />
         <rect x="42" y="37" width="9" height="3" />
         <rect x="19" y="28" width="5" height="10" />
         <rect x="17" y="37" width="9" height="3" />
       </g>
-      <g fill="var(--color-text-dim)" style={{ transform: `translateY(${backLegY}px)` }}>
+      <g fill="var(--color-text-dim)" style={{ transform: backLegTransform }}>
         <rect x="35" y="28" width="5" height="10" />
         <rect x="33" y="37" width="9" height="3" />
         <rect x="25" y="29" width="5" height="9" />
