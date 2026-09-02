@@ -17,7 +17,7 @@ function resetSystem() {
 }
 
 export function MenuBar() {
-  const time = useClock();
+  const clock = useClock();
   const { mode } = useTheme();
   const {
     openWindow,
@@ -108,27 +108,29 @@ export function MenuBar() {
         </MenuButton>
 
         {/* File Menu */}
-        <MenuButton
-          label="File"
-          isOpen={openMenu === "file"}
-          onClick={() => setOpenMenu(openMenu === "file" ? null : "file")}
-          onHoverOpen={() => setOpenMenu("file")}
-          anyMenuOpen={anyMenuOpen}
-          className="ml-2"
-        >
-          <MenuItem label="New Window" disabled />
-          <MenuItem label="Open..." disabled />
-          <MenuDivider />
-          <MenuItem
-            label="Close Window"
-            shortcut={`${CMD_KEY}+Opt+W`}
-            onClick={() => {
-              if (focusedAppId) closeWindow(focusedAppId);
-              setOpenMenu(null);
-            }}
-            disabled={!focusedAppId}
-          />
-        </MenuButton>
+        <div className="hidden md:flex">
+          <MenuButton
+            label="File"
+            isOpen={openMenu === "file"}
+            onClick={() => setOpenMenu(openMenu === "file" ? null : "file")}
+            onHoverOpen={() => setOpenMenu("file")}
+            anyMenuOpen={anyMenuOpen}
+            className="ml-2"
+          >
+            <MenuItem label="New Window" disabled />
+            <MenuItem label="Open..." disabled />
+            <MenuDivider />
+            <MenuItem
+              label="Close Window"
+              shortcut={`${CMD_KEY}+Opt+W`}
+              onClick={() => {
+                if (focusedAppId) closeWindow(focusedAppId);
+                setOpenMenu(null);
+              }}
+              disabled={!focusedAppId}
+            />
+          </MenuButton>
+        </div>
 
         {/* View Menu */}
         <MenuButton
@@ -185,7 +187,7 @@ export function MenuBar() {
       </div>
 
       {/* Right: Display + Clock */}
-      <div className="flex items-stretch gap-2">
+      <div className="flex shrink-0 items-stretch gap-1 md:gap-2">
         <div className="relative flex items-center">
           <DisplayButton
             isOpen={openMenu === "brightness"}
@@ -196,8 +198,12 @@ export function MenuBar() {
           )}
         </div>
 
-        <span className="flex items-center text-[11.5px]" style={{ color: "var(--color-menubar-text)" }}>
-          {time}
+        <span
+          className="flex items-center whitespace-nowrap text-[11.5px]"
+          style={{ color: "var(--color-menubar-text)" }}
+        >
+          <span className="md:hidden">{clock.time}</span>
+          <span className="hidden md:inline">{clock.full}</span>
         </span>
       </div>
     </div>
@@ -355,4 +361,3 @@ function DisplayButton({ isOpen, onClick }: { isOpen: boolean; onClick: () => vo
     </button>
   );
 }
-

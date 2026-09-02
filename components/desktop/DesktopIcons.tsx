@@ -99,8 +99,22 @@ interface DesktopIconsProps {
 export function DesktopIcons({ llmUnlocked, onToast }: DesktopIconsProps) {
   const { openWindow } = useWindowManager();
   const isMobile = useIsMobile();
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const [showScrollHint, setShowScrollHint] = useState(true);
   // Session-only state — positions reset on refresh
   const [positions, setPositions] = useState<Record<string, IconPos>>(DEFAULT_POSITIONS);
+
+  const updateScrollHint = useCallback(() => {
+    const row = mobileScrollRef.current;
+    if (!row) return;
+    setShowScrollHint(row.scrollLeft + row.clientWidth < row.scrollWidth - 8);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const frame = window.requestAnimationFrame(updateScrollHint);
+    return () => window.cancelAnimationFrame(frame);
+  }, [isMobile, updateScrollHint]);
 
   const handleActivate = useCallback(
     (item: DesktopItem) => {
@@ -140,24 +154,26 @@ export function DesktopIcons({ llmUnlocked, onToast }: DesktopIconsProps) {
   // to the top of the desktop area. Dragging is disabled — tapping opens.
   if (isMobile) {
     return (
-      <>
+      <div className="absolute left-0 right-0 top-0 z-[5]">
         <div
-          className="no-scrollbar absolute left-0 right-0 top-0 z-[5] overflow-x-auto overflow-y-hidden"
+          ref={mobileScrollRef}
+          className="no-scrollbar overflow-x-auto overflow-y-hidden"
           style={{
             WebkitOverflowScrolling: "touch",
             maxWidth: "100vw",
           }}
+          onScroll={updateScrollHint}
         >
-          <div className="flex w-max items-start gap-2 px-3 py-3">
+          <div className="flex w-max items-start gap-1 px-2 py-2.5 pr-10">
             {DESKTOP_ITEMS.map((item) => (
               <button
                 key={item.id}
-                className="flex w-[92px] shrink-0 flex-col items-center gap-1.5 px-1 py-1 select-none"
+                className="flex w-[78px] shrink-0 flex-col items-center gap-1 px-0.5 py-1 select-none"
                 onClick={() => handleActivate(item)}
               >
-                <DesktopIconSvg type={item.type} size={60} />
+                <DesktopIconSvg type={item.type} size={50} />
                 <span
-                  className="w-full truncate text-center text-[12px] font-medium leading-[1.2]"
+                  className="w-full truncate text-center text-[11.5px] font-medium leading-[1.2]"
                   style={{
                     color: "var(--color-desktop-label)",
                     textShadow: "1px 1px 2px rgba(0,0,0,0.5), 0 0 3px rgba(0,0,0,0.3)",
@@ -169,7 +185,26 @@ export function DesktopIcons({ llmUnlocked, onToast }: DesktopIconsProps) {
             ))}
           </div>
         </div>
-      </>
+
+        {showScrollHint && (
+          <button
+            type="button"
+            className="mobile-icon-scroll-hint absolute right-1 top-[24px] flex h-9 w-7 items-center justify-center border"
+            style={{
+              color: "var(--color-text)",
+              background: "var(--color-surface-solid)",
+              borderColor: "var(--color-border-strong)",
+              boxShadow: "-5px 0 8px color-mix(in srgb, var(--color-bg) 75%, transparent)",
+            }}
+            onClick={() => mobileScrollRef.current?.scrollBy({ left: 220, behavior: "smooth" })}
+            aria-label="Scroll desktop icons right"
+          >
+            <svg width="14" height="18" viewBox="0 0 14 18" fill="none" aria-hidden="true">
+              <path d="M4 3L10 9L4 15" stroke="currentColor" strokeWidth="2" strokeLinecap="square" />
+            </svg>
+          </button>
+        )}
+      </div>
     );
   }
 

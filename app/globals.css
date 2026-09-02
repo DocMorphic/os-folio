@@ -324,6 +324,15 @@ body {
   background: rgba(255, 255, 255, 0.12);
 }
 
+.mobile-icon-scroll-hint svg {
+  animation: mobileScrollNudge 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes mobileScrollNudge {
+  from { transform: translateX(-2px); }
+  to { transform: translateX(2px); }
+}
+
 /* === Boot screen === */
 .boot-screen {
   animation: bootFade 0.18s ease-out 0.58s forwards;
@@ -381,6 +390,7 @@ body {
   .boot-screen { opacity: 0; pointer-events: none; }
   .cursor-blink { animation: none; }
   .skeleton { animation: none; }
+  .mobile-icon-scroll-hint svg { animation: none; }
 }
 
 /* === Skip to content === */

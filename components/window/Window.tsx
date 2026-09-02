@@ -237,7 +237,7 @@ export function Window({
         itemCount={itemCount}
         statusText={statusText}
         showMinimize={showMinimize}
-        showMaximize={showMaximize}
+        showMaximize={showMaximize && !isMobile}
         onClose={handleClose}
         onMinimize={handleMinimize}
         onMaximize={handleMaximize}
@@ -247,7 +247,7 @@ export function Window({
       />
       <WindowContent>{children}</WindowContent>
 
-      {!noResize && (
+      {!noResize && !isMobile && (
         <div
           className="resize-handle"
           onPointerDown={handleResizeDown}

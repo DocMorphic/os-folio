@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from "react";
 
-export function useClock(): string {
+export interface ClockValue {
+  full: string;
+  time: string;
+}
+
+export function useClock(): ClockValue {
   const [time, setTime] = useState(() => formatTime());
 
   useEffect(() => {
@@ -25,7 +30,7 @@ export function useClock(): string {
   return time;
 }
 
-function formatTime(): string {
+function formatTime(): ClockValue {
   const now = new Date();
   const day = now.toLocaleDateString("en-US", { weekday: "short" });
   const date = now.getDate();
@@ -39,5 +44,8 @@ function formatTime(): string {
     .toLocaleTimeString("en-US", { timeZoneName: "short" })
     .split(" ")
     .pop() || "";
-  return `${day} ${date} ${month} ${time} ${tzAbbr}`;
+  return {
+    full: `${day} ${date} ${month} ${time} ${tzAbbr}`,
+    time,
+  };
 }
