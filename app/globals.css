@@ -456,8 +456,11 @@ body {
 }
 
 .pixel-cat-button:focus-visible {
-  outline: 1px solid var(--color-accent);
-  outline-offset: 3px;
+  outline: none;
+}
+
+.pixel-cat-button:focus-visible .pixel-cat {
+  filter: drop-shadow(0 0 2px var(--color-accent));
 }
 
 .pixel-cat {

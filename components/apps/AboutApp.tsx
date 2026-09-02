@@ -146,7 +146,6 @@ function PixelCompanion() {
     let active = true;
     let generation = 0;
     let timeout: ReturnType<typeof setTimeout> | undefined;
-    let walkTimer: ReturnType<typeof setInterval> | undefined;
     let frame: number | undefined;
 
     const update = (next: Partial<typeof cat>) => {
@@ -165,8 +164,6 @@ function PixelCompanion() {
     const stopWalking = () => {
       if (frame !== undefined) cancelAnimationFrame(frame);
       frame = undefined;
-      clearInterval(walkTimer);
-      walkTimer = undefined;
       update({ walkFrame: 0 });
     };
 
@@ -185,17 +182,15 @@ function PixelCompanion() {
         behavior: "walking",
         facingRight: target > start,
       });
-      walkTimer = setInterval(() => {
-        setCat((current) => ({ ...current, walkFrame: current.walkFrame === 0 ? 1 : 0 }));
-      }, 180);
-
       const move = (now: number) => {
         if (!active || run !== generation) return;
         const progress = Math.min(1, (now - startedAt) / duration);
-        const eased = progress < 0.5
-          ? 2 * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-        update({ x: start + (target - start) * eased });
+        const currentX = start + (target - start) * progress;
+        const travelled = Math.abs(currentX - start);
+        update({
+          x: currentX,
+          walkFrame: Math.floor(travelled / 3.5) % 2,
+        });
         if (progress < 1) {
           frame = requestAnimationFrame(move);
         } else {
@@ -273,7 +268,6 @@ function PixelCompanion() {
       active = false;
       restartRef.current = null;
       clearTimeout(timeout);
-      clearInterval(walkTimer);
       if (frame !== undefined) cancelAnimationFrame(frame);
     };
   }, []);
@@ -358,10 +352,10 @@ function StandingCat({
       aria-hidden="true"
     >
       <image
-        href="/assets/pixel-cat-sprites.png"
-        x={-spriteFrame * 362}
+        href={`/assets/pixel-cat-frame-${spriteFrame}.png`}
+        x="0"
         y="0"
-        width="2172"
+        width="362"
         height="400"
         preserveAspectRatio="none"
         style={{ imageRendering: "pixelated" }}
