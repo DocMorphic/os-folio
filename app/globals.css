@@ -427,7 +427,7 @@ body {
 
 .pixel-companion {
   position: absolute;
-  bottom: 12px;
+  bottom: 4px;
   width: 132px;
   transform: translateX(-50%);
   will-change: left;
@@ -435,7 +435,7 @@ body {
 }
 
 .pixel-companion--boxed {
-  bottom: 25px;
+  bottom: 47px;
   z-index: 4;
 }
 
@@ -445,7 +445,10 @@ body {
 
 .pixel-cat-button {
   position: relative;
-  display: block;
+  display: flex;
+  width: 132px;
+  justify-content: center;
+  align-items: flex-end;
   cursor: pointer;
   border: 0;
   padding: 0;
@@ -495,61 +498,12 @@ body {
 .pixel-cat-box {
   position: absolute;
   left: 78%;
-  bottom: 8px;
-  width: 132px;
-  height: 46px;
+  bottom: 3px;
+  width: 150px;
+  height: 76px;
   transform: translateX(-50%);
-  background: #bd7a3d;
-  border: 2px solid var(--color-border-strong);
-  box-shadow:
-    5px 4px 0 color-mix(in srgb, var(--color-border-strong) 45%, transparent),
-    10px 4px 0 color-mix(in srgb, var(--color-border-strong) 20%, transparent);
+  background: url("/assets/pixel-cat-box.png") center / contain no-repeat;
   z-index: 3;
-}
-
-.pixel-cat-box::before {
-  content: "";
-  position: absolute;
-  left: -11px;
-  top: -19px;
-  width: 77px;
-  height: 21px;
-  border: 2px solid var(--color-border-strong);
-  background: #dda05d;
-  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
-}
-
-.pixel-cat-box::after {
-  content: "";
-  position: absolute;
-  right: -11px;
-  top: -19px;
-  width: 77px;
-  height: 21px;
-  border: 2px solid var(--color-border-strong);
-  background: #dda05d;
-  clip-path: polygon(0 0, 86% 0, 100% 100%, 14% 100%);
-}
-
-.pixel-cat-box-mark {
-  position: absolute;
-  right: 15px;
-  bottom: 11px;
-  width: 18px;
-  height: 9px;
-  border-radius: 50%;
-  background: #8c542d;
-  opacity: 0.62;
-}
-
-.pixel-cat-box-mark::after {
-  content: "";
-  position: absolute;
-  right: -7px;
-  top: 0;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-  border-left: 8px solid #8c542d;
 }
 
 .pixel-cat-zzz,

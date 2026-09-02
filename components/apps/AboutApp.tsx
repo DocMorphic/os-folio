@@ -288,9 +288,7 @@ function PixelCompanion() {
 
   return (
     <div className="pixel-companion-stage mt-2 h-[116px] shrink-0 overflow-hidden" aria-label="Interactive pixel cat area">
-      <div className="pixel-cat-box" aria-hidden="true">
-        <span className="pixel-cat-box-mark" />
-      </div>
+      <div className="pixel-cat-box" aria-hidden="true" />
       <div
         className={`pixel-companion pixel-companion--${cat.behavior} pixel-companion--facing-${cat.facingRight ? "right" : "left"}`}
         style={{ left: `${cat.x}%` }}
@@ -319,6 +317,7 @@ function PixelCompanion() {
               }}
             >
               <StandingCat
+                pose={cat.behavior}
                 walking={cat.behavior === "walking"}
                 walkFrame={cat.walkFrame}
               />
@@ -331,12 +330,15 @@ function PixelCompanion() {
 }
 
 function StandingCat({
+  pose,
   walking,
   walkFrame,
 }: {
+  pose: "idle" | "walking" | "jumping" | "boxed" | "stretching";
   walking: boolean;
   walkFrame: number;
 }) {
+  const spriteFrame = pose === "jumping" ? 3 : pose === "stretching" ? 2 : walking ? walkFrame : 5;
   const frontLegTransform = walking
     ? walkFrame === 0 ? "translate(3px, -4px)" : "translate(-2px, 0)"
     : undefined;
@@ -347,13 +349,24 @@ function StandingCat({
   return (
     <svg
       className="pixel-cat pixel-cat-standing"
-      width="132"
-      height="80"
-      viewBox="0 0 96 58"
+      width="108"
+      height="110"
+      viewBox="0 0 362 400"
       fill="none"
       shapeRendering="crispEdges"
+      style={{ overflow: "hidden" }}
       aria-hidden="true"
     >
+      <image
+        href="/assets/pixel-cat-sprites.png"
+        x={-spriteFrame * 362}
+        y="0"
+        width="2172"
+        height="400"
+        preserveAspectRatio="none"
+        style={{ imageRendering: "pixelated" }}
+      />
+      <g display="none">
       <g className="pixel-cat-tail">
         <path
           d="M28 35H20V32H14V27H9V20H5V10H9V17H13V23H18V27H23V21H29Z"
@@ -407,6 +420,7 @@ function StandingCat({
         <path d="M39 54H48V56H39ZM65 54H75V56H65Z" fill="var(--color-surface-alt)" />
         <path d="M42 56V58M69 56V58M73 56V58" stroke="var(--color-border-strong)" strokeWidth="1" />
       </g>
+      </g>
     </svg>
   );
 }
@@ -415,13 +429,24 @@ function BoxCat() {
   return (
     <svg
       className="pixel-cat pixel-cat-boxed"
-      width="132"
-      height="72"
-      viewBox="0 0 96 54"
+      width="82"
+      height="69"
+      viewBox="0 0 1250 1050"
       fill="none"
       shapeRendering="crispEdges"
+      style={{ overflow: "hidden" }}
       aria-hidden="true"
     >
+      <image
+        href="/assets/pixel-cat-peek.png"
+        x="0"
+        y="0"
+        width="1250"
+        height="1050"
+        preserveAspectRatio="none"
+        style={{ imageRendering: "pixelated" }}
+      />
+      <g display="none">
       <g className="pixel-cat-tail">
         <path d="M25 40H17V36H12V29H9V20H12V14H18V18H15V27H18V32H25Z" fill="var(--color-text-dim)" stroke="var(--color-text)" strokeWidth="2" />
         <path d="M10 20H15V25H10ZM14 30H20V35H14Z" fill="var(--color-text-muted)" />
@@ -444,6 +469,7 @@ function BoxCat() {
       <path d="M36 38H63V41H36Z" fill="var(--color-accent)" />
       <rect x="48" y="41" width="4" height="4" fill="#e4bd58" />
       <path d="M58 32H72M58 35H73M40 32H25M41 35H24" stroke="var(--color-text)" strokeWidth="1" />
+      </g>
     </svg>
   );
 }
