@@ -229,7 +229,7 @@ function PixelCompanion() {
       }
 
       const target = xRef.current > 47
-        ? 13 + Math.random() * 22
+        ? 16 + Math.random() * 20
         : 62 + Math.random() * 19;
       wander(target, () => {
         update({ behavior: "idle" });
@@ -303,7 +303,7 @@ function PixelCompanion() {
               className="pixel-cat-facing"
               style={{
                 display: "block",
-                width: 112,
+                width: 132,
                 transform: cat.facingRight ? "scaleX(1)" : "scaleX(-1)",
                 transformOrigin: "center",
               }}
@@ -328,76 +328,74 @@ function StandingCat({
   walkFrame: number;
 }) {
   const frontLegTransform = walking
-    ? walkFrame === 0 ? "translate(2px, -3px)" : "translate(-1px, 0)"
+    ? walkFrame === 0 ? "translate(3px, -4px)" : "translate(-2px, 0)"
     : undefined;
   const backLegTransform = walking
-    ? walkFrame === 1 ? "translate(2px, -3px)" : "translate(-1px, 0)"
+    ? walkFrame === 1 ? "translate(3px, -4px)" : "translate(-2px, 0)"
     : undefined;
 
   return (
     <svg
       className="pixel-cat pixel-cat-standing"
-      width="112"
-      height="70"
-      viewBox="0 0 64 40"
+      width="132"
+      height="80"
+      viewBox="0 0 96 58"
       fill="none"
       shapeRendering="crispEdges"
       aria-hidden="true"
     >
-      <g className="pixel-cat-tail" fill="var(--color-text-muted)">
-        <rect x="10" y="14" width="9" height="5" />
-        <rect x="6" y="10" width="6" height="6" />
-        <rect x="3" y="5" width="5" height="7" />
-        <rect x="4" y="2" width="8" height="5" />
+      <g className="pixel-cat-tail">
+        <path
+          d="M28 35H20V32H14V27H9V20H5V10H9V17H13V23H18V27H23V21H29Z"
+          fill="var(--color-text-dim)"
+          stroke="var(--color-text-muted)"
+          strokeWidth="2"
+        />
+        <path d="M5 10H9V15H5ZM9 19H14V24H9ZM16 27H22V32H16Z" fill="var(--color-border-strong)" />
       </g>
-      <g fill="var(--color-text-dim)">
-        <rect x="15" y="14" width="34" height="16" />
-        <rect x="20" y="11" width="27" height="5" />
-        <rect x="43" y="8" width="15" height="17" />
-        <rect x="45" y="5" width="12" height="7" />
-        <rect x="45" y="2" width="5" height="7" />
-        <rect x="53" y="1" width="5" height="8" />
-        <rect x="56" y="14" width="5" height="7" />
+      <path
+        d="M25 22H31V18H60V20H68V25H75V43H69V47H28V44H23V29H25Z"
+        fill="var(--color-text-dim)"
+        stroke="var(--color-text-muted)"
+        strokeWidth="2"
+      />
+      <path d="M31 20H60V23H66V30H61V34H31V31H27V25H31Z" fill="var(--color-surface-alt)" opacity="0.6" />
+      <path d="M35 19H41V26H37V29H33V23H35ZM47 19H53V27H49V30H45V23H47ZM59 22H65V29H62V32H58V26H59Z" fill="var(--color-border-strong)" />
+      <path d="M29 36H38V42H29ZM47 35H56V43H47Z" fill="var(--color-text-muted)" opacity="0.75" />
+
+      <path
+        d="M65 14H68V7H73V12H82V6H87V14H91V34H87V38H68V35H63V20H65Z"
+        fill="var(--color-text-dim)"
+        stroke="var(--color-text-muted)"
+        strokeWidth="2"
+      />
+      <path className="pixel-cat-ear" d="M68 8H72V13H68ZM83 7H87V14H83Z" fill="var(--color-surface-alt)" />
+      <path d="M65 25H71V33H76V37H68V34H64Z" fill="var(--color-surface-alt)" />
+      <path d="M69 14H74V18H69ZM81 14H86V18H81Z" fill="var(--color-text)" />
+      <path d="M70 15H72V17H70ZM82 15H84V17H82Z" fill="var(--color-accent)" />
+      <path d="M88 21H93V25H88Z" fill="var(--color-surface-alt)" />
+      <path d="M90 22H94V24H90Z" fill="var(--color-accent)" />
+      <path d="M85 26H90V28H85ZM88 28H90V30H88Z" fill="var(--color-text-muted)" />
+      <path d="M68 10H71V13H68ZM84 9H87V13H84ZM76 11H80V15H76Z" fill="var(--color-border-strong)" />
+
+      <path d="M64 32H89V35H64Z" fill="var(--color-accent)" />
+      <path d="M76 35H81V40H76Z" fill="var(--color-border-strong)" />
+      <rect x="77" y="36" width="3" height="3" fill="var(--color-surface-alt)" />
+
+      <g className="pixel-cat-whiskers" stroke="var(--color-text-muted)" strokeWidth="1">
+        <path d="M88 25H96M87 28H95M70 25H61M71 28H62" />
       </g>
-      <g fill="var(--color-text-muted)">
-        <rect x="4" y="3" width="3" height="2" />
-        <rect x="7" y="5" width="4" height="2" />
-        <rect x="19" y="16" width="5" height="4" />
-        <rect x="27" y="14" width="4" height="5" />
-        <rect x="36" y="17" width="5" height="4" />
-        <rect x="48" y="4" width="2" height="4" />
-        <rect x="54" y="3" width="2" height="5" />
+
+      <g style={{ transform: backLegTransform }}>
+        <path d="M29 43H38V55H42V58H27V54H29Z" fill="var(--color-text-dim)" stroke="var(--color-text-muted)" strokeWidth="2" />
+        <path d="M51 42H59V54H64V58H49V54H51Z" fill="var(--color-text-dim)" stroke="var(--color-text-muted)" strokeWidth="2" />
+        <path d="M29 54H39V56H29ZM51 54H61V56H51Z" fill="var(--color-surface-alt)" />
       </g>
-      <g fill="var(--color-surface-alt)">
-        <rect x="46" y="4" width="3" height="4" />
-        <rect x="54" y="3" width="3" height="5" />
-        <rect x="22" y="21" width="16" height="5" />
-      </g>
-      <rect x="47" y="11" width="4" height="4" fill="var(--color-text)" />
-      <rect x="54" y="11" width="4" height="4" fill="var(--color-text)" />
-      <rect x="48" y="12" width="2" height="2" fill="var(--color-surface)" />
-      <rect x="55" y="12" width="2" height="2" fill="var(--color-surface)" />
-      <rect x="58" y="17" width="3" height="2" fill="var(--color-accent)" />
-      <rect x="43" y="22" width="14" height="2" fill="var(--color-accent)" />
-      <rect x="50" y="24" width="3" height="3" fill="var(--color-border-strong)" />
-      <g stroke="var(--color-text-muted)" strokeWidth="1">
-        <path d="M57 19H63M57 21H64M54 19H48M54 21H47" />
-      </g>
-      <g fill="var(--color-text-muted)" style={{ transform: frontLegTransform }}>
-        <rect x="42" y="27" width="5" height="11" />
-        <rect x="42" y="37" width="9" height="3" />
-        <rect x="19" y="28" width="5" height="10" />
-        <rect x="17" y="37" width="9" height="3" />
-        <rect x="46" y="38" width="3" height="1" fill="var(--color-surface-alt)" />
-        <rect x="19" y="38" width="3" height="1" fill="var(--color-surface-alt)" />
-      </g>
-      <g fill="var(--color-text-dim)" style={{ transform: backLegTransform }}>
-        <rect x="35" y="28" width="5" height="10" />
-        <rect x="33" y="37" width="9" height="3" />
-        <rect x="25" y="29" width="5" height="9" />
-        <rect x="24" y="37" width="8" height="3" />
-        <rect x="36" y="38" width="3" height="1" fill="var(--color-surface-alt)" />
-        <rect x="26" y="38" width="3" height="1" fill="var(--color-surface-alt)" />
+      <g style={{ transform: frontLegTransform }}>
+        <path d="M39 44H47V55H51V58H37V54H39Z" fill="var(--color-text-muted)" stroke="var(--color-text-muted)" strokeWidth="2" />
+        <path d="M65 39H73V54H78V58H63V54H65Z" fill="var(--color-text-muted)" stroke="var(--color-text-muted)" strokeWidth="2" />
+        <path d="M39 54H48V56H39ZM65 54H75V56H65Z" fill="var(--color-surface-alt)" />
+        <path d="M42 56V58M69 56V58M73 56V58" stroke="var(--color-border-strong)" strokeWidth="1" />
       </g>
     </svg>
   );
@@ -407,38 +405,36 @@ function SleepingCat() {
   return (
     <svg
       className="pixel-cat pixel-cat-sleeping"
-      width="112"
-      height="58"
-      viewBox="0 0 56 29"
+      width="132"
+      height="68"
+      viewBox="0 0 88 45"
       fill="none"
       shapeRendering="crispEdges"
       aria-hidden="true"
     >
-      <g fill="var(--color-text-dim)">
-        <rect x="8" y="13" width="39" height="13" />
-        <rect x="5" y="11" width="17" height="13" />
-        <rect x="7" y="7" width="5" height="6" />
-        <rect x="16" y="7" width="5" height="6" />
-        <rect x="36" y="9" width="13" height="14" />
-        <rect x="42" y="12" width="10" height="11" />
-      </g>
-      <g fill="var(--color-text-muted)">
-        <rect x="43" y="7" width="9" height="5" />
-        <rect x="49" y="10" width="5" height="11" />
-        <rect x="42" y="20" width="10" height="4" />
-        <rect x="24" y="16" width="6" height="5" />
-        <rect x="32" y="13" width="5" height="5" />
-      </g>
-      <g fill="var(--color-surface-alt)">
-        <rect x="8" y="8" width="3" height="4" />
-        <rect x="17" y="8" width="3" height="4" />
-        <rect x="23" y="21" width="12" height="4" />
-      </g>
-      <path d="M8 15H12M15 15H19" stroke="var(--color-surface)" strokeWidth="1" />
-      <rect x="12" y="18" width="3" height="2" fill="var(--color-accent)" />
-      <rect x="20" y="12" width="3" height="2" fill="var(--color-accent)" />
-      <rect x="43" y="9" width="3" height="2" fill="var(--color-surface-alt)" />
-      <rect x="49" y="13" width="3" height="2" fill="var(--color-surface-alt)" />
+      <path
+        d="M15 18H22V12H28V17H38V13H44V21H66V17H74V21H80V35H76V40H67V43H21V40H13V35H9V24H12V18Z"
+        fill="var(--color-text-dim)"
+        stroke="var(--color-text-muted)"
+        strokeWidth="2"
+      />
+      <path d="M22 14H27V19H22ZM39 15H44V21H39Z" fill="var(--color-surface-alt)" />
+      <path d="M18 22H24V25H18ZM30 22H36V25H30Z" fill="var(--color-text)" />
+      <path d="M24 27H29V30H24Z" fill="var(--color-accent)" />
+      <path d="M18 31H35V36H18Z" fill="var(--color-surface-alt)" opacity="0.8" />
+      <path d="M43 22H49V29H45V32H41V26H43ZM54 20H60V28H56V31H52V24H54Z" fill="var(--color-border-strong)" />
+      <path d="M33 35H51V40H33Z" fill="var(--color-surface-alt)" />
+      <path d="M17 34H38V37H17Z" fill="var(--color-accent)" />
+      <rect x="27" y="37" width="5" height="5" fill="var(--color-border-strong)" />
+      <path
+        d="M67 18H76V22H82V29H85V37H80V33H76V29H68V33H59V28H67Z"
+        fill="var(--color-text-muted)"
+        stroke="var(--color-text-muted)"
+        strokeWidth="2"
+      />
+      <path d="M75 22H80V26H75ZM79 29H84V33H79Z" fill="var(--color-border-strong)" />
+      <path d="M20 27H25M31 27H36M23 30H18M32 30H38" stroke="var(--color-text-muted)" strokeWidth="1" />
+      <path d="M35 39V42M40 39V42M46 39V42" stroke="var(--color-border-strong)" strokeWidth="1" />
     </svg>
   );
 }

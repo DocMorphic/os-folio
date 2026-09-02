@@ -428,7 +428,7 @@ body {
 .pixel-companion {
   position: absolute;
   bottom: 12px;
-  width: 112px;
+  width: 132px;
   transform: translateX(-50%);
   will-change: left;
   z-index: 2;
@@ -458,7 +458,7 @@ body {
 
 .pixel-cat-facing {
   display: block;
-  width: 112px;
+  width: 132px;
   transform-origin: center;
 }
 
@@ -468,8 +468,13 @@ body {
 
 .pixel-companion--idle .pixel-cat-tail,
 .pixel-companion--walking .pixel-cat-tail {
-  transform-origin: 35px 13px;
+  transform-origin: 28px 35px;
   animation: pixelCatTail 0.62s steps(3, end) infinite alternate;
+}
+
+.pixel-companion--idle .pixel-cat-ear {
+  transform-origin: 70px 13px;
+  animation: pixelCatEarTwitch 3.8s steps(2, end) infinite;
 }
 
 .pixel-companion--stretching .pixel-cat {
@@ -584,6 +589,11 @@ body {
   to { transform: rotate(-12deg) translateY(1px); }
 }
 
+@keyframes pixelCatEarTwitch {
+  0%, 86%, 100% { transform: translateY(0); }
+  90%, 94% { transform: translateY(2px); }
+}
+
 @keyframes pixelCatStretch {
   0%, 100% { transform: scaleX(1) translateY(0); }
   45%, 70% { transform: scaleX(1.1) translate(-3px, 2px); }
@@ -604,6 +614,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .pixel-cat,
   .pixel-cat-tail,
+  .pixel-cat-ear,
   .pixel-cat-zzz,
   .pixel-cat-heart {
     animation: none;
