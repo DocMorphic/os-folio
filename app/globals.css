@@ -446,6 +446,10 @@ body {
   z-index: 5;
 }
 
+.pixel-companion--dropping {
+  z-index: 2;
+}
+
 .pixel-cat-button {
   position: relative;
   display: flex;

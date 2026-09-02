@@ -133,7 +133,7 @@ function PixelCompanion() {
     x: 18,
     jumpY: 0,
     facingRight: true,
-    behavior: "idle" as "idle" | "walking" | "jumping" | "boxed" | "stretching",
+    behavior: "idle" as "idle" | "walking" | "jumping" | "dropping" | "boxed" | "stretching",
     walkFrame: 0,
   });
   const [showHeart, setShowHeart] = useState(false);
@@ -148,6 +148,7 @@ function PixelCompanion() {
   const catButtonRef = useRef<HTMLButtonElement>(null);
   const speechTimerRef = useRef<number | null>(null);
   const meowTimerRef = useRef<number | null>(null);
+  const meowAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!showSpeech) return;
@@ -257,8 +258,9 @@ function PixelCompanion() {
       const start = xRef.current;
       const takeoffDuration = 140;
       const flightDuration = 620;
+      const dropDuration = endJumpY > 0 ? 320 : 0;
       const landingDuration = endJumpY < 0 ? 120 : 0;
-      const duration = takeoffDuration + flightDuration + landingDuration;
+      const duration = takeoffDuration + flightDuration + dropDuration + landingDuration;
       const startedAt = performance.now();
       update({
         behavior: "stretching",
@@ -276,20 +278,32 @@ function PixelCompanion() {
         }
 
         const flightElapsed = elapsed - takeoffDuration;
-        const progress = Math.min(1, flightElapsed / flightDuration);
-        const currentX = start + (target - start) * progress;
-        const landingHeight = startJumpY + (endJumpY - startJumpY) * progress;
-        const jumpY = landingHeight + 4 * 28 * progress * (1 - progress);
-        update({ x: currentX, jumpY, behavior: "jumping" });
-
         if (flightElapsed < flightDuration) {
+          const progress = flightElapsed / flightDuration;
+          const currentX = start + (target - start) * progress;
+          const landingHeight = startJumpY + (endJumpY - startJumpY) * progress;
+          const jumpY = landingHeight + 4 * 28 * progress * (1 - progress);
+          update({ x: currentX, jumpY, behavior: "jumping" });
+          frame = requestAnimationFrame(jump);
+        } else if (dropDuration > 0 && flightElapsed < flightDuration + dropDuration) {
+          const dropProgress = (flightElapsed - flightDuration) / dropDuration;
+          const easedDrop = dropProgress * dropProgress;
+          update({
+            x: target,
+            jumpY: endJumpY + (-38 - endJumpY) * easedDrop,
+            behavior: "dropping",
+          });
           frame = requestAnimationFrame(jump);
         } else if (landingDuration > 0 && elapsed < duration) {
           update({ x: target, jumpY: 0, behavior: "stretching" });
           frame = requestAnimationFrame(jump);
         } else {
           frame = undefined;
-          update({ x: target, jumpY: landingDuration > 0 ? 0 : endJumpY });
+          update({
+            x: target,
+            jumpY: dropDuration > 0 ? -38 : landingDuration > 0 ? 0 : endJumpY,
+            behavior: dropDuration > 0 ? "dropping" : landingDuration > 0 ? "stretching" : "jumping",
+          });
           done();
         }
       };
@@ -304,13 +318,15 @@ function PixelCompanion() {
       if (choice < 0.22) {
         wander(68, () => {
           jumpTo(78, true, -27, 45, () => {
-            update({ behavior: "boxed" });
-            wait(3200 + Math.random() * 2400, () => {
-              jumpTo(70, false, 45, -27, () => {
-                update({ behavior: "idle", jumpY: 0 });
-                wander(30, () => {
-                  update({ behavior: "idle" });
-                  wait(900, () => chooseNext(run), run);
+            wait(140, () => {
+              update({ behavior: "boxed", jumpY: 0 });
+              wait(3200 + Math.random() * 2400, () => {
+                jumpTo(70, false, 45, -27, () => {
+                  update({ behavior: "idle", jumpY: 0 });
+                  wander(30, () => {
+                    update({ behavior: "idle" });
+                    wait(900, () => chooseNext(run), run);
+                  }, run);
                 }, run);
               }, run);
             }, run);
@@ -360,7 +376,10 @@ function PixelCompanion() {
     window.setTimeout(() => setShowHeart(false), 950);
     speechTimerRef.current = window.setTimeout(() => setShowSpeech(false), 3200);
     meowTimerRef.current = window.setTimeout(() => setIsMeowing(false), 850);
-
+    const audio = meowAudioRef.current ?? new Audio("/audio/cat-meow.mp3");
+    audio.currentTime = 0;
+    meowAudioRef.current = audio;
+    void audio.play().catch(() => {});
   };
 
   const isBoxed = cat.behavior === "boxed";
@@ -434,11 +453,11 @@ function StandingCat({
   walking,
   walkFrame,
 }: {
-  pose: "idle" | "walking" | "jumping" | "boxed" | "stretching";
+  pose: "idle" | "walking" | "jumping" | "dropping" | "boxed" | "stretching";
   walking: boolean;
   walkFrame: number;
 }) {
-  const spriteFrame = pose === "jumping" ? 3 : pose === "stretching" ? 2 : walking ? walkFrame : 5;
+  const spriteFrame = pose === "jumping" || pose === "dropping" ? 3 : pose === "stretching" ? 2 : walking ? walkFrame : 5;
   const frontLegTransform = walking
     ? walkFrame === 0 ? "translate(3px, -4px)" : "translate(-2px, 0)"
     : undefined;
