@@ -421,85 +421,122 @@ body {
 .pixel-companion-stage {
   position: relative;
   border-bottom: 1px solid var(--color-border);
+  container-type: inline-size;
 }
 
 .pixel-companion {
   position: absolute;
-  left: 0;
-  bottom: 8px;
-  width: 88px;
-  animation: companionWalk 14s linear infinite alternate;
-  will-change: transform;
+  bottom: 9px;
+  width: 92px;
+  transform: translateX(-50%);
+  will-change: left;
+  z-index: 2;
 }
 
-.pixel-companion-dog {
+.pixel-cat-button {
+  position: relative;
   display: block;
-  animation: companionBob 0.42s steps(2, end) infinite;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  background: transparent;
 }
 
-.pixel-dog-tail {
-  transform-origin: 36px 11px;
-  animation: companionTail 0.32s steps(2, end) infinite;
+.pixel-cat-button:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
-.pixel-dog-leg-a,
-.pixel-dog-leg-b {
-  transform-origin: center;
-  animation: companionLegs 0.42s steps(2, end) infinite;
+.pixel-cat {
+  display: block;
 }
 
-.pixel-dog-leg-b {
-  animation-direction: reverse;
+.pixel-companion--walking .pixel-cat {
+  animation: pixelCatWalkBob 0.36s steps(2, end) infinite;
 }
 
-.pixel-companion-shadow {
+.pixel-companion--idle .pixel-cat-tail,
+.pixel-companion--walking .pixel-cat-tail {
+  transform-origin: 35px 13px;
+  animation: pixelCatTail 0.62s steps(3, end) infinite alternate;
+}
+
+.pixel-companion--stretching .pixel-cat {
+  transform-origin: 70% 100%;
+  animation: pixelCatStretch 0.9s steps(3, end) both;
+}
+
+.pixel-cat-bed {
   position: absolute;
-  right: 8%;
+  left: 78%;
   bottom: 7px;
-  width: 24%;
-  height: 5px;
-  background: var(--color-border);
+  width: 96px;
+  height: 7px;
+  transform: translateX(-50%);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
   box-shadow:
-    8px 3px 0 var(--color-border),
-    16px 3px 0 var(--color-border),
-    24px 0 0 var(--color-border-hover);
-  opacity: 0.75;
+    5px 3px 0 var(--color-border),
+    10px 3px 0 var(--color-border),
+    15px 0 0 var(--color-border-hover);
+  z-index: 1;
 }
 
-@keyframes companionWalk {
-  from { transform: translateX(8px); }
-  to { transform: translateX(calc(100cqw - 104px)); }
+.pixel-cat-zzz,
+.pixel-cat-heart {
+  position: absolute;
+  pointer-events: none;
+  color: var(--color-accent);
+  font-family: var(--font-mono), monospace;
+  font-weight: 700;
+  z-index: 3;
 }
 
-@keyframes companionBob {
+.pixel-cat-zzz {
+  left: 9px;
+  top: -17px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  animation: pixelCatSleep 1.6s steps(3, end) infinite;
+}
+
+.pixel-cat-heart {
+  left: 42px;
+  top: -18px;
+  font-size: 15px;
+  animation: pixelCatHeart 0.95s steps(4, end) both;
+}
+
+@keyframes pixelCatWalkBob {
   50% { transform: translateY(-2px); }
 }
 
-@keyframes companionTail {
-  50% { transform: rotate(-18deg); }
+@keyframes pixelCatTail {
+  to { transform: rotate(-12deg) translateY(1px); }
 }
 
-@keyframes companionLegs {
-  50% { transform: translateY(-2px); }
+@keyframes pixelCatStretch {
+  0%, 100% { transform: scaleX(1) translateY(0); }
+  45%, 70% { transform: scaleX(1.1) translate(-3px, 2px); }
 }
 
-@supports not (width: 1cqw) {
-  @keyframes companionWalk {
-    from { transform: translateX(8px); }
-    to { transform: translateX(300px); }
-  }
+@keyframes pixelCatSleep {
+  0% { opacity: 0; transform: translate(0, 4px); }
+  35%, 70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(8px, -9px); }
 }
 
-.pixel-companion-stage {
-  container-type: inline-size;
+@keyframes pixelCatHeart {
+  0% { opacity: 0; transform: translateY(5px) scale(0.7); }
+  30%, 70% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-12px) scale(0.8); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pixel-companion,
-  .pixel-companion-dog,
-  .pixel-dog-tail,
-  .pixel-dog-leg-a,
-  .pixel-dog-leg-b {
+  .pixel-cat,
+  .pixel-cat-tail,
+  .pixel-cat-zzz,
+  .pixel-cat-heart {
     animation: none;
   }
 }
