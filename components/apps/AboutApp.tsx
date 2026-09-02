@@ -148,7 +148,6 @@ function PixelCompanion() {
   const catButtonRef = useRef<HTMLButtonElement>(null);
   const speechTimerRef = useRef<number | null>(null);
   const meowTimerRef = useRef<number | null>(null);
-  const meowAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!showSpeech) return;
@@ -258,14 +257,15 @@ function PixelCompanion() {
       const start = xRef.current;
       const takeoffDuration = 140;
       const flightDuration = 620;
-      const dropDuration = endJumpY > 0 ? 320 : 0;
-      const landingDuration = endJumpY < 0 ? 120 : 0;
-      const duration = takeoffDuration + flightDuration + dropDuration + landingDuration;
+      const enteringBox = endJumpY === -38;
+      const leavingBox = startJumpY === -38;
+      const landingDuration = leavingBox ? 120 : 0;
+      const duration = takeoffDuration + flightDuration + landingDuration;
       const startedAt = performance.now();
       update({
-        behavior: "stretching",
+        behavior: leavingBox ? "dropping" : "stretching",
         facingRight,
-        jumpY: startJumpY > 0 ? startJumpY : 0,
+        jumpY: leavingBox ? startJumpY : startJumpY > 0 ? startJumpY : 0,
       });
 
       const jump = (now: number) => {
@@ -283,15 +283,12 @@ function PixelCompanion() {
           const currentX = start + (target - start) * progress;
           const landingHeight = startJumpY + (endJumpY - startJumpY) * progress;
           const jumpY = landingHeight + 4 * 28 * progress * (1 - progress);
-          update({ x: currentX, jumpY, behavior: "jumping" });
-          frame = requestAnimationFrame(jump);
-        } else if (dropDuration > 0 && flightElapsed < flightDuration + dropDuration) {
-          const dropProgress = (flightElapsed - flightDuration) / dropDuration;
-          const easedDrop = dropProgress * dropProgress;
           update({
-            x: target,
-            jumpY: endJumpY + (-38 - endJumpY) * easedDrop,
-            behavior: "dropping",
+            x: currentX,
+            jumpY,
+            behavior: (enteringBox && progress > 0.62) || (leavingBox && progress < 0.34)
+              ? "dropping"
+              : "jumping",
           });
           frame = requestAnimationFrame(jump);
         } else if (landingDuration > 0 && elapsed < duration) {
@@ -301,8 +298,8 @@ function PixelCompanion() {
           frame = undefined;
           update({
             x: target,
-            jumpY: dropDuration > 0 ? -38 : landingDuration > 0 ? 0 : endJumpY,
-            behavior: dropDuration > 0 ? "dropping" : landingDuration > 0 ? "stretching" : "jumping",
+            jumpY: landingDuration > 0 ? 0 : endJumpY,
+            behavior: enteringBox ? "dropping" : landingDuration > 0 ? "stretching" : "jumping",
           });
           done();
         }
@@ -317,16 +314,14 @@ function PixelCompanion() {
 
       if (choice < 0.22) {
         wander(68, () => {
-          jumpTo(78, true, -27, 45, () => {
-            wait(140, () => {
-              update({ behavior: "boxed", jumpY: 0 });
-              wait(3200 + Math.random() * 2400, () => {
-                jumpTo(70, false, 45, -27, () => {
-                  update({ behavior: "idle", jumpY: 0 });
-                  wander(30, () => {
-                    update({ behavior: "idle" });
-                    wait(900, () => chooseNext(run), run);
-                  }, run);
+          jumpTo(78, true, -27, -38, () => {
+            update({ behavior: "boxed", jumpY: 0 });
+            wait(3200 + Math.random() * 2400, () => {
+              jumpTo(70, false, -38, -27, () => {
+                update({ behavior: "idle", jumpY: 0 });
+                wander(30, () => {
+                  update({ behavior: "idle" });
+                  wait(900, () => chooseNext(run), run);
                 }, run);
               }, run);
             }, run);
@@ -376,10 +371,6 @@ function PixelCompanion() {
     window.setTimeout(() => setShowHeart(false), 950);
     speechTimerRef.current = window.setTimeout(() => setShowSpeech(false), 3200);
     meowTimerRef.current = window.setTimeout(() => setIsMeowing(false), 850);
-    const audio = meowAudioRef.current ?? new Audio("/audio/cat-meow.mp3");
-    audio.currentTime = 0;
-    meowAudioRef.current = audio;
-    void audio.play().catch(() => {});
   };
 
   const isBoxed = cat.behavior === "boxed";
