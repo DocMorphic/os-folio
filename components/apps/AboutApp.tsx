@@ -148,7 +148,6 @@ function PixelCompanion() {
   const catButtonRef = useRef<HTMLButtonElement>(null);
   const speechTimerRef = useRef<number | null>(null);
   const meowTimerRef = useRef<number | null>(null);
-  const meowAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!showSpeech) return;
@@ -233,7 +232,7 @@ function PixelCompanion() {
         const travelled = Math.abs(currentX - start);
         update({
           x: currentX,
-          walkFrame: Math.floor(travelled / 2.1) % 6,
+          walkFrame: Math.floor(travelled / 6.25) % 2,
         });
         if (progress < 1) {
           frame = requestAnimationFrame(move);
@@ -362,13 +361,6 @@ function PixelCompanion() {
     speechTimerRef.current = window.setTimeout(() => setShowSpeech(false), 3200);
     meowTimerRef.current = window.setTimeout(() => setIsMeowing(false), 850);
 
-    const audio = meowAudioRef.current ?? new Audio("/audio/miso-meow.ogg");
-    audio.volume = 0.42;
-    audio.currentTime = 0;
-    meowAudioRef.current = audio;
-    void audio.play().catch(() => {
-      // Audio can be blocked by browser or system-level autoplay settings.
-    });
   };
 
   const isBoxed = cat.behavior === "boxed";
@@ -446,7 +438,6 @@ function StandingCat({
   walking: boolean;
   walkFrame: number;
 }) {
-  const walkFrameY = [0, 1, 2, 43, 4, 3][walkFrame] ?? 0;
   const spriteFrame = pose === "jumping" ? 3 : pose === "stretching" ? 2 : walking ? walkFrame : 5;
   const frontLegTransform = walking
     ? walkFrame === 0 ? "translate(3px, -4px)" : "translate(-2px, 0)"
@@ -466,27 +457,15 @@ function StandingCat({
       style={{ overflow: "hidden" }}
       aria-hidden="true"
     >
-      {walking ? (
-        <image
-          href="/assets/pixel-cat-walk-cycle.png"
-          x={-walkFrame * 362}
-          y={-150 + walkFrameY}
-          width="2172"
-          height="724"
-          preserveAspectRatio="none"
-          style={{ imageRendering: "pixelated" }}
-        />
-      ) : (
-        <image
-          href={`/assets/pixel-cat-frame-${spriteFrame}.png`}
-          x="0"
-          y="0"
-          width="362"
-          height="400"
-          preserveAspectRatio="none"
-          style={{ imageRendering: "pixelated" }}
-        />
-      )}
+      <image
+        href={`/assets/pixel-cat-frame-${spriteFrame}.png`}
+        x="0"
+        y="0"
+        width="362"
+        height="400"
+        preserveAspectRatio="none"
+        style={{ imageRendering: "pixelated" }}
+      />
       <g display="none">
       <g className="pixel-cat-tail">
         <path
