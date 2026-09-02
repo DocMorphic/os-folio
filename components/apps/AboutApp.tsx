@@ -12,7 +12,7 @@ export function AboutApp() {
       <div className="flex min-h-0 flex-1 flex-col gap-3">
         <div>
           <h1
-            className="font-serif-heading flex flex-nowrap items-center gap-x-3 whitespace-nowrap text-[clamp(48px,5vw,64px)] leading-[0.95]"
+            className="about-name-heading font-serif-heading flex flex-nowrap items-center gap-x-3 whitespace-nowrap text-[clamp(48px,5vw,64px)] leading-[0.95]"
             style={{ color: "var(--color-text)" }}
           >
             <span>{aboutData.firstName}</span>
