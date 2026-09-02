@@ -138,6 +138,7 @@ function PixelCompanion() {
   });
   const [showHeart, setShowHeart] = useState(false);
   const [showSpeech, setShowSpeech] = useState(false);
+  const [isMeowing, setIsMeowing] = useState(false);
   const [speechPosition, setSpeechPosition] = useState<{
     left: number;
     top: number;
@@ -146,6 +147,8 @@ function PixelCompanion() {
   const xRef = useRef(cat.x);
   const catButtonRef = useRef<HTMLButtonElement>(null);
   const speechTimerRef = useRef<number | null>(null);
+  const meowTimerRef = useRef<number | null>(null);
+  const meowAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!showSpeech) return;
@@ -230,7 +233,7 @@ function PixelCompanion() {
         const travelled = Math.abs(currentX - start);
         update({
           x: currentX,
-          walkFrame: Math.floor(travelled / 6.25) % 2,
+          walkFrame: Math.floor(travelled / 2.1) % 6,
         });
         if (progress < 1) {
           frame = requestAnimationFrame(move);
@@ -253,23 +256,41 @@ function PixelCompanion() {
     ) => {
       stopWalking();
       const start = xRef.current;
-      const duration = 720;
+      const takeoffDuration = 140;
+      const flightDuration = 620;
+      const landingDuration = endJumpY < 0 ? 120 : 0;
+      const duration = takeoffDuration + flightDuration + landingDuration;
       const startedAt = performance.now();
-      update({ behavior: "jumping", facingRight, jumpY: startJumpY });
+      update({
+        behavior: "stretching",
+        facingRight,
+        jumpY: startJumpY > 0 ? startJumpY : 0,
+      });
 
       const jump = (now: number) => {
         if (!active || run !== generation) return;
-        const progress = Math.min(1, (now - startedAt) / duration);
+        const elapsed = Math.min(duration, now - startedAt);
+
+        if (elapsed < takeoffDuration) {
+          frame = requestAnimationFrame(jump);
+          return;
+        }
+
+        const flightElapsed = elapsed - takeoffDuration;
+        const progress = Math.min(1, flightElapsed / flightDuration);
         const currentX = start + (target - start) * progress;
         const landingHeight = startJumpY + (endJumpY - startJumpY) * progress;
-        const jumpY = landingHeight + Math.sin(Math.PI * progress) * 28;
-        update({ x: currentX, jumpY });
+        const jumpY = landingHeight + 4 * 28 * progress * (1 - progress);
+        update({ x: currentX, jumpY, behavior: "jumping" });
 
-        if (progress < 1) {
+        if (flightElapsed < flightDuration) {
+          frame = requestAnimationFrame(jump);
+        } else if (landingDuration > 0 && elapsed < duration) {
+          update({ x: target, jumpY: 0, behavior: "stretching" });
           frame = requestAnimationFrame(jump);
         } else {
           frame = undefined;
-          update({ x: target, jumpY: endJumpY });
+          update({ x: target, jumpY: landingDuration > 0 ? 0 : endJumpY });
           done();
         }
       };
@@ -326,6 +347,7 @@ function PixelCompanion() {
       active = false;
       clearTimeout(timeout);
       if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
+      if (meowTimerRef.current) clearTimeout(meowTimerRef.current);
       if (frame !== undefined) cancelAnimationFrame(frame);
     };
   }, []);
@@ -333,9 +355,20 @@ function PixelCompanion() {
   const petCat = () => {
     setShowHeart(true);
     setShowSpeech(true);
+    setIsMeowing(true);
     if (speechTimerRef.current) window.clearTimeout(speechTimerRef.current);
+    if (meowTimerRef.current) window.clearTimeout(meowTimerRef.current);
     window.setTimeout(() => setShowHeart(false), 950);
     speechTimerRef.current = window.setTimeout(() => setShowSpeech(false), 3200);
+    meowTimerRef.current = window.setTimeout(() => setIsMeowing(false), 850);
+
+    const audio = meowAudioRef.current ?? new Audio("/audio/miso-meow.ogg");
+    audio.volume = 0.42;
+    audio.currentTime = 0;
+    meowAudioRef.current = audio;
+    void audio.play().catch(() => {
+      // Audio can be blocked by browser or system-level autoplay settings.
+    });
   };
 
   const isBoxed = cat.behavior === "boxed";
@@ -345,13 +378,14 @@ function PixelCompanion() {
       <div className="pixel-companion-stage mt-2 h-[116px] shrink-0" aria-label="Interactive pixel cat area">
         <div className="pixel-cat-box" aria-hidden="true" />
         <div
-          className={`pixel-companion pixel-companion--${cat.behavior} pixel-companion--facing-${cat.facingRight ? "right" : "left"}`}
+          className={`pixel-companion pixel-companion--${cat.behavior} pixel-companion--facing-${cat.facingRight ? "right" : "left"}${isMeowing ? " pixel-companion--meowing" : ""}`}
           style={{
             left: `${cat.x}%`,
             bottom: cat.behavior === "boxed" ? "47px" : `${4 + cat.jumpY}px`,
           }}
         >
           {showHeart && <span className="pixel-cat-heart" aria-hidden="true">♥</span>}
+          {isMeowing && <span className="pixel-cat-meow" aria-hidden="true">MEOW!</span>}
           {cat.behavior === "walking" && (
             <span className={`pixel-cat-steps pixel-cat-steps--${cat.walkFrame}`} aria-hidden="true" />
           )}
@@ -395,7 +429,7 @@ function PixelCompanion() {
             "--speech-tail-x": `${speechPosition.tailX}px`,
           } as CSSProperties}
         >
-          This is Miso, the cat keeping watch over the portfolio.
+          Meow! I&apos;m Miso, the cat keeping watch over the portfolio.
         </span>,
         document.body,
       )}
@@ -412,6 +446,7 @@ function StandingCat({
   walking: boolean;
   walkFrame: number;
 }) {
+  const walkFrameY = [0, 1, 2, 43, 4, 3][walkFrame] ?? 0;
   const spriteFrame = pose === "jumping" ? 3 : pose === "stretching" ? 2 : walking ? walkFrame : 5;
   const frontLegTransform = walking
     ? walkFrame === 0 ? "translate(3px, -4px)" : "translate(-2px, 0)"
@@ -431,15 +466,27 @@ function StandingCat({
       style={{ overflow: "hidden" }}
       aria-hidden="true"
     >
-      <image
-        href={`/assets/pixel-cat-frame-${spriteFrame}.png`}
-        x="0"
-        y="0"
-        width="362"
-        height="400"
-        preserveAspectRatio="none"
-        style={{ imageRendering: "pixelated" }}
-      />
+      {walking ? (
+        <image
+          href="/assets/pixel-cat-walk-cycle.png"
+          x={-walkFrame * 362}
+          y={-150 + walkFrameY}
+          width="2172"
+          height="724"
+          preserveAspectRatio="none"
+          style={{ imageRendering: "pixelated" }}
+        />
+      ) : (
+        <image
+          href={`/assets/pixel-cat-frame-${spriteFrame}.png`}
+          x="0"
+          y="0"
+          width="362"
+          height="400"
+          preserveAspectRatio="none"
+          style={{ imageRendering: "pixelated" }}
+        />
+      )}
       <g display="none">
       <g className="pixel-cat-tail">
         <path
