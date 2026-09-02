@@ -422,15 +422,20 @@ body {
   position: relative;
   border-bottom: 1px solid var(--color-border);
   container-type: inline-size;
+  background: linear-gradient(to bottom, transparent 82%, color-mix(in srgb, var(--color-border) 18%, transparent));
 }
 
 .pixel-companion {
   position: absolute;
-  bottom: 9px;
-  width: 92px;
+  bottom: 12px;
+  width: 112px;
   transform: translateX(-50%);
   will-change: left;
   z-index: 2;
+}
+
+.pixel-companion--sleeping {
+  bottom: 21px;
 }
 
 .pixel-cat-button {
@@ -469,17 +474,40 @@ body {
 .pixel-cat-bed {
   position: absolute;
   left: 78%;
-  bottom: 7px;
-  width: 96px;
-  height: 7px;
+  bottom: 8px;
+  width: 132px;
+  height: 16px;
   transform: translateX(-50%);
-  background: var(--color-surface-alt);
-  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface-alt));
+  border: 2px solid var(--color-border-strong);
   box-shadow:
-    5px 3px 0 var(--color-border),
-    10px 3px 0 var(--color-border),
-    15px 0 0 var(--color-border-hover);
+    5px 4px 0 var(--color-border),
+    10px 4px 0 var(--color-border),
+    15px 4px 0 var(--color-border-hover);
   z-index: 1;
+}
+
+.pixel-cat-bed::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: -9px;
+  height: 10px;
+  border: 2px solid var(--color-border-strong);
+  border-bottom: 0;
+  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface));
+}
+
+.pixel-cat-bed::after {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: -14px;
+  width: 45px;
+  height: 7px;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface-alt);
 }
 
 .pixel-cat-zzz,
@@ -493,16 +521,16 @@ body {
 }
 
 .pixel-cat-zzz {
-  left: 9px;
-  top: -17px;
-  font-size: 11px;
+  left: 4px;
+  top: -24px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   animation: pixelCatSleep 1.6s steps(3, end) infinite;
 }
 
 .pixel-cat-heart {
-  left: 42px;
-  top: -18px;
+  left: 53px;
+  top: -25px;
   font-size: 15px;
   animation: pixelCatHeart 0.95s steps(4, end) both;
 }
