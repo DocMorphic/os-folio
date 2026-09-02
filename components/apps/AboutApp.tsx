@@ -2,7 +2,8 @@
 
 import { aboutData } from "@/content/about";
 import { useWindowManager } from "@/hooks/use-window-manager";
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 export function AboutApp() {
   const { openWindow } = useWindowManager();
@@ -137,8 +138,46 @@ function PixelCompanion() {
   });
   const [showHeart, setShowHeart] = useState(false);
   const [showSpeech, setShowSpeech] = useState(false);
+  const [speechPosition, setSpeechPosition] = useState<{
+    left: number;
+    top: number;
+    tailX: number;
+  } | null>(null);
   const xRef = useRef(cat.x);
+  const catButtonRef = useRef<HTMLButtonElement>(null);
   const speechTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!showSpeech) return;
+
+    let frame: number | undefined;
+    const positionBubble = () => {
+      const button = catButtonRef.current;
+      if (!button) return;
+
+      const rect = button.getBoundingClientRect();
+      const bubbleWidth = 238;
+      const screenPadding = 10;
+      const catCenter = rect.left + rect.width / 2;
+      const left = Math.min(
+        window.innerWidth - bubbleWidth / 2 - screenPadding,
+        Math.max(bubbleWidth / 2 + screenPadding, catCenter),
+      );
+      const top = Math.max(screenPadding, rect.top - 58);
+      const tailX = Math.min(
+        bubbleWidth - 16,
+        Math.max(16, catCenter - (left - bubbleWidth / 2)),
+      );
+
+      setSpeechPosition({ left, top, tailX });
+      frame = requestAnimationFrame(positionBubble);
+    };
+
+    positionBubble();
+    return () => {
+      if (frame !== undefined) cancelAnimationFrame(frame);
+    };
+  }, [showSpeech]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -302,53 +341,65 @@ function PixelCompanion() {
   const isBoxed = cat.behavior === "boxed";
 
   return (
-    <div className="pixel-companion-stage mt-2 h-[116px] shrink-0" aria-label="Interactive pixel cat area">
-      <div className="pixel-cat-box" aria-hidden="true" />
-      <div
-        className={`pixel-companion pixel-companion--${cat.behavior} pixel-companion--facing-${cat.facingRight ? "right" : "left"}`}
-        style={{
-          left: `${cat.x}%`,
-          bottom: cat.behavior === "boxed" ? "47px" : `${4 + cat.jumpY}px`,
-        }}
-      >
-        {showSpeech && (
-          <span className="pixel-cat-speech" role="status">
-            This is Miso, the cat keeping watch over the portfolio.
-          </span>
-        )}
-        {showHeart && <span className="pixel-cat-heart" aria-hidden="true">♥</span>}
-        {cat.behavior === "walking" && (
-          <span className={`pixel-cat-steps pixel-cat-steps--${cat.walkFrame}`} aria-hidden="true" />
-        )}
-        <button
-          type="button"
-          className="pixel-cat-button"
-          onClick={petCat}
-          aria-label="Pet the pixel cat"
-          title="Pet the cat"
+    <>
+      <div className="pixel-companion-stage mt-2 h-[116px] shrink-0" aria-label="Interactive pixel cat area">
+        <div className="pixel-cat-box" aria-hidden="true" />
+        <div
+          className={`pixel-companion pixel-companion--${cat.behavior} pixel-companion--facing-${cat.facingRight ? "right" : "left"}`}
+          style={{
+            left: `${cat.x}%`,
+            bottom: cat.behavior === "boxed" ? "47px" : `${4 + cat.jumpY}px`,
+          }}
         >
-          {isBoxed ? (
-            <BoxCat />
-          ) : (
-            <span
-              className="pixel-cat-facing"
-              style={{
-                display: "block",
-                width: 132,
-                transform: cat.facingRight ? "scaleX(1)" : "scaleX(-1)",
-                transformOrigin: "center",
-              }}
-            >
-              <StandingCat
-                pose={cat.behavior}
-                walking={cat.behavior === "walking"}
-                walkFrame={cat.walkFrame}
-              />
-            </span>
+          {showHeart && <span className="pixel-cat-heart" aria-hidden="true">♥</span>}
+          {cat.behavior === "walking" && (
+            <span className={`pixel-cat-steps pixel-cat-steps--${cat.walkFrame}`} aria-hidden="true" />
           )}
-        </button>
+          <button
+            ref={catButtonRef}
+            type="button"
+            className="pixel-cat-button"
+            onClick={petCat}
+            aria-label="Pet the pixel cat"
+            title="Pet the cat"
+          >
+            {isBoxed ? (
+              <BoxCat />
+            ) : (
+              <span
+                className="pixel-cat-facing"
+                style={{
+                  display: "block",
+                  width: 132,
+                  transform: cat.facingRight ? "scaleX(1)" : "scaleX(-1)",
+                  transformOrigin: "center",
+                }}
+              >
+                <StandingCat
+                  pose={cat.behavior}
+                  walking={cat.behavior === "walking"}
+                  walkFrame={cat.walkFrame}
+                />
+              </span>
+            )}
+          </button>
+        </div>
       </div>
-    </div>
+      {showSpeech && speechPosition && createPortal(
+        <span
+          className="pixel-cat-speech"
+          role="status"
+          style={{
+            left: speechPosition.left,
+            top: speechPosition.top,
+            "--speech-tail-x": `${speechPosition.tailX}px`,
+          } as CSSProperties}
+        >
+          This is Miso, the cat keeping watch over the portfolio.
+        </span>,
+        document.body,
+      )}
+    </>
   );
 }
 

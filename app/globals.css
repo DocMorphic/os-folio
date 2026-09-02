@@ -515,8 +515,7 @@ body {
 }
 
 .pixel-cat-speech {
-  left: 50%;
-  bottom: 104px;
+  position: fixed;
   width: 238px;
   transform: translateX(-50%);
   border: 1px solid var(--color-border-strong);
@@ -528,13 +527,14 @@ body {
   font-weight: 400;
   line-height: 1.35;
   text-align: center;
-  z-index: 8;
+  filter: brightness(var(--display-brightness));
+  z-index: 10000;
 }
 
 .pixel-cat-speech::before,
 .pixel-cat-speech::after {
   position: absolute;
-  left: 50%;
+  left: var(--speech-tail-x, 50%);
   width: 0;
   height: 0;
   transform: translateX(-50%);
