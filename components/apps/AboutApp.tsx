@@ -130,13 +130,16 @@ export function AboutApp() {
 function PixelCompanion() {
   const [cat, setCat] = useState({
     x: 18,
+    jumpY: 0,
     facingRight: true,
     behavior: "idle" as "idle" | "walking" | "jumping" | "boxed" | "stretching",
     walkFrame: 0,
   });
   const [showHeart, setShowHeart] = useState(false);
+  const [showSpeech, setShowSpeech] = useState(false);
   const xRef = useRef(cat.x);
   const restartRef = useRef<(() => void) | null>(null);
+  const speechTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -202,19 +205,48 @@ function PixelCompanion() {
       frame = requestAnimationFrame(move);
     };
 
+    const jumpTo = (
+      target: number,
+      facingRight: boolean,
+      done: () => void,
+      run = generation,
+    ) => {
+      stopWalking();
+      const start = xRef.current;
+      const duration = 720;
+      const startedAt = performance.now();
+      update({ behavior: "jumping", facingRight, jumpY: 0 });
+
+      const jump = (now: number) => {
+        if (!active || run !== generation) return;
+        const progress = Math.min(1, (now - startedAt) / duration);
+        const currentX = start + (target - start) * progress;
+        const jumpY = Math.sin(Math.PI * progress) * 45;
+        update({ x: currentX, jumpY });
+
+        if (progress < 1) {
+          frame = requestAnimationFrame(jump);
+        } else {
+          frame = undefined;
+          update({ x: target, jumpY: 0 });
+          done();
+        }
+      };
+
+      frame = requestAnimationFrame(jump);
+    };
+
     const chooseNext = (run = generation) => {
       if (!active || run !== generation) return;
       const choice = Math.random();
 
       if (choice < 0.22) {
         wander(68, () => {
-          update({ x: 78, behavior: "jumping", facingRight: true });
-          wait(760, () => {
+          jumpTo(78, true, () => {
             update({ behavior: "boxed" });
             wait(3200 + Math.random() * 2400, () => {
-              update({ behavior: "jumping", facingRight: false });
-              wait(760, () => {
-                update({ x: 70, behavior: "idle" });
+              jumpTo(70, false, () => {
+                update({ behavior: "idle", jumpY: 0 });
                 wander(30, () => {
                   update({ behavior: "idle" });
                   wait(900, () => chooseNext(run), run);
@@ -268,25 +300,36 @@ function PixelCompanion() {
       active = false;
       restartRef.current = null;
       clearTimeout(timeout);
+      if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
       if (frame !== undefined) cancelAnimationFrame(frame);
     };
   }, []);
 
   const petCat = () => {
     setShowHeart(true);
+    setShowSpeech(true);
+    if (speechTimerRef.current) window.clearTimeout(speechTimerRef.current);
     window.setTimeout(() => setShowHeart(false), 950);
-    restartRef.current?.();
+    speechTimerRef.current = window.setTimeout(() => setShowSpeech(false), 3200);
   };
 
   const isBoxed = cat.behavior === "boxed";
 
   return (
-    <div className="pixel-companion-stage mt-2 h-[116px] shrink-0 overflow-hidden" aria-label="Interactive pixel cat area">
+    <div className="pixel-companion-stage mt-2 h-[116px] shrink-0" aria-label="Interactive pixel cat area">
       <div className="pixel-cat-box" aria-hidden="true" />
       <div
         className={`pixel-companion pixel-companion--${cat.behavior} pixel-companion--facing-${cat.facingRight ? "right" : "left"}`}
-        style={{ left: `${cat.x}%` }}
+        style={{
+          left: `${cat.x}%`,
+          bottom: cat.behavior === "boxed" ? "47px" : `${4 + cat.jumpY}px`,
+        }}
       >
+        {showSpeech && (
+          <span className="pixel-cat-speech" role="status">
+            This is Miso, the cat keeping watch over the portfolio.
+          </span>
+        )}
         {showHeart && <span className="pixel-cat-heart" aria-hidden="true">♥</span>}
         {cat.behavior === "walking" && (
           <span className={`pixel-cat-steps pixel-cat-steps--${cat.walkFrame}`} aria-hidden="true" />
