@@ -2,7 +2,7 @@
 
 import { aboutData } from "@/content/about";
 import { useWindowManager } from "@/hooks/use-window-manager";
-import { PixelCompanion } from "@/components/PixelCompanion";
+import { HamsterCompanion } from "@/components/HamsterCompanion";
 
 export function AboutApp() {
   const { openWindow } = useWindowManager();
@@ -97,7 +97,7 @@ export function AboutApp() {
         </section>
       </div>
 
-      <PixelCompanion onExperience={() => openWindow("experience")} />
+      <HamsterCompanion onExperience={() => openWindow("experience")} />
     </div>
   );
 }

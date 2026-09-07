@@ -423,8 +423,8 @@ body {
   color: var(--color-accent);
 }
 
-/* === About pixel companion === */
-.miso-stage {
+/* === About hamster companion === */
+.hamster-stage {
   position: relative;
   flex: 1 1 176px;
   min-height: 0;
@@ -432,23 +432,15 @@ body {
   isolation: isolate;
   overflow: clip;
 }
-
-.miso-scene {
+.hamster-scene {
   position: absolute;
   left: 0;
   bottom: 0;
   height: 176px;
   transform-origin: bottom left;
 }
-
-.miso-actor {
-  position: absolute;
-  bottom: 4px;
-  width: 108px;
-  will-change: transform;
-}
-
-.miso-experience {
+.hamster-illustration { display: block; overflow: visible; }
+.companion-experience {
   position: absolute;
   top: 0;
   left: 0;
@@ -461,71 +453,22 @@ body {
   font-weight: 500;
   cursor: pointer;
 }
-
-.miso-button {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  width: 108px;
+.hamster-pet {
+  position: absolute;
+  width: 80px;
+  height: 56px;
   padding: 0;
   border: 0;
+  border-radius: 40%;
   background: transparent;
   cursor: pointer;
   touch-action: manipulation;
 }
-
-.miso-button:focus-visible {
+.hamster-pet:focus-visible {
   outline: 2px dashed var(--color-accent);
-  outline-offset: 4px;
+  outline-offset: 3px;
 }
-
-.miso-facing, .miso-pose, .miso-sprite {
-  display: block;
-  transform-origin: 50% 100%;
-}
-
-.miso-sprite { image-rendering: pixelated; overflow: hidden; }
-
-.miso-box {
-  position: absolute;
-  left: min(78%, calc(100% - 77px));
-  bottom: 3px;
-  width: 150px;
-  height: 76px;
-  transform: translateX(-50%);
-  background: url("/assets/pixel-cat-box.png") center / 150px 76px no-repeat;
-  image-rendering: pixelated;
-  pointer-events: none;
-}
-
-.miso-box-back { z-index: 1; }
-.miso-box-front {
-  z-index: 3;
-  clip-path: polygon(0 0, 27% 0, 27% 30%, 81% 30%, 81% 0, 100% 0, 100% 100%, 0 100%);
-}
-
-.miso-meow {
-  position: absolute;
-  right: 3px;
-  top: 10px;
-  color: var(--color-accent);
-  font-size: 20px;
-  pointer-events: none;
-  animation: misoAffection 1.2s ease-out both;
-}
-
-@keyframes misoAffection {
-  0% { opacity: 0; transform: translateY(4px) scale(0.8); }
-  20%, 65% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-18px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .miso-meow { animation: none; }
-}
-
-.pixel-cat-speech {
+.companion-speech {
   position: fixed;
   pointer-events: none;
   width: 238px;
@@ -543,8 +486,8 @@ body {
   z-index: 10000;
 }
 
-.pixel-cat-speech::before,
-.pixel-cat-speech::after {
+.companion-speech::before,
+.companion-speech::after {
   position: absolute;
   left: var(--speech-tail-x, 50%);
   width: 0;
@@ -555,12 +498,12 @@ body {
   content: "";
 }
 
-.pixel-cat-speech::before {
+.companion-speech::before {
   bottom: -8px;
   border-top: 8px solid var(--color-border-strong);
 }
 
-.pixel-cat-speech::after {
+.companion-speech::after {
   bottom: -6px;
   border-top: 7px solid var(--color-surface);
 }
