@@ -424,127 +424,110 @@ body {
 }
 
 /* === About pixel companion === */
-.pixel-companion-stage {
+.miso-stage {
   position: relative;
-  container-type: inline-size;
+  flex: 1 1 176px;
+  min-height: 0;
+  margin-top: 8px;
+  isolation: isolate;
+  overflow: clip;
 }
 
-.pixel-companion {
+.miso-scene {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 176px;
+  transform-origin: bottom left;
+}
+
+.miso-actor {
   position: absolute;
   bottom: 4px;
-  width: 132px;
-  transform: translateX(-50%);
-  will-change: left;
-  z-index: 4;
+  width: 108px;
+  will-change: transform;
 }
 
-.pixel-companion--boxed {
-  z-index: 4;
-}
-
-.pixel-companion--jumping {
+.miso-experience {
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 5;
+  border: 1px solid var(--color-border-strong);
+  padding: 8px 16px;
+  background: var(--color-button-dark);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
-.pixel-companion--dropping {
-  z-index: 2;
-}
-
-.pixel-cat-button {
+.miso-button {
   position: relative;
   display: flex;
-  width: 132px;
   justify-content: center;
   align-items: flex-end;
-  cursor: pointer;
-  border: 0;
+  width: 108px;
   padding: 0;
+  border: 0;
   background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
-.pixel-cat-button:focus-visible {
-  outline: none;
+.miso-button:focus-visible {
+  outline: 2px dashed var(--color-accent);
+  outline-offset: 4px;
 }
 
-.pixel-cat-button:focus-visible .pixel-cat {
-  filter: drop-shadow(0 0 2px var(--color-accent));
-}
-
-.pixel-cat {
+.miso-facing, .miso-pose, .miso-sprite {
   display: block;
+  transform-origin: 50% 100%;
 }
 
-.pixel-cat-facing {
-  display: block;
-  width: 132px;
-  transform-origin: center;
-}
+.miso-sprite { image-rendering: pixelated; overflow: hidden; }
 
-.pixel-companion--idle .pixel-cat-tail,
-.pixel-companion--walking .pixel-cat-tail {
-  transform-origin: 28px 35px;
-  animation: pixelCatTail 0.62s steps(3, end) infinite alternate;
-}
-
-.pixel-companion--idle .pixel-cat-ear {
-  transform-origin: 70px 13px;
-  animation: pixelCatEarTwitch 3.8s steps(2, end) infinite;
-}
-
-.pixel-companion--stretching .pixel-cat {
-  transform-origin: 70% 100%;
-  animation: pixelCatStretch 0.9s steps(3, end) both;
-}
-
-.pixel-cat-box {
+.miso-box {
   position: absolute;
-  left: 78%;
+  left: min(78%, calc(100% - 77px));
   bottom: 3px;
   width: 150px;
   height: 76px;
   transform: translateX(-50%);
-  background: url("/assets/pixel-cat-box.png") center / contain no-repeat;
-  z-index: 3;
-}
-
-.pixel-cat-zzz,
-.pixel-cat-heart,
-.pixel-cat-meow,
-.pixel-cat-speech {
-  position: absolute;
+  background: url("/assets/pixel-cat-box.png") center / 150px 76px no-repeat;
+  image-rendering: pixelated;
   pointer-events: none;
-  color: var(--color-accent);
-  font-family: var(--font-mono), monospace;
-  font-weight: 700;
+}
+
+.miso-box-back { z-index: 1; }
+.miso-box-front {
   z-index: 3;
+  clip-path: polygon(0 0, 27% 0, 27% 30%, 81% 30%, 81% 0, 100% 0, 100% 100%, 0 100%);
 }
 
-.pixel-cat-meow {
-  top: 16px;
-  padding: 2px 4px;
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-surface);
-  font-size: 10px;
-  line-height: 1;
-  white-space: nowrap;
-  animation: pixelCatMeowBurst 0.85s steps(5, end) both;
+.miso-meow {
+  position: absolute;
+  right: 3px;
+  top: 10px;
+  color: var(--color-accent);
+  font-size: 20px;
+  pointer-events: none;
+  animation: misoAffection 1.2s ease-out both;
 }
 
-.pixel-companion--facing-right .pixel-cat-meow {
-  left: 98px;
+@keyframes misoAffection {
+  0% { opacity: 0; transform: translateY(4px) scale(0.8); }
+  20%, 65% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-18px); }
 }
 
-.pixel-companion--facing-left .pixel-cat-meow {
-  right: 98px;
-}
-
-.pixel-companion--meowing .pixel-cat-button {
-  transform-origin: 50% 80%;
-  animation: pixelCatMeowBounce 0.6s steps(5, end) both;
+@media (prefers-reduced-motion: reduce) {
+  .miso-meow { animation: none; }
 }
 
 .pixel-cat-speech {
   position: fixed;
+  pointer-events: none;
   width: 238px;
   transform: translateX(-50%);
   border: 1px solid var(--color-border-strong);
@@ -580,105 +563,4 @@ body {
 .pixel-cat-speech::after {
   bottom: -6px;
   border-top: 7px solid var(--color-surface);
-}
-
-.pixel-cat-zzz {
-  left: 4px;
-  top: -24px;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  animation: pixelCatSleep 1.6s steps(3, end) infinite;
-}
-
-.pixel-cat-heart {
-  left: 53px;
-  top: -25px;
-  font-size: 15px;
-  animation: pixelCatHeart 0.95s steps(4, end) both;
-}
-
-.pixel-cat-steps {
-  position: absolute;
-  bottom: 1px;
-  width: 4px;
-  height: 3px;
-  background: var(--color-border-strong);
-  opacity: 0.65;
-}
-
-.pixel-companion--facing-right .pixel-cat-steps {
-  left: 3px;
-}
-
-.pixel-companion--facing-left .pixel-cat-steps {
-  right: 3px;
-}
-
-.pixel-cat-steps--0 {
-  box-shadow: -6px 2px 0 var(--color-border);
-}
-
-.pixel-cat-steps--1 {
-  opacity: 0.35;
-  box-shadow: -10px 1px 0 var(--color-border);
-}
-
-.pixel-companion--facing-left .pixel-cat-steps--0 {
-  box-shadow: 6px 2px 0 var(--color-border);
-}
-
-.pixel-companion--facing-left .pixel-cat-steps--1 {
-  box-shadow: 10px 1px 0 var(--color-border);
-}
-
-@keyframes pixelCatTail {
-  to { transform: rotate(-12deg) translateY(1px); }
-}
-
-@keyframes pixelCatEarTwitch {
-  0%, 86%, 100% { transform: translateY(0); }
-  90%, 94% { transform: translateY(2px); }
-}
-
-@keyframes pixelCatStretch {
-  0%, 100% { transform: scaleX(1) translateY(0); }
-  45%, 70% { transform: scaleX(1.1) translate(-3px, 2px); }
-}
-
-@keyframes pixelCatSleep {
-  0% { opacity: 0; transform: translate(0, 4px); }
-  35%, 70% { opacity: 1; }
-  100% { opacity: 0; transform: translate(8px, -9px); }
-}
-
-@keyframes pixelCatHeart {
-  0% { opacity: 0; transform: translateY(5px) scale(0.7); }
-  30%, 70% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-12px) scale(0.8); }
-}
-
-@keyframes pixelCatMeowBounce {
-  0%, 100% { transform: translate(0, 0) rotate(0); }
-  20% { transform: translate(-2px, -2px) rotate(-1deg); }
-  40% { transform: translate(2px, 0) rotate(1deg); }
-  60% { transform: translate(-1px, -1px) rotate(-0.5deg); }
-  80% { transform: translate(1px, 0) rotate(0.5deg); }
-}
-
-@keyframes pixelCatMeowBurst {
-  0% { opacity: 0; transform: translate(-4px, 3px) scale(0.75); }
-  20%, 70% { opacity: 1; transform: translate(0, 0) scale(1); }
-  100% { opacity: 0; transform: translate(7px, -7px) scale(0.9); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pixel-cat,
-  .pixel-cat-tail,
-  .pixel-cat-ear,
-  .pixel-cat-zzz,
-  .pixel-cat-heart,
-  .pixel-cat-meow,
-  .pixel-companion--meowing .pixel-cat-button {
-    animation: none;
-  }
 }
