@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { pawPosition, smoothStep, wheelAngle } from "@/lib/hamster-motion";
 
@@ -124,25 +124,7 @@ export function HamsterCompanion({ onExperience }: { onExperience: () => void })
         <button className="companion-experience" type="button" onClick={onExperience}>Open Experience</button>
         <div className="hamster-scene" style={{ width: layout.width, transform: `scale(${layout.scale})` }}>
           <svg className="hamster-illustration" width={layout.width} height="176" viewBox={`0 0 ${layout.width} 176`} aria-hidden="true">
-            <ellipse cx={cx} cy="170" rx="66" ry="3" fill="#684f39" opacity=".1" />
-            <path d={`M${cx-32} 166L${cx-7} 82H${cx+7}L${cx+32} 166`} fill="none" stroke="#6a5542" strokeWidth="7" strokeLinejoin="round" />
-            <path d={`M${cx-30} 164L${cx-5} 82`} stroke="#b09878" strokeWidth="2" />
-            <circle cx={cx} cy="78" r="69" fill="#d9d4be" stroke="#65513e" strokeWidth="4" />
-            <circle cx={cx} cy="78" r="62" fill="#eee4cb" />
-            <g transform={`rotate(${motion.wheel} ${cx} 78)`} data-wheel-angle={motion.wheel.toFixed(2)}>
-              {Array.from({ length: 8 }, (_, i) => (
-                <path key={i} d={`M${cx} 78V17`} transform={`rotate(${i*45} ${cx} 78)`} stroke="#b7baa0" strokeWidth="3" />
-              ))}
-              {Array.from({ length: 28 }, (_, i) => (
-                <path key={i} d={`M${cx} 11V17`} transform={`rotate(${i*360/28} ${cx} 78)`}
-                  stroke={i % 7 === 0 ? "#7c8d6b" : "#aaae91"} strokeWidth={i % 7 === 0 ? 5 : 2} />
-              ))}
-              <circle cx={cx} cy="78" r="64.5" fill="none" stroke="#899776" strokeWidth="2" />
-            </g>
-            <circle cx={cx} cy="78" r="8" fill="#b5ba9a" stroke="#65513e" strokeWidth="2" />
-            <circle cx={cx-1} cy="77" r="2.5" fill="#ede3ca" />
-            <path d={`M${cx-42} 162H${cx+42}V169H${cx-42}Z`} fill="#927459" stroke="#65513e" strokeWidth="2" />
-            <path d={`M${cx-36} 164H${cx+36}`} stroke="#d4b795" strokeWidth="2" />
+            <WoodenWheel cx={cx} angle={motion.wheel} />
             <g transform={`translate(${motion.x-40} ${motion.y-54})`} data-hamster-phase={motion.phase}>
               <Hamster distance={motion.distance} running={running} bob={bob} blink={motion.blink}
                 onWheel={motion.phase === "run" || motion.phase === "rest" || motion.phase === "climb"}
@@ -172,48 +154,86 @@ export function HamsterCompanion({ onExperience }: { onExperience: () => void })
   );
 }
 
+// Stepped silhouettes retain a fixed pixel grid as the drum markings turn.
+function pixelDisk(cx: number, cy: number, radius: number) {
+  const rows: string[] = [];
+  for (let y = -radius; y < radius; y += 3) {
+    const mid = y + 1.5;
+    const half = Math.round(Math.sqrt(Math.max(0, radius * radius - mid * mid)) / 3) * 3;
+    if (half) rows.push(`M${cx-half} ${cy+y}h${half*2}v3h${-half*2}Z`);
+  }
+  return rows.join("");
+}
+
+function WoodenWheel({ cx, angle }: { cx: number; angle: number }) {
+  const id = useId();
+  const rear = cx - 11;
+  return <g shapeRendering="crispEdges">
+    <defs>
+      <clipPath id={id}><path d={pixelDisk(rear, 78, 59)} /></clipPath>
+    </defs>
+    <path d={`M${cx-32} 161H${cx-22}V116H${cx-16}V78H${cx-5}V154H${cx+29}V161Z`} fill="#68452b" />
+    <path d={`M${cx-20} 156V116H${cx-15}V82H${cx-11}V156Z`} fill="#ad7547" />
+    <path d={pixelDisk(rear, 78, 72)} fill="#533623" />
+    <path d={pixelDisk(rear, 78, 69)} fill="#9b663b" />
+    <path d={pixelDisk(cx, 78, 72)} fill="#533623" />
+    <path d={pixelDisk(cx, 78, 69)} fill="#c18b50" />
+    <path d={pixelDisk(cx, 78, 63)} fill="#75492c" />
+    <path d={pixelDisk(rear, 78, 59)} fill="#e2bd80" />
+    <g clipPath={`url(#${id})`} transform={`rotate(${angle} ${rear} 78)`}>
+      {[-42,-21,0,21,42].map((y) => <g key={y}>
+        <path d={`M${rear-61} ${78+y}h122v2h-122Z`} fill="#c4965d" />
+        <path d={`M${rear-45} ${84+y}h17v2h-17ZM${rear+13} ${72+y}h25v2h-25Z`} fill="#efd09a" />
+      </g>)}
+    </g>
+    <g data-wheel-angle={angle.toFixed(2)}>
+      {Array.from({length:24},(_,i) => {
+        const a=(i*15+angle)*Math.PI/180;
+        const x=Math.round((cx+66*Math.cos(a))/3)*3;
+        const y=Math.round((78+66*Math.sin(a))/3)*3;
+        return <rect key={i} x={x-1.5} y={y-1.5} width="3" height="3" fill={Math.sin(a)<0 ? "#f1cc8a" : "#986334"} />;
+      })}
+    </g>
+    <path d={pixelDisk(rear,78,7)} fill="#81532f" />
+    <rect x={rear-3} y="75" width="6" height="6" fill="#d5a164" />
+    <path d={`M${cx-44} 159H${cx+38}V163H${cx+43}V170H${cx-49}V163H${cx-44}Z`} fill="#533623" />
+    <path d={`M${cx-43} 162H${cx+37}V166H${cx-43}Z`} fill="#bc8952" />
+    <path d={`M${cx-36} 162H${cx+30}V164H${cx-36}Z`} fill="#e4bd80" />
+  </g>;
+}
+
 function Hamster({ distance, running, bob, blink, snack, onWheel }: {
   distance: number; running: boolean; bob: number; blink: boolean; snack: boolean; onWheel: boolean;
 }) {
-  const paw = (x: number, phase: number, far: boolean) => {
-    const p = running ? pawPosition(distance, phase) : { x: 0, y: 0 };
-    const surface = onWheel ? Math.sqrt(63 ** 2 - (x + p.x - 39) ** 2) - 63 : 0;
-    return <g transform={`translate(${x+p.x} ${p.y+surface})`} fill={far ? "#b77b62" : "#e5a18c"} stroke="#704b36" strokeWidth="1.5" strokeLinejoin="round">
-      <path d="M-3 42H2V48H7V51H-5V47Z" />
-      {!far && <path d="M1 48V50M4 48V50" stroke="#aa715c" strokeWidth="1" />}
-    </g>;
-  };
-  return (
-    <g shapeRendering="geometricPrecision">
-      {paw(25, 0.5, true)}{paw(54, 0, true)}
-      <g transform={`translate(0 ${bob})`}>
-        <path d="M10 35H5V40H11" fill="#e2a389" stroke="#704b36" strokeWidth="2" />
-        <path d="M10 39V28L15 19L25 14H39L48 17L58 17L67 24L70 35L66 44L56 48H24L14 45Z"
-          fill="#c98b47" stroke="#684731" strokeWidth="2.5" strokeLinejoin="round" />
-        <path d="M14 28L20 21L29 18H39L44 21L36 23H28L21 28L18 37H13Z" fill="#e7b76c" />
-        <path d="M17 39L25 35L38 34L44 28L55 28L66 34L64 42L55 47H27L18 44Z" fill="#f5e5bd" />
-        <path d="M23 44H37L43 40L48 43L42 47H27Z" fill="#ddc899" />
-        <path d="M43 20L40 15V8L44 4H50L54 8V17" fill="#bb8145" stroke="#684731" strokeWidth="2" strokeLinejoin="round" />
-        <path d="M44 14V9L47 7L51 10V15Z" fill="#e7a68b" />
-        <path d="M53 20L54 13L60 10L65 14V23" fill="#dda356" stroke="#684731" strokeWidth="2" strokeLinejoin="round" />
-        <path d="M58 18V15L60 14L63 17V20" fill="#edb6a0" />
-        <path d="M41 22L48 17H59L67 24L69 30L75 32V37L70 39L65 45H52L43 40L40 31Z" fill="#e6b36b" />
-        <path d="M51 21H57L59 24L58 30L61 33L57 38L52 34L48 34L46 29Z" fill="#f9ebc9" />
-        <path d="M58 33L67 31L72 34V39L65 44H55L49 40V35Z" fill="#f9eccf" />
-        <path d="M47 35L51 32L55 35V41L51 43L47 40Z" fill="#f3dcb0" />
-        {blink
-          ? <path d="M61 27H66" stroke="#33271e" strokeWidth="2" />
-          : <><path d="M61 23H65L67 25V30L64 32L60 30V26Z" fill="#322820" /><rect x="61" y="24" width="2.5" height="3" rx=".5" fill="#fff9e9" /><rect x="65" y="29" width="1" height="1" fill="#a87743" /></>}
-        <path d="M72 32H76V35L73 37L71 35Z" fill="#c48076" stroke="#704b36" strokeWidth="1" />
-        <path d="M70 39H73M64 37L71 38M64 41L70 40" stroke="#b59872" strokeWidth="1" strokeLinecap="round" />
-        <path d="M20 25L24 23M25 20H30M16 33L18 30M30 31L33 29M35 21L38 22" stroke="#b7793d" strokeWidth="1.5" />
-        {snack && <g>
-          <path d="M63 38L68 40L65 48L60 46Z" fill="#997046" stroke="#604c33" strokeWidth="1" />
-          <path d="M64 40L62 46" stroke="#e2ca91" strokeWidth="1" />
-          <path d="M55 41L60 39L63 41L60 44H56" fill="#e5a18c" stroke="#704b36" strokeWidth="1" />
-        </g>}
-      </g>
-      {paw(22, 0, false)}{!snack && paw(55, 0.5, false)}
+  const id = useId();
+  const feet = [{x:8, width:13, phase:0}, {x:39,width:11,phase:0.5}, {x:55,width:11,phase:0}];
+  const art = <svg x="0" y="3" width="80" height="48" viewBox="70 90 1390 830" preserveAspectRatio="none">
+    <image href="/assets/hamster-pixel-v2.png" width="1536" height="1024" style={{imageRendering:"pixelated"}} />
+  </svg>;
+  return <g shapeRendering="crispEdges">
+    <defs>
+      <mask id={`${id}-body`} maskUnits="userSpaceOnUse" x="-5" y="-5" width="90" height="65">
+        <rect x="-5" y="-5" width="90" height="65" fill="white" />
+        {feet.map((f,i)=><rect key={i} x={f.x} y="44" width={f.width} height="10" fill="black" />)}
+      </mask>
+      {feet.map((f,i)=><clipPath id={`${id}-foot-${i}`} key={i}>
+        <rect x={f.x} y="44" width={f.width} height="10" />
+      </clipPath>)}
+    </defs>
+    {feet.map((f,i)=>{
+      const p=running ? pawPosition(distance,f.phase) : {x:0,y:0};
+      const surface=onWheel ? Math.sqrt(63**2-(f.x+5+p.x-40)**2)-63 : 0;
+      return <g key={i} transform={`translate(${Math.round(p.x)} ${Math.round(p.y+surface)})`}>
+        <g clipPath={`url(#${id}-foot-${i})`}>{art}</g>
+      </g>;
+    })}
+    <g transform={`translate(0 ${Math.round(bob)})`} mask={`url(#${id}-body)`}>{art}
+      {blink && <g><path d="M59 20H67V26H59Z" fill="#ffbb42" /><path d="M59 24H66V26H59Z" fill="#422413" /></g>}
     </g>
-  );
+    {snack && <g>
+      <path d="M69 34H73V39H71V42H67V38H65V35Z" fill="#68432a" />
+      <path d="M69 35H71V40H69Z" fill="#daba7a" />
+      <path d="M64 37H69V40H65Z" fill="#efa1a9" />
+    </g>}
+  </g>;
 }
