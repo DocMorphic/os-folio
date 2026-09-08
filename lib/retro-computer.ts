@@ -3,7 +3,7 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 import { dvdPosition, DVD_WIDTH } from "./dvd-screensaver";
 import { ComputerSpin } from "./computer-spin";
 
-export type ComputerControls = { power(): void; disk(): void; screen(): void; resetView(): void; dispose(): void };
+export type ComputerControls = { power(): void; disk(): void; screen(): void; dispose(): void };
 type ComputerState = { powered: boolean; ejected: boolean; message: string };
 
 /** A self-contained desk toy: no model downloads, audio, or physics worker. */
@@ -199,7 +199,7 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
   const keydown=(event:KeyboardEvent)=>{
     if(event.key==="Home"){event.preventDefault();resetView();}
     else if(event.key==="ArrowLeft"||event.key==="ArrowRight"){
-      event.preventDefault();spin.velocity=0;spin.angle+=(event.key==="ArrowLeft"?-1:1)*Math.PI/8;invalidate();
+      event.preventDefault();spin.rotateBy((event.key==="ArrowLeft"?-1:1)*Math.PI/8);invalidate();
     }
   };
   renderer.domElement.addEventListener("pointerdown",down);renderer.domElement.addEventListener("pointermove",move);renderer.domElement.addEventListener("pointerleave",leave);renderer.domElement.addEventListener("pointerup",release);renderer.domElement.addEventListener("pointercancel",release);renderer.domElement.addEventListener("lostpointercapture",release);host.addEventListener("keydown",keydown);
@@ -230,7 +230,7 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
   const visibility=()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;spin.release(performance.now(),true);activePointer=null;pressedObject=null;}else invalidate();};
   document.addEventListener("visibilitychange",visibility);reduced.addEventListener("change",invalidate);
   drawScreen();resize();invalidate();
-  return {power,disk:eject,screen:wakeScreen,resetView,dispose:()=>{
+  return {power,disk:eject,screen:wakeScreen,dispose:()=>{
     disposed=true;cancelAnimationFrame(frame);observer.disconnect();intersection.disconnect();document.removeEventListener("visibilitychange",visibility);reduced.removeEventListener("change",invalidate);
     renderer.domElement.removeEventListener("pointerdown",down);renderer.domElement.removeEventListener("pointermove",move);renderer.domElement.removeEventListener("pointerleave",leave);renderer.domElement.removeEventListener("pointerup",release);renderer.domElement.removeEventListener("pointercancel",release);renderer.domElement.removeEventListener("lostpointercapture",release);host.removeEventListener("keydown",keydown);
     scene.traverse(object=>{if(object instanceof THREE.Mesh)object.geometry.dispose();});materials.forEach(mat=>mat.dispose());textures.forEach(tex=>tex.dispose());renderer.dispose();renderer.domElement.remove();

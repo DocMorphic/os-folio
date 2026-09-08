@@ -36,7 +36,6 @@ export function RetroComputer({ onExperience }: { onExperience: () => void }) {
     <button className="companion-experience" type="button" onClick={onExperience}>Open Experience</button>
     <div className="retro-computer-spin-hint">
       <span>Drag to spin</span>
-      <button type="button" disabled={!ready} onClick={() => controls.current?.resetView()}>Reset view</button>
     </div>
     <div ref={host} className="retro-computer-canvas" tabIndex={ready ? 0 : -1} role="group"
       aria-label="3D retro computer. Drag left or right and release to spin. Use arrow keys to rotate, or Home to reset." />

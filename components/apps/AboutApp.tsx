@@ -8,7 +8,7 @@ export function AboutApp() {
   const { openWindow } = useWindowManager();
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col overflow-clip pt-1">
       <div className="flex shrink-0 flex-col gap-3">
         <div>
           <h1
