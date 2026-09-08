@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { dvdPosition, DVD_WIDTH } from "./dvd-screensaver";
+import { ComputerSpin } from "./computer-spin";
 
-export type ComputerControls = { power(): void; disk(): void; screen(): void; setPixelated(value: boolean): void; dispose(): void };
+export type ComputerControls = { power(): void; disk(): void; screen(): void; resetView(): void; dispose(): void };
 type ComputerState = { powered: boolean; ejected: boolean; message: string };
 
 /** A self-contained desk toy: no model downloads, audio, or physics worker. */
@@ -14,6 +15,7 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   host.appendChild(renderer.domElement);
+  renderer.domElement.setAttribute("aria-hidden", "true");
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-3, 3, 2, -2, 0.1, 50);
   camera.position.set(4.2, 3.1, 7);
@@ -114,7 +116,10 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(20,20),shadowMat);floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
 
   let powered=true,ejected=false,boot=-10,wake=-10,time=0,previous=0,lastDraw=-1,frame=0,visible=true,disposed=false;
-  let targetX=0,targetY=0,pixelated=true;
+  let targetX=0,targetY=0,hoverYaw=0;
+  const spin = new ComputerSpin();
+  let activePointer: number | null = null;
+  let pressedObject: THREE.Object3D | null = null;
   const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
   const notify=(message:string)=>onState({powered,ejected,message});
   const power=()=>{powered=!powered;if(powered){boot=time;wake=time;}notify(powered?"Booting DD-01…":"Computer asleep.");invalidate();};
@@ -154,16 +159,59 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
     screenTexture.needsUpdate=true;
   };
   const raycaster=new THREE.Raycaster();const pointer=new THREE.Vector2();
-  const hit=(event:PointerEvent)=>{const r=renderer.domElement.getBoundingClientRect();pointer.set((event.clientX-r.left)/r.width*2-1,-(event.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects([powerButton,ejectButton,disk,screen],true)[0]?.object;};
-  const move=(event:PointerEvent)=>{const r=host.getBoundingClientRect();targetX=((event.clientX-r.left)/r.width-0.5)*0.22;targetY=((event.clientY-r.top)/r.height-0.5)*0.06;renderer.domElement.style.cursor=hit(event)?"pointer":"default";invalidate();};
-  const leave=()=>{targetX=0;targetY=0;invalidate();};
-  const click=(event:PointerEvent)=>{const object=hit(event);if(object===powerButton)power();else if(object===ejectButton||object?.parent===disk)eject();else if(object===screen)wakeScreen();};
-  renderer.domElement.addEventListener("pointermove",move);renderer.domElement.addEventListener("pointerleave",leave);renderer.domElement.addEventListener("pointerup",click);
+  const hit=(event:PointerEvent)=>{const r=renderer.domElement.getBoundingClientRect();pointer.set((event.clientX-r.left)/r.width*2-1,-(event.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects(rig.children,true)[0]?.object;};
+  const down=(event:PointerEvent)=>{
+    if(!event.isPrimary||event.button!==0||activePointer!==null)return;
+    const object=hit(event);if(!object)return;
+    activePointer=event.pointerId;pressedObject=object;
+    spin.begin(event.clientX,event.clientY,event.timeStamp,host.clientWidth);
+    renderer.domElement.setPointerCapture(event.pointerId);
+    renderer.domElement.style.cursor="grabbing";
+    host.focus({preventScroll:true});invalidate();
+  };
+  const move=(event:PointerEvent)=>{
+    if(activePointer!==null){
+      if(event.pointerId===activePointer){spin.move(event.clientX,event.clientY,event.timeStamp);targetX=0;targetY=0;invalidate();}
+      return;
+    }
+    const r=host.getBoundingClientRect();targetX=((event.clientX-r.left)/r.width-0.5)*0.22;targetY=((event.clientY-r.top)/r.height-0.5)*0.06;
+    renderer.domElement.style.cursor=hit(event)?"grab":"default";invalidate();
+  };
+  const leave=()=>{targetX=0;targetY=0;if(activePointer===null)renderer.domElement.style.cursor="default";invalidate();};
+  const release=(event:PointerEvent)=>{
+    if(event.pointerId!==activePointer)return;
+    const cancelled=event.type!=="pointerup";
+    const dragged=spin.release(event.timeStamp,cancelled,reduced.matches);
+    activePointer=null;
+    if(renderer.domElement.hasPointerCapture(event.pointerId))renderer.domElement.releasePointerCapture(event.pointerId);
+    renderer.domElement.style.cursor="grab";
+    const object=hit(event);
+    if(!cancelled&&!dragged&&object===pressedObject){
+      if(object===powerButton)power();else if(object===ejectButton||object?.parent===disk)eject();else if(object===screen)wakeScreen();
+    }
+    pressedObject=null;invalidate();
+  };
+  const resetView=()=>{
+    const pointerId=activePointer;activePointer=null;pressedObject=null;spin.reset();targetX=0;targetY=0;hoverYaw=0;
+    if(pointerId!==null&&renderer.domElement.hasPointerCapture(pointerId))renderer.domElement.releasePointerCapture(pointerId);
+    notify("Computer view reset.");invalidate();
+  };
+  const keydown=(event:KeyboardEvent)=>{
+    if(event.key==="Home"){event.preventDefault();resetView();}
+    else if(event.key==="ArrowLeft"||event.key==="ArrowRight"){
+      event.preventDefault();spin.velocity=0;spin.angle+=(event.key==="ArrowLeft"?-1:1)*Math.PI/8;invalidate();
+    }
+  };
+  renderer.domElement.addEventListener("pointerdown",down);renderer.domElement.addEventListener("pointermove",move);renderer.domElement.addEventListener("pointerleave",leave);renderer.domElement.addEventListener("pointerup",release);renderer.domElement.addEventListener("pointercancel",release);renderer.domElement.addEventListener("lostpointercapture",release);host.addEventListener("keydown",keydown);
   function render(now:number){
     frame=0;if(disposed||!visible||document.hidden)return;
     const dt=previous?Math.min((now-previous)/1000,0.05):0;previous=now;time+=dt;
     const blend=reduced.matches?1:1-Math.exp(-dt*9);
-    rig.rotation.y+=(targetX-rig.rotation.y)*blend;rig.rotation.x+=(targetY-rig.rotation.x)*blend;
+    spin.step(dt,reduced.matches);
+    hoverYaw+=(targetX-hoverYaw)*blend;
+    rig.rotation.y=spin.angle+hoverYaw;rig.rotation.x+=(targetY-rig.rotation.x)*blend;
+    renderer.domElement.dataset.spinAngle=spin.angle.toFixed(3);
+    renderer.domElement.dataset.spinVelocity=spin.velocity.toFixed(3);
     disk.position.z+=((ejected?1.26:0.45)-disk.position.z)*blend;
     led.visible=powered;
     if(time-lastDraw>1/24||reduced.matches){drawScreen();lastDraw=time;}
@@ -173,22 +221,18 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
   function invalidate(){if(!disposed&&!frame&&visible&&!document.hidden){previous=0;frame=requestAnimationFrame(render);}}
   const resize=()=>{
     const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;
-    // Only this toy's drawing buffer changes. Smooth restores native DPR;
-    // no portfolio image, texture asset, or model is modified.
-    renderer.setPixelRatio(pixelated?1:window.devicePixelRatio);
-    renderer.setSize(pixelated?Math.max(1,Math.round(w/3)):w,pixelated?Math.max(1,Math.round(h/3)):h,false);
-    renderer.domElement.style.imageRendering=pixelated?"pixelated":"auto";
-    renderer.domElement.dataset.renderStyle=pixelated?"pixel":"smooth";
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(w,h,false);
     const vertical=Math.max(3.25,3.9*h/w);camera.left=-vertical*w/h/2;camera.right=vertical*w/h/2;camera.top=vertical/2;camera.bottom=-vertical/2;camera.updateProjectionMatrix();invalidate();
   };
   const observer=new ResizeObserver(resize);observer.observe(host);
   const intersection=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(!visible){cancelAnimationFrame(frame);frame=0;}else invalidate();});intersection.observe(host);
-  const visibility=()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else invalidate();};
+  const visibility=()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;spin.release(performance.now(),true);activePointer=null;pressedObject=null;}else invalidate();};
   document.addEventListener("visibilitychange",visibility);reduced.addEventListener("change",invalidate);
   drawScreen();resize();invalidate();
-  return {power,disk:eject,screen:wakeScreen,setPixelated:(value)=>{pixelated=value;resize();},dispose:()=>{
+  return {power,disk:eject,screen:wakeScreen,resetView,dispose:()=>{
     disposed=true;cancelAnimationFrame(frame);observer.disconnect();intersection.disconnect();document.removeEventListener("visibilitychange",visibility);reduced.removeEventListener("change",invalidate);
-    renderer.domElement.removeEventListener("pointermove",move);renderer.domElement.removeEventListener("pointerleave",leave);renderer.domElement.removeEventListener("pointerup",click);
+    renderer.domElement.removeEventListener("pointerdown",down);renderer.domElement.removeEventListener("pointermove",move);renderer.domElement.removeEventListener("pointerleave",leave);renderer.domElement.removeEventListener("pointerup",release);renderer.domElement.removeEventListener("pointercancel",release);renderer.domElement.removeEventListener("lostpointercapture",release);host.removeEventListener("keydown",keydown);
     scene.traverse(object=>{if(object instanceof THREE.Mesh)object.geometry.dispose();});materials.forEach(mat=>mat.dispose());textures.forEach(tex=>tex.dispose());renderer.dispose();renderer.domElement.remove();
   }};
 }

@@ -10,7 +10,6 @@ export function RetroComputer({ onExperience }: { onExperience: () => void }) {
   const [ready, setReady] = useState(false);
   const [powered, setPowered] = useState(true);
   const [ejected, setEjected] = useState(false);
-  const [pixelated, setPixelated] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,7 +25,7 @@ export function RetroComputer({ onExperience }: { onExperience: () => void }) {
       controls.current = computer;
       dispose = computer.dispose;
       setReady(true);
-      setStatus("Click the screen to wake it up.");
+      setStatus("Drag and release to spin. Click the screen to wake it up.");
     }).catch(() => {
       if (!cancelled) setStatus("The little computer needs WebGL to start.");
     });
@@ -35,13 +34,12 @@ export function RetroComputer({ onExperience }: { onExperience: () => void }) {
 
   return <div className="retro-computer-stage">
     <button className="companion-experience" type="button" onClick={onExperience}>Open Experience</button>
-    <div className="retro-computer-style" role="group" aria-label="Computer rendering style">
-      {([false, true] as const).map((pixel) => <button key={String(pixel)} type="button" disabled={!ready}
-        aria-pressed={pixelated === pixel} onClick={() => { controls.current?.setPixelated(pixel); setPixelated(pixel); }}>
-        {pixel ? "Pixel" : "Smooth"}
-      </button>)}
+    <div className="retro-computer-spin-hint">
+      <span>Drag to spin</span>
+      <button type="button" disabled={!ready} onClick={() => controls.current?.resetView()}>Reset view</button>
     </div>
-    <div ref={host} className="retro-computer-canvas" aria-hidden="true" />
+    <div ref={host} className="retro-computer-canvas" tabIndex={ready ? 0 : -1} role="group"
+      aria-label="3D retro computer. Drag left or right and release to spin. Use arrow keys to rotate, or Home to reset." />
     {!ready && <p className="retro-computer-fallback">{status}</p>}
     <div className="retro-computer-controls" aria-label="Mini computer controls">
       <button disabled={!ready} type="button" onClick={() => controls.current?.power()}
