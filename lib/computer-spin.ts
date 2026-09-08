@@ -1,16 +1,12 @@
-const FRICTION = 1.7;
 const MAX_SPEED = 14;
 const DRAG_THRESHOLD = 6;
-const STOP_SPEED = 0.008;
 const TAU = Math.PI * 2;
-const RETURN_DELAY = 0.2;
-const RETURN_DURATION = 2.4;
 
 /** Pointer coordinates use CSS pixels; velocity is radians per second. */
 export class ComputerSpin {
   angle = 0;
   velocity = 0;
-  private home: null | { from: number; to: number; elapsed: number } = null;
+  private home: null | { from: number; to: number; elapsed: number; duration: number; speed: number } = null;
   private drag: null | {
     x: number; y: number; angle: number; sensitivity: number; moved: boolean;
     samples: { x: number; time: number }[];
@@ -50,29 +46,30 @@ export class ComputerSpin {
   step(dt: number, reducedMotion = false) {
     if (this.dragging) return;
     if (reducedMotion) { this.velocity = 0; this.home = null; return; }
-    let remaining = Math.max(0, dt);
-    if (this.velocity !== 0) {
-      // Split at the exact stop time, so the return is frame-rate independent.
-      const untilStop = Math.max(0, Math.log(Math.abs(this.velocity) / STOP_SPEED) / FRICTION);
-      const coast = Math.min(remaining, untilStop);
-      const decay = Math.exp(-FRICTION * coast);
-      this.angle += this.velocity * (1 - decay) / FRICTION;
-      this.velocity *= decay;
-      remaining -= coast;
-      if (coast < untilStop) return;
-      this.velocity = 0;
-    }
     if (!this.home) {
-      const to = Math.round(this.angle / TAU) * TAU;
-      if (Math.abs(to - this.angle) < 1e-9) return;
-      this.home = { from: this.angle, to, elapsed: 0 };
+      const speed = Math.abs(this.velocity);
+      let to = Math.round(this.angle / TAU) * TAU;
+      let duration = 2.4;
+      if (speed >= 1.2) {
+        // Land on a front-facing revolution AHEAD of the flick, rather than
+        // stopping at an arbitrary angle and then reversing toward home.
+        const direction = Math.sign(this.velocity);
+        to = direction * Math.ceil(direction * (this.angle + this.velocity * 0.7) / TAU) * TAU;
+        duration = Math.min(4.5, 3 * Math.abs(to - this.angle) / speed);
+      }
+      if (Math.abs(to - this.angle) < 1e-9 && speed < 1e-9) return;
+      this.home = { from: this.angle, to, elapsed: 0, duration, speed: this.velocity };
     }
-    this.home.elapsed += remaining;
-    const t = Math.max(0, Math.min(1, (this.home.elapsed - RETURN_DELAY) / RETURN_DURATION));
-    // Ease in and out from rest, using the shortest route to the front.
-    const ease = t * t * t * (t * (6 * t - 15) + 10);
-    this.angle = this.home.from + (this.home.to - this.home.from) * ease;
-    if (t === 1) { this.angle = this.home.to; this.home = null; }
+    const home = this.home;
+    home.elapsed += Math.max(0, dt);
+    const t = Math.min(1, home.elapsed / home.duration);
+    const distance = home.to - home.from;
+    const tangent = home.speed * home.duration;
+    // One Hermite trajectory preserves release velocity and continuously
+    // brings it to zero at home. There is no coast/return switch or delay.
+    this.angle = home.from + distance * (3*t*t - 2*t*t*t) + tangent * (t*t*t - 2*t*t + t);
+    this.velocity = (distance * (6*t - 6*t*t) + tangent * (3*t*t - 4*t + 1)) / home.duration;
+    if (t === 1) { this.angle = home.to; this.velocity = 0; this.home = null; }
   }
 
   rotateBy(angle: number) { this.home = null; this.velocity = 0; this.angle += angle; }

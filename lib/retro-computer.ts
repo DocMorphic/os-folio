@@ -184,8 +184,8 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
     const dragged=spin.release(event.timeStamp,cancelled,reduced.matches);
     activePointer=null;
     if(renderer.domElement.hasPointerCapture(event.pointerId))renderer.domElement.releasePointerCapture(event.pointerId);
-    renderer.domElement.style.cursor="grab";
     const object=hit(event);
+    renderer.domElement.style.cursor=object?"grab":"default";
     if(!cancelled&&!dragged&&object===pressedObject){
       if(object===powerButton)power();else if(object===ejectButton||object?.parent===disk)eject();else if(object===screen)wakeScreen();
     }
