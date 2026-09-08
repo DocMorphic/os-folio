@@ -10,6 +10,7 @@ export function RetroComputer({ onExperience }: { onExperience: () => void }) {
   const [ready, setReady] = useState(false);
   const [powered, setPowered] = useState(true);
   const [ejected, setEjected] = useState(false);
+  const [pixelated, setPixelated] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -34,6 +35,12 @@ export function RetroComputer({ onExperience }: { onExperience: () => void }) {
 
   return <div className="retro-computer-stage">
     <button className="companion-experience" type="button" onClick={onExperience}>Open Experience</button>
+    <div className="retro-computer-style" role="group" aria-label="Computer rendering style">
+      {([false, true] as const).map((pixel) => <button key={String(pixel)} type="button" disabled={!ready}
+        aria-pressed={pixelated === pixel} onClick={() => { controls.current?.setPixelated(pixel); setPixelated(pixel); }}>
+        {pixel ? "Pixel" : "Smooth"}
+      </button>)}
+    </div>
     <div ref={host} className="retro-computer-canvas" aria-hidden="true" />
     {!ready && <p className="retro-computer-fallback">{status}</p>}
     <div className="retro-computer-controls" aria-label="Mini computer controls">

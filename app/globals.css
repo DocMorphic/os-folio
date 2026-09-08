@@ -437,6 +437,32 @@ body {
   touch-action: pan-y;
 }
 .retro-computer-canvas canvas { display: block; width: 100%; height: 100%; }
+.retro-computer-style {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  gap: 2px;
+}
+.retro-computer-style button {
+  min-height: 44px;
+  padding: 0 8px;
+  background: transparent;
+  border: 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.retro-computer-style button[aria-pressed="true"] {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+}
+.retro-computer-style button:focus-visible { outline: 2px solid var(--color-accent); }
+.retro-computer-style button:disabled { opacity: 0.5; cursor: default; }
 .retro-computer-fallback {
   position: absolute;
   top: 50%;

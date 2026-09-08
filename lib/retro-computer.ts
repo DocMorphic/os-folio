@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { dvdPosition, DVD_WIDTH } from "./dvd-screensaver";
 
-export type ComputerControls = { power(): void; disk(): void; screen(): void; dispose(): void };
+export type ComputerControls = { power(): void; disk(): void; screen(): void; setPixelated(value: boolean): void; dispose(): void };
 type ComputerState = { powered: boolean; ejected: boolean; message: string };
 
 /** A self-contained desk toy: no model downloads, audio, or physics worker. */
@@ -113,7 +114,7 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(20,20),shadowMat);floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
 
   let powered=true,ejected=false,boot=-10,wake=-10,time=0,previous=0,lastDraw=-1,frame=0,visible=true,disposed=false;
-  let targetX=0,targetY=0;
+  let targetX=0,targetY=0,pixelated=true;
   const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
   const notify=(message:string)=>onState({powered,ejected,message});
   const power=()=>{powered=!powered;if(powered){boot=time;wake=time;}notify(powered?"Booting DD-01…":"Computer asleep.");invalidate();};
@@ -135,17 +136,16 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
         ctx.font="18px monospace";ctx.fillText("I'm Dharmay.",112,195);ctx.fillText("I build things.",112,224);
         if(reduced.matches||Math.floor(time*2)%2===0)ctx.fillRect(112,246,12,20);
       } else {
-        // A genuine animated wireframe screensaver, drawn into the CRT texture.
-        const angle=reduced.matches?0.4:time*0.62;
-        const points=Array.from({length:8},(_,i)=>{
-          const x=(i&1?1:-1),y=(i&2?1:-1),z=(i&4?1:-1);
-          const rx=x*Math.cos(angle)-z*Math.sin(angle),rz=x*Math.sin(angle)+z*Math.cos(angle);
-          const ry=y*Math.cos(angle*0.7)-rz*Math.sin(angle*0.7);
-          return [256+rx*69+(reduced.matches?0:Math.sin(time*0.4)*78),167+ry*63+(reduced.matches?0:Math.cos(time*0.31)*27)];
-        });
-        ctx.lineWidth=3;ctx.strokeStyle="#a8df93";ctx.shadowColor="#8bdd83";ctx.shadowBlur=8;
-        for(let i=0;i<8;i++)for(const bit of [1,2,4])if(!(i&bit)){ctx.beginPath();ctx.moveTo(...points[i] as [number,number]);ctx.lineTo(...points[i|bit] as [number,number]);ctx.stroke();}
-        ctx.shadowBlur=0;ctx.font="16px monospace";ctx.fillStyle="#86ac7d";ctx.fillText("CLICK TO WAKE",194,317);
+        const logo=dvdPosition(reduced.matches?0:time);
+        ctx.fillStyle="#091710";ctx.fillRect(0,0,512,352);
+        ctx.save();ctx.translate(logo.x,logo.y);
+        ctx.fillStyle=logo.color;ctx.shadowColor=logo.color;ctx.shadowBlur=4;
+        ctx.font="italic 900 80px Arial, sans-serif";ctx.fillText("DVD",0,72,DVD_WIDTH);
+        ctx.beginPath();ctx.ellipse(90,88,85,9,0,0,Math.PI*2);ctx.fill();
+        ctx.shadowBlur=0;ctx.fillStyle="#091710";
+        ctx.beginPath();ctx.ellipse(90,88,26,3,0,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=logo.color;ctx.font="bold 14px Arial, sans-serif";ctx.fillText("V I D E O",59,111);
+        ctx.restore();
       }
       ctx.fillStyle="rgba(5,20,12,.15)";for(let y=0;y<352;y+=4)ctx.fillRect(0,y,512,1);
       const vignette=ctx.createRadialGradient(256,176,90,256,176,300);vignette.addColorStop(0,"transparent");vignette.addColorStop(1,"rgba(0,15,8,.48)");ctx.fillStyle=vignette;ctx.fillRect(0,0,512,352);
@@ -171,13 +171,22 @@ export function createComputer(host: HTMLElement, onState: (state: ComputerState
     if(!reduced.matches)frame=requestAnimationFrame(render);
   }
   function invalidate(){if(!disposed&&!frame&&visible&&!document.hidden){previous=0;frame=requestAnimationFrame(render);}}
-  const resize=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h);const vertical=Math.max(3.25,3.9*h/w);camera.left=-vertical*w/h/2;camera.right=vertical*w/h/2;camera.top=vertical/2;camera.bottom=-vertical/2;camera.updateProjectionMatrix();invalidate();};
+  const resize=()=>{
+    const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;
+    // Only this toy's drawing buffer changes. Smooth restores native DPR;
+    // no portfolio image, texture asset, or model is modified.
+    renderer.setPixelRatio(pixelated?1:window.devicePixelRatio);
+    renderer.setSize(pixelated?Math.max(1,Math.round(w/3)):w,pixelated?Math.max(1,Math.round(h/3)):h,false);
+    renderer.domElement.style.imageRendering=pixelated?"pixelated":"auto";
+    renderer.domElement.dataset.renderStyle=pixelated?"pixel":"smooth";
+    const vertical=Math.max(3.25,3.9*h/w);camera.left=-vertical*w/h/2;camera.right=vertical*w/h/2;camera.top=vertical/2;camera.bottom=-vertical/2;camera.updateProjectionMatrix();invalidate();
+  };
   const observer=new ResizeObserver(resize);observer.observe(host);
   const intersection=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(!visible){cancelAnimationFrame(frame);frame=0;}else invalidate();});intersection.observe(host);
   const visibility=()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else invalidate();};
   document.addEventListener("visibilitychange",visibility);reduced.addEventListener("change",invalidate);
   drawScreen();resize();invalidate();
-  return {power,disk:eject,screen:wakeScreen,dispose:()=>{
+  return {power,disk:eject,screen:wakeScreen,setPixelated:(value)=>{pixelated=value;resize();},dispose:()=>{
     disposed=true;cancelAnimationFrame(frame);observer.disconnect();intersection.disconnect();document.removeEventListener("visibilitychange",visibility);reduced.removeEventListener("change",invalidate);
     renderer.domElement.removeEventListener("pointermove",move);renderer.domElement.removeEventListener("pointerleave",leave);renderer.domElement.removeEventListener("pointerup",click);
     scene.traverse(object=>{if(object instanceof THREE.Mesh)object.geometry.dispose();});materials.forEach(mat=>mat.dispose());textures.forEach(tex=>tex.dispose());renderer.dispose();renderer.domElement.remove();
