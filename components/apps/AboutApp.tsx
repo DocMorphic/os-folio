@@ -2,7 +2,7 @@
 
 import { aboutData } from "@/content/about";
 import { useWindowManager } from "@/hooks/use-window-manager";
-import { HamsterCompanion } from "@/components/HamsterCompanion";
+import { RetroComputer } from "@/components/RetroComputer";
 
 export function AboutApp() {
   const { openWindow } = useWindowManager();
@@ -97,7 +97,7 @@ export function AboutApp() {
         </section>
       </div>
 
-      <HamsterCompanion onExperience={() => openWindow("experience")} />
+      <RetroComputer onExperience={() => openWindow("experience")} />
     </div>
   );
 }

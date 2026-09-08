@@ -423,7 +423,52 @@ body {
   color: var(--color-accent);
 }
 
-/* === About hamster companion === */
+/* === Interactive miniature computer === */
+.retro-computer-stage {
+  position: relative;
+  flex: 1 1 240px;
+  min-height: 90px;
+  margin-top: 8px;
+  isolation: isolate;
+}
+.retro-computer-canvas {
+  position: absolute;
+  inset: 34px 0 38px;
+  touch-action: pan-y;
+}
+.retro-computer-canvas canvas { display: block; width: 100%; height: 100%; }
+.retro-computer-fallback {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+.retro-computer-controls {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  white-space: nowrap;
+}
+.retro-computer-controls button {
+  border: 0;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 5px 3px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  cursor: pointer;
+}
+.retro-computer-controls button:hover { color: var(--color-link); }
+.retro-computer-controls button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.retro-computer-controls button:disabled { opacity: 0.5; cursor: default; }
+
+/* === Legacy companion styles === */
 .hamster-stage {
   position: relative;
   flex: 1 1 176px;
