@@ -180,19 +180,26 @@ function WoodenWheel({ cx, angle }: { cx: number; angle: number }) {
     <path d={pixelDisk(cx, 78, 69)} fill="#c18b50" />
     <path d={pixelDisk(cx, 78, 63)} fill="#75492c" />
     <path d={pixelDisk(rear, 78, 59)} fill="#e2bd80" />
-    <g clipPath={`url(#${id})`} transform={`rotate(${angle} ${rear} 78)`}>
-      {[-42,-21,0,21,42].map((y) => <g key={y}>
-        <path d={`M${rear-61} ${78+y}h122v2h-122Z`} fill="#c4965d" />
-        <path d={`M${rear-45} ${84+y}h17v2h-17ZM${rear+13} ${72+y}h25v2h-25Z`} fill="#efd09a" />
-      </g>)}
+    <g clipPath={`url(#${id})`}>
+      <g transform={`rotate(${angle % 360} ${rear} 78)`}>
+        {/* Unequal boards and a wood knot give the eye a point to follow. */}
+        <path d={`M${rear-61} 33h122v22h-122ZM${rear-61} 102h122v15h-122Z`} fill="#c99b60" />
+        {[-45,-23,2,24,39].map((y) => <g key={y}>
+          <path d={`M${rear-61} ${78+y}h122v3h-122Z`} fill="#986637" />
+          <path d={`M${rear-61} ${81+y}h122v2h-122Z`} fill="#f6d8a1" />
+          <path d={`M${rear-45} ${87+y}h17v2h-17ZM${rear+13} ${72+y}h25v2h-25Z`} fill="#b3824b" />
+        </g>)}
+        <path d={`M${rear+20} 41h10v3h4v5h-4v3h-10v-3h-4v-5h4Z`} fill="#936033" />
+        <path d={`M${rear+22} 44h7v5h-7Z`} fill="#e2bd80" />
+      </g>
     </g>
-    <g data-wheel-angle={angle.toFixed(2)}>
-      {Array.from({length:24},(_,i) => {
-        const a=(i*15+angle)*Math.PI/180;
-        const x=Math.round((cx+66*Math.cos(a))/3)*3;
-        const y=Math.round((78+66*Math.sin(a))/3)*3;
-        return <rect key={i} x={x-1.5} y={y-1.5} width="3" height="3" fill={Math.sin(a)<0 ? "#f1cc8a" : "#986334"} />;
-      })}
+    <g data-wheel-angle={angle.toFixed(2)} transform={`rotate(${angle % 360} ${cx} 78)`}>
+      {Array.from({length:12},(_,i) => <g key={i} transform={`rotate(${i*30} ${cx} 78)`}>
+        <rect x={cx-3} y="9" width="6" height="8" fill={i % 3 === 0 ? "#6b4127" : "#f2d399"} />
+        <rect x={cx-1} y="10" width="2" height="6" fill={i % 3 === 0 ? "#a77943" : "#d5a569"} />
+      </g>)}
+      <path d={`M${cx-6} 8h12v10h-12Z`} fill="#74432a" />
+      <path d={`M${cx-3} 10h6v6h-6Z`} fill="#ffdc96" />
     </g>
     <path d={pixelDisk(rear,78,7)} fill="#81532f" />
     <rect x={rear-3} y="75" width="6" height="6" fill="#d5a164" />
@@ -216,15 +223,22 @@ function Hamster({ distance, running, bob, blink, snack, onWheel }: {
         <rect x="-5" y="-5" width="90" height="65" fill="white" />
         {feet.map((f,i)=><rect key={i} x={f.x} y="44" width={f.width} height="10" fill="black" />)}
       </mask>
-      {feet.map((f,i)=><clipPath id={`${id}-foot-${i}`} key={i}>
-        <rect x={f.x} y="44" width={f.width} height="10" />
-      </clipPath>)}
     </defs>
     {feet.map((f,i)=>{
       const p=running ? pawPosition(distance,f.phase) : {x:0,y:0};
-      const surface=onWheel ? Math.sqrt(63**2-(f.x+5+p.x-40)**2)-63 : 0;
-      return <g key={i} transform={`translate(${Math.round(p.x)} ${Math.round(p.y+surface)})`}>
-        <g clipPath={`url(#${id}-foot-${i})`}>{art}</g>
+      const hip = f.x + f.width / 2;
+      const footX = Math.round(hip + p.x);
+      const surface=onWheel ? Math.sqrt(63**2-(footX-40)**2)-63 : 0;
+      const footY = Math.round(49 + p.y + surface);
+      // The hip stays embedded in the body. One solid leg joins it to the
+      // moving ankle; no translated sprite fragments or exposed cutout holes.
+      const hipY = 37 + Math.round(bob);
+      return <g key={i} data-hamster-leg={i}>
+        <path d={`M${f.x-1} ${hipY}H${f.x+f.width+1}L${footX+4} ${footY-2}V${footY}H${footX-4}V${footY-2}Z`}
+          fill={i === 0 ? "#e5a548" : "#f5d8a0"} stroke="#65402a" strokeWidth="1" />
+        <path d={`M${footX-4} ${footY-3}H${footX+4}V${footY-1}H${footX+5}V${footY+1}H${footX-4}Z`}
+          fill="#ed8eaa" stroke="#854538" strokeWidth="1" />
+        <path d={`M${footX-2} ${footY-2}H${footX+2}V${footY}H${footX-2}Z`} fill="#ffbdd0" />
       </g>;
     })}
     <g transform={`translate(0 ${Math.round(bob)})`} mask={`url(#${id}-body)`}>{art}
