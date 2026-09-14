@@ -4,8 +4,8 @@ export const aboutData = {
   title: "CS Student & Full-Stack Developer",
   location: "Munich, Germany",
   intro: [
-    "Munich-based Computer Science student at TU Munich, building reliable AI and web products at Lyceum.",
-    "Outside code: volleyball, squash, game mechanics, and odd little prototypes.",
+    "hi :) I’m a CS student at TUM, starting my bachelor’s in October. I currently intern at Lyceum, working on serverless inference and GPUs.",
+    "A little about me: I’m really athletic, I love video games, playing AND making them, and I’ve got good taste.",
   ],
   currentFocus: [
     "Engineering serverless inference and GPU infrastructure at Lyceum.",

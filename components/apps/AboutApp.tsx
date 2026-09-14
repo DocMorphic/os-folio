@@ -37,11 +37,11 @@ export function AboutApp() {
         >
           <p>{aboutData.intro[0]}</p>
           <p>
-            {aboutData.intro[1]} Browse my{" "}
+            {aboutData.intro[1]} Feel free to browse through my{" "}
             <button className="content-link" onClick={() => openWindow("works")}>
               projects
             </button>
-            , follow along on{" "}
+            {" "}or my{" "}
             <a
               className="content-link"
               href={aboutData.socials.github}
@@ -61,9 +61,8 @@ export function AboutApp() {
             </a>
             , or{" "}
             <button className="content-link" onClick={() => openWindow("contact")}>
-              get in touch
-            </button>
-            .
+              just get in touch with me
+            </button>.
           </p>
         </div>
 
