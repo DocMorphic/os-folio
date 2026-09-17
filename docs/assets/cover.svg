@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+<title id="title">os-folio — A portfolio with windows to open.</title>
+<desc id="desc">Projects, photographs, notes. A little room on the web. Original illustrative artwork, not an application screenshot or measured result.</desc>
+<defs><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#767363" stroke-opacity=".08"/></pattern></defs>
+<rect width="1200" height="440" rx="24" fill="#eee9dd"/><rect width="1200" height="440" rx="24" fill="url(#grid)"/>
+<path d="M704 40V400" stroke="#767363" stroke-opacity=".25"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#302e25">
+<text x="52" y="58" font-size="12" letter-spacing="3" fill="#767363">DHARMAY DAVE / PERSONAL DESKTOP</text>
+<text x="48" y="182" font-family="Georgia, serif" font-size="104" font-style="italic" letter-spacing="-5">os-folio</text>
+<text x="54" y="243" font-size="25">A portfolio with windows to open.</text>
+<text x="54" y="279" font-size="16" fill="#767363">Projects, photographs, notes. A little room on the web.</text>
+<path d="M54 322H650" stroke="#767363" stroke-opacity=".35"/>
+<text x="54" y="363" font-size="21" fill="#302e25">Explore</text><text x="54" y="389" font-size="10" letter-spacing="1.5" fill="#767363">PROJECTS &amp; STORIES</text><text x="257" y="363" font-size="21" fill="#302e25">Arrange</text><text x="257" y="389" font-size="10" letter-spacing="1.5" fill="#767363">YOUR OWN WORKSPACE</text><text x="460" y="363" font-size="21" fill="#44664d">Personal</text><text x="460" y="389" font-size="10" letter-spacing="1.5" fill="#767363">BUILT TO FEEL LIKE ME</text>
+<g transform="translate(745 62)">
+<rect x="44" y="0" width="316" height="214" rx="12" fill="#e1dece" stroke="#aaa98f"/>
+<path d="M44 36H360" stroke="#aaa98f"/><text x="63" y="23" font-size="11" fill="#5b6252">photographs</text>
+<path d="M64 177L135 86L197 139L253 78L340 177Z" fill="#879a7a"/><circle cx="314" cy="73" r="15" fill="#d3b96c"/>
+<rect x="0" y="94" width="297" height="213" rx="10" fill="#faf7ef" stroke="#7a826d"/>
+<path d="M0 131H297" stroke="#a8ad9b"/><circle cx="20" cy="112" r="4" fill="#85917b"/><circle cx="34" cy="112" r="4" fill="#b7c1ad"/><text x="57" y="116" font-size="11">works</text>
+<rect x="20" y="152" width="76" height="76" rx="5" fill="#ced9c7"/><path d="M40 211V174H75V211M47 181H68M47 190H68" fill="none" stroke="#547153" stroke-width="3"/>
+<text x="116" y="169" font-size="20" font-family="Georgia, serif">A few things</text><text x="116" y="194" font-size="20" font-family="Georgia, serif">I've made.</text>
+<path d="M116 211H260M20 253H266M20 270H218" stroke="#b5baaa" stroke-width="5" stroke-linecap="round"/>
+<path d="M265 270L265 313L277 302L290 322L300 316L287 296L304 293Z" fill="#44664d" stroke="#faf7ef" stroke-width="3"/>
+</g><text x="952" y="416" text-anchor="middle" font-size="10" fill="#767363">ILLUSTRATIVE PROJECT ARTWORK</text></g></svg>
