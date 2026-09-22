@@ -28,7 +28,8 @@
 .header{padding:4cqw 5cqw 3cqw;height:auto;min-height:16cqw;}
 .header h2{font-size:6cqw;letter-spacing:-.035em;}
 .header p{font-size:2.5cqw;line-height:1.3;margin:1cqw 0 0;color:#225f50;}
-.headerActions{display:flex;align-items:center;gap:2.5cqw;}.headerActions a{font-size:2.4cqw;color:#225f50;text-decoration:underline;text-underline-offset:.5cqw;}
+.headerActions{display:flex;align-items:center;gap:2.5cqw;}.headerActions .manageButton{width:auto;height:auto;padding:1cqw;background:transparent;border-radius:0;font-size:2.4cqw;color:#225f50;text-decoration:underline;text-underline-offset:.5cqw;}
+.machine.management{display:block;overflow:auto;padding:5cqw;background:#e6ffef;}.management::before,.management::after{display:none;}
 .header button{width:5.5cqw;height:5.5cqw;padding:1.2cqw;display:grid;place-items:center;flex:none;}
 .machine svg{display:block;width:100%;height:100%;flex:none;}
 .shelf{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:49cqw;gap:3cqw;padding:1cqw 5cqw 3cqw;align-content:start;}

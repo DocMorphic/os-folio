@@ -70,7 +70,7 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
 // Simple secret sequence: up up down down
 const SECRET_SEQUENCE = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown"];
 
-export function Desktop() {
+export function Desktop({ initialBlogManagement = false }: { initialBlogManagement?: boolean }) {
   const theme = useThemeProvider();
   const windowManager = useWindowManagerProvider();
   const [toast, setToast] = useState<string | null>(null);
@@ -95,8 +95,20 @@ export function Desktop() {
 
   // Auto-open the About window so first-time visitors land on the bio.
   useEffect(() => {
-    windowManager.openWindow("about");
+    windowManager.openWindow(initialBlogManagement ? "blog" : "about");
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Older shared links still open the desktop, without retaining the old fragment.
+  useEffect(() => {
+    const cleanAboutHash = () => {
+      if (window.location.hash === "#about") {
+        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+      }
+    };
+    cleanAboutHash();
+    window.addEventListener("hashchange", cleanAboutHash);
+    return () => window.removeEventListener("hashchange", cleanAboutHash);
   }, []);
 
   // Type ↑ ↑ ↓ ↓ anywhere on the page (outside of inputs) to unlock
@@ -179,6 +191,9 @@ export function Desktop() {
         <div className="desktop-brightness relative h-dvh w-full select-none">
           <Wallpaper />
           <MenuBar />
+          <nav className="sr-only" aria-label="Main navigation">
+            {["about", "works", "experience", "blog", "contact"].map(id => <button key={id} onClick={() => windowManager.openWindow(id)}>{APP_REGISTRY[id].title}</button>)}
+          </nav>
 
           <div
             id="desktop-content"
@@ -212,7 +227,7 @@ export function Desktop() {
                       showMinimize={!isSearch}
                       showMaximize={!isSearch}
                     >
-                      <AppComponent />
+                      {w.appId === "blog" ? <BlogApp initialManaging={initialBlogManagement} /> : <AppComponent />}
                     </Window>
                   );
                 })}

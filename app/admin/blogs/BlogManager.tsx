@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { BlogEntry } from "@/lib/blogs-store";
 import styles from "./page.module.css";
 
-export function BlogManager() {
+export function BlogManager({ onBack }: { onBack?: () => void }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [configured, setConfigured] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -51,8 +51,8 @@ export function BlogManager() {
     finally { setBusy(false); }
   }
 
-  return <main className={styles.page}><div className={styles.panel}>
-    <header><Link href="/">← Portfolio</Link><span>OWNER’S DESK</span></header>
+  return <section aria-label="Manage blogs" className={onBack ? styles.embedded : styles.page}><div className={styles.panel}>
+    <header>{onBack ? <button onClick={onBack}>← Back to blogs</button> : <Link href="/">← Portfolio</Link>}<span>OWNER’S DESK</span></header>
     <h1>Manage blogs</h1><p className={styles.subtitle}>Keep the shelf full of good reads.</p>
     {error && <p role="alert" className={styles.error}>{error}</p>}
     {notice && <p role="status" className={styles.notice}>{notice}</p>}
@@ -93,5 +93,5 @@ export function BlogManager() {
       </li>)}</ul>
       {blogs.length === 0 && <p>The shelf is empty.</p>}
     </>}
-  </div></main>;
+  </div></section>;
 }

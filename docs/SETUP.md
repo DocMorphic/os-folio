@@ -33,7 +33,9 @@ The recipient and sender are defined in [`lib/email.ts`](../lib/email.ts). Updat
 
 ### Owner blog management
 
-The desktop Blog app and vending screen link to `/admin/blogs`. Configure these
+The desktop Blog app opens management inside its existing OS window; the vending
+machine opens it inside its screen. The legacy `/admin/blogs` address opens the
+desktop with blog management selected. Configure these
 **server-only** Vercel variables, then redeploy:
 
 - `BLOG_ADMIN_PASSWORD`: a password of your choice (no minimum length; it cannot be empty). Save it in your password manager, never in Git or chat.

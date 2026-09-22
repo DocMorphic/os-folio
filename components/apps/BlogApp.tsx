@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { BlogEntry } from "@/lib/blogs-store";
+import { BlogManager } from "@/app/admin/blogs/BlogManager";
 
 type SubmitState = "idle" | "sending" | "success" | "error";
 
@@ -30,7 +31,8 @@ export function preloadBlogs() {
   void loadBlogs().catch(() => {});
 }
 
-export function BlogApp({numbered=false}:{numbered?:boolean}={}) {
+export function BlogApp({numbered=false,initialManaging=false}:{numbered?:boolean;initialManaging?:boolean}={}) {
+  const [managing, setManaging] = useState(initialManaging);
   const [blogs, setBlogs] = useState<BlogEntry[]>(cachedBlogs ?? []);
   const [loading, setLoading] = useState(cachedBlogs === null);
   const [url, setUrl] = useState("");
@@ -105,6 +107,8 @@ export function BlogApp({numbered=false}:{numbered?:boolean}={}) {
       setError(err instanceof Error ? err.message : "Network error");
     }
   };
+
+  if (managing) return <BlogManager onBack={() => { setManaging(false); cachedBlogs = null; void refresh(); }} />;
 
   return (
     <div className="flex flex-col gap-5">
@@ -206,7 +210,7 @@ export function BlogApp({numbered=false}:{numbered?:boolean}={}) {
           >
             POST LIST
           </span>
-          <a href="/admin/blogs" target="_blank" rel="noopener noreferrer" className="text-[11px] underline underline-offset-2">Manage blogs</a>
+          <button onClick={() => setManaging(true)} className="text-[11px] underline underline-offset-2">Manage blogs</button>
         </div>
 
         {loading ? (

@@ -1,5 +1,10 @@
 .page { height:100dvh; overflow:auto; background:#f1e8d8; color:#302a22; padding:clamp(20px,5vw,64px) 20px; font-family:var(--font-dm-sans),sans-serif; }
 .panel { max-width:740px; margin:0 auto; }
+.embedded { color:var(--color-text,#302a22); font-family:var(--font-dm-sans),sans-serif; padding:4px; width:100%; min-width:0; }
+.embedded .panel { max-width:none; }
+.embedded .panel header { margin-bottom:22px; }
+.embedded .panel h1 { font-size:30px; }
+.embedded .subtitle { margin-bottom:24px; }
 .panel header { display:flex; justify-content:space-between; align-items:center; margin-bottom:42px; gap:12px; }
 .panel header a { color:inherit; text-decoration:underline; text-underline-offset:4px; }
 .panel header span { font-size:11px; letter-spacing:.13em; color:#776951; }

@@ -16,7 +16,7 @@ export function WorldPage() {
   const router=useRouter();
   // Establish the presentation gate before the scene's passive mount effects.
   useLayoutEffect(()=>{beginWorldVisit();},[]);
-  const leave=()=>navigateImmersive("/#about",path=>router.push(path));
+  const leave=()=>navigateImmersive("/",path=>router.push(path));
   return <main id="desktop-content" className="world-page">
     <PortfolioRoom active sourceReady sourceBounds={noSource} onExit={leave} standalone/>
   </main>;

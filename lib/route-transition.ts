@@ -33,7 +33,7 @@ export function finishJourney(){
   if(!state?.ready||!pending)return;
   const {present,gameReady,timeout}=pending;clearTimeout(timeout);pending=null;state=null;emit();gameReady();present();
 }
-export function navigateImmersive(path:"/v2"|"/#about",push:(path:string)=>void){
+export function navigateImmersive(path:"/v2"|"/",push:(path:string)=>void){
   if(!begin(path==="/v2"?"world":"desktop"))return;
   // Paint the game before mounting OR tearing down an expensive route tree.
   const current=pending;
