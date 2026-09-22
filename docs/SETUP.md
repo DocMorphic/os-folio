@@ -13,6 +13,8 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 RESEND_API_KEY=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+BLOG_ADMIN_PASSWORD=
+SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 | Setting | Purpose |
@@ -28,6 +30,30 @@ Keep the Resend key server-only. The Supabase anon key is a public client creden
 The recipient and sender are defined in [`lib/email.ts`](../lib/email.ts). Update both for your own installation and configure the sender in your Resend account. With no key, the contact endpoint reports that delivery is unavailable. Merely rendering the form does not prove email delivery works.
 
 ## Optional persistence
+
+### Owner blog management
+
+The desktop Blog app and vending screen link to `/admin/blogs`. Configure these
+**server-only** Vercel variables, then redeploy:
+
+- `BLOG_ADMIN_PASSWORD`: a password of your choice (no minimum length; it cannot be empty). Save it in your password manager, never in Git or chat.
+- `SUPABASE_SERVICE_ROLE_KEY`: the service-role key for the same Supabase project as the public URL. This bypasses RLS; never prefix it with `NEXT_PUBLIC_` or expose it to the browser.
+
+Sign in with the password, choose a post, and confirm deletion. The API requires
+a signed, HttpOnly, same-site session and a matching request Origin. Sessions
+expire after one hour; changing the password invalidates existing sessions.
+Anonymous deletion stays disabled in Supabase. The login endpoint has a small
+per-instance throttle; for durable distributed brute-force protection add a
+Vercel Firewall rate-limit rule for `POST /api/blogs/admin`.
+
+Deleting removes the saved link permanently, not the external article. The
+catalogues refresh when their tab regains focus. No deletion capability is
+enabled until both server variables are configured.
+
+New submissions send email to `davedharmay@gmail.com` through the existing
+Resend integration. Next.js `after()` retains the notification work after the
+HTTP response. Failures are logged; this is best-effort delivery, not a durable
+retry queue. Verify delivery in Resend before relying on it.
 
 The committed project does not include a complete database migration. These are the contracts implemented by the adapters:
 

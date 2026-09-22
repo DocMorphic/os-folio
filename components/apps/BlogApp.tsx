@@ -51,6 +51,9 @@ export function BlogApp({numbered=false}:{numbered?:boolean}={}) {
 
   useEffect(() => {
     refresh();
+    const onReturn = () => { cachedBlogs = null; void refresh(); };
+    window.addEventListener("focus", onReturn);
+    return () => window.removeEventListener("focus", onReturn);
   }, [refresh]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -191,7 +194,7 @@ export function BlogApp({numbered=false}:{numbered?:boolean}={}) {
       {/* POST LIST card */}
       <div className="border" style={{ borderColor: "var(--color-border-hover)" }}>
         <div
-          className="border-b px-4 py-2.5"
+          className="flex items-center justify-between border-b px-4 py-2.5"
           style={{
             background: "var(--color-surface-alt)",
             borderColor: "var(--color-border-hover)",
@@ -203,6 +206,7 @@ export function BlogApp({numbered=false}:{numbered?:boolean}={}) {
           >
             POST LIST
           </span>
+          <a href="/admin/blogs" target="_blank" rel="noopener noreferrer" className="text-[11px] underline underline-offset-2">Manage blogs</a>
         </div>
 
         {loading ? (

@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
-import { addBlog, listBlogs } from "@/lib/blogs-store";
+import { addBlog, deleteBlog, listBlogs } from "@/lib/blogs-store";
 import { sendNewBlogEmail } from "@/lib/email";
+import { ADMIN_COOKIE, adminConfigured, sameOrigin, validAdminSession, validBlogId } from "@/lib/blog-admin";
 
 const MAX_URL_LEN = 1000;
 const MAX_TITLE_LEN = 200;
@@ -22,10 +23,25 @@ export async function GET() {
     { blogs },
     {
       headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+        "Cache-Control": "no-store",
       },
     }
   );
+}
+
+export async function DELETE(request: NextRequest) {
+  if (!sameOrigin(request)) return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
+  if (!adminConfigured() || !validAdminSession(request.cookies.get(ADMIN_COOKIE)?.value)) {
+    return NextResponse.json({ error: "Sign in as the owner to delete blogs." }, { status: 401 });
+  }
+  let body;
+  try { body = await request.json(); } catch { return NextResponse.json({ error: "Invalid request." }, { status: 400 }); }
+  if (!validBlogId(body?.id)) return NextResponse.json({ error: "Invalid blog ID." }, { status: 400 });
+  const result = await deleteBlog(body.id);
+  if (result === "failed") return NextResponse.json({ error: "Couldn't delete this blog. Please try again." }, { status: 502 });
+  if (result === "missing") return NextResponse.json({ error: "This blog was not found. Refresh the list." }, { status: 404 });
+  revalidateTag("blogs", { expire: 0 });
+  return NextResponse.json({ deleted: body.id }, { headers: { "Cache-Control": "no-store" } });
 }
 
 export async function POST(req: Request) {
@@ -84,8 +100,12 @@ export async function POST(req: Request) {
 
   revalidateTag("blogs", "max");
 
-  // Best-effort notification — a failed email should never fail the submission.
-  sendNewBlogEmail({ title: entry.title, url: entry.url }).catch(() => {});
+  // Keep the serverless invocation alive until delivery finishes. An unawaited
+  // promise can be frozen as soon as Vercel sends the response.
+  after(async () => {
+    const result = await sendNewBlogEmail({ title: entry.title, url: entry.url });
+    if (!result.ok) console.error("[blog-notify] Notification failed:", result.error);
+  });
 
   return NextResponse.json({ blog: entry });
 }

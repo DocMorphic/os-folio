@@ -20,18 +20,20 @@ export function JournalVending({onBack,focused}:{onBack():void;focused:boolean})
   const [title,setTitle]=useState(""),[url,setUrl]=useState(""),[sending,setSending]=useState(false);
   useEffect(()=>{
     const controller=new AbortController();
-    fetch("/api/blogs",{signal:controller.signal}).then(async res=>{
+    const reload=()=>fetch("/api/blogs",{signal:controller.signal,cache:"no-store"}).then(async res=>{
       if(!res.ok)throw new Error("The shelf couldn't load. Please try again.");
-      const data=await res.json();if(!controller.signal.aborted)setEntries((data.blogs??[]).filter((entry:BlogEntry)=>safeLink(entry.url)));
+      const data=await res.json();if(!controller.signal.aborted){const next:BlogEntry[]=(data.blogs??[]).filter((entry:BlogEntry)=>safeLink(entry.url));setEntries(next);setPage(p=>Math.min(p,Math.max(0,Math.ceil(next.length/PAGE_SIZE)-1)));setSelected(current=>current&&next.some(entry=>entry.id===current.id)?current:null);}
     }).catch(err=>{if(!controller.signal.aborted)setError(err.message);}).finally(()=>{if(!controller.signal.aborted)setLoading(false);});
-    return()=>controller.abort();
+    void reload();
+    window.addEventListener("focus",reload);
+    return()=>{controller.abort();window.removeEventListener("focus",reload);};
   },[]);
   const pages=Math.max(1,Math.ceil(entries.length/PAGE_SIZE)),items=entries.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);
   const choose=(entry:BlogEntry)=>{worldSound.play("paper",{gain:.18});setSelected(entry);};
   const back=()=>{worldSound.play("key",{gain:.14});if(selected)setSelected(null);else if(sharing)setSharing(false);else onBack();};
   return <div className={styles.machine} data-state={sharing?"form":selected?"detail":"shelf"} aria-label="Chocolate blog selection screen">
     {!focused?<div className={styles.attract}><h2>Blogs</h2><ShopOtter/><p>A little treat for your brain.</p></div>:<>
-      <header className={styles.header}><div><h2>Blogs</h2><p>{sharing?"Share a good read.":selected?"Your next read.":"Pick a chocolate. Find a good read."}</p></div><button onClick={onBack} aria-label="Leave vending machine"><Icon kind="close"/></button></header>
+      <header className={styles.header}><div><h2>Blogs</h2><p>{sharing?"Share a good read.":selected?"Your next read.":"Pick a chocolate. Find a good read."}</p></div><div className={styles.headerActions}><a href="/admin/blogs" target="_blank" rel="noopener noreferrer">Manage</a><button onClick={onBack} aria-label="Leave vending machine"><Icon kind="close"/></button></div></header>
       {sharing?<form className={styles.form} onSubmit={async event=>{
         event.preventDefault();if(sending)return;if(!safeLink(url.trim())){setError("Use an http or https link.");return;}setSending(true);setError("");
         try{const res=await fetch("/api/blogs",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:title.trim(),url:url.trim()})});const data=await res.json();if(!res.ok||!data.blog)throw new Error(data.error??"Couldn't add that blog.");setEntries(prev=>[data.blog,...prev]);setPage(0);setSharing(false);setTitle("");setUrl("");}

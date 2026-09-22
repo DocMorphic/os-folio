@@ -58,8 +58,7 @@ export async function listBlogs(): Promise<BlogEntry[]> {
     const res = await fetch(url, {
       method: "GET",
       headers: authHeaders(),
-      cache: "force-cache",
-      next: { revalidate: 300, tags: ["blogs"] },
+      cache: "no-store",
     });
     if (!res.ok) return [];
     const rows = (await res.json()) as BlogRow[];
@@ -67,6 +66,22 @@ export async function listBlogs(): Promise<BlogEntry[]> {
   } catch {
     return [];
   }
+}
+
+/** Server-only privileged operation. The public anon key must never allow DELETE. */
+export async function deleteBlog(id: string): Promise<"deleted" | "missing" | "failed"> {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!SUPABASE_URL || !key || !/^[a-f0-9-]{36}$/i.test(id)) return "failed";
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${encodeURIComponent(id)}&select=id`, {
+      method: "DELETE",
+      headers: { apikey: key, Authorization: `Bearer ${key}`, Prefer: "return=representation" },
+      cache: "no-store",
+    });
+    if (!response.ok) return "failed";
+    const rows = await response.json() as { id: string }[];
+    return rows.some(row => row.id === id) ? "deleted" : "missing";
+  } catch { return "failed"; }
 }
 
 export async function addBlog(url: string, title: string): Promise<BlogEntry | null> {
