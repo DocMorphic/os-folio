@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useWindowManager } from "@/hooks/use-window-manager";
 import { APP_REGISTRY } from "@/lib/constants";
 
@@ -91,11 +91,36 @@ export function Taskbar() {
   const { windows, openWindow, focusWindow, restoreWindow, minimizeWindow } = useWindowManager();
   const isMobile = useIsMobile();
   const apps = isMobile ? DOCK_APPS_MOBILE : DOCK_APPS;
+  const dockRef = useRef<HTMLDivElement>(null);
+  const [tooltip, setTooltip] = useState<{ title: string; left: number } | null>(null);
+
+  function showTooltip(button: HTMLButtonElement, title: string) {
+    const dock = dockRef.current?.getBoundingClientRect();
+    if (!dock) return;
+    const bounds = button.getBoundingClientRect();
+    setTooltip({ title, left: bounds.left + bounds.width / 2 - dock.left });
+  }
+
+  useEffect(() => {
+    const dismiss = () => setTooltip(null);
+    window.addEventListener("resize", dismiss);
+    return () => window.removeEventListener("resize", dismiss);
+  }, []);
 
   return (
-    <div className="desktop-dock absolute bottom-5 left-1/2 z-[600] -translate-x-1/2 md:bottom-2">
+    <div ref={dockRef} className="desktop-dock absolute bottom-5 left-1/2 -translate-x-1/2 md:bottom-2"
+      style={{ zIndex: Math.max(600, ...windows.map((win) => win.zIndex + 1)) }}
+      onMouseLeave={() => setTooltip(null)}>
+      {/* Outside the scrolling strip: overflow-x:auto also clips the vertical axis. */}
+      {tooltip && (
+        <div role="tooltip" className="dock-tooltip absolute bottom-full mb-2 whitespace-nowrap border px-2 py-0.5 text-[12px]"
+          style={{ left: tooltip.left, background: "var(--color-surface-solid)", borderColor: "var(--color-border-strong)", color: "var(--color-text)" }}>
+          {tooltip.title}
+        </div>
+      )}
       <div
         className="desktop-dock-items flex items-center justify-center gap-1.5 border-2 px-3 py-3 md:w-auto md:gap-1.5 md:px-2.5 md:py-1.5"
+        onScroll={() => setTooltip(null)}
         style={{
           background: "var(--color-dock-bg)",
           borderColor: "var(--color-dock-border)",
@@ -113,19 +138,11 @@ export function Taskbar() {
 
           return (
             <div key={app.id} className="dock-item relative flex flex-col items-center">
-              {/* Tooltip */}
-              <div
-                className="dock-tooltip absolute -top-8 left-1/2 whitespace-nowrap border px-2 py-0.5 text-[12px]"
-                style={{
-                  background: "var(--color-surface-solid)",
-                  borderColor: "var(--color-border-strong)",
-                  color: "var(--color-text)",
-                }}
-              >
-                {app.title}
-              </div>
-
               <button
+                onMouseEnter={(event) => showTooltip(event.currentTarget, app.title)}
+                onMouseLeave={() => setTooltip(null)}
+                onFocus={(event) => showTooltip(event.currentTarget, app.title)}
+                onBlur={() => setTooltip(null)}
                 className="flex h-10 w-10 items-center justify-center border-2 transition-colors md:h-10 md:w-10"
                 style={{
                   background: isFocused ? "var(--color-button-dark-hover)" : "var(--color-button-dark)",

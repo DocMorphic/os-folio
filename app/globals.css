@@ -402,14 +402,8 @@ body {
 
 /* === Dock === */
 .dock-tooltip {
-  opacity: 0;
-  transform: translateX(-50%) translateY(4px);
-  transition: all 0.15s ease;
+  transform: translateX(-50%);
   pointer-events: none;
-}
-.dock-item:hover .dock-tooltip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
 }
 
 /* === Menu dropdown === */
