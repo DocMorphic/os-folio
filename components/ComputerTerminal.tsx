@@ -8,6 +8,7 @@ import { experience, education } from "@/content/experience";
 import { FOLDER_CONTENTS } from "@/content/folder-files";
 import { BlogApp } from "@/components/apps/BlogApp";
 import { ContactApp } from "@/components/apps/ContactApp";
+import { AboutSocialLinks } from "@/components/AboutSocialLinks";
 import { resolveTerminalCommand, terminalRowIndex, TERMINAL_SECTIONS, type TerminalRoute } from "@/lib/portfolio-terminal";
 import type { ExperienceEntry } from "@/lib/types";
 
@@ -130,7 +131,7 @@ export function ComputerTerminal({ onExit, autoFocus = true, initialSection = "h
         <h3 className="ct-section-title">REFERENCES</h3><div className="ct-reference-links">{(detail?.references ?? [{ label: "GitHub", href: project.github }, { label: "Live project", href: project.link }]).filter(link => link.href).map(link => <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer">{link.label} ↗</a>)}</div>
       </>}
 
-      {route.section === "about" && <><h1>A little about me.</h1>{aboutData.intro.map(text => <p className="ct-prose" key={text}>{text}</p>)}<h3 className="ct-section-title">CURRENT FOCUS</h3><ul className="ct-focus">{aboutData.currentFocus.map(text => <li key={text}>{text}</li>)}</ul><div className="ct-reference-links"><a href={aboutData.socials.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href={aboutData.socials.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div></>}
+      {route.section === "about" && <><h1>A little about me.</h1>{aboutData.intro.map(text => <p className="ct-prose" key={text}>{text}</p>)}<AboutSocialLinks onContact={() => navigate({section:"contact"})} /><h3 className="ct-section-title">CURRENT FOCUS</h3><ul className="ct-focus">{aboutData.currentFocus.map(text => <li key={text}>{text}</li>)}</ul></>}
       {route.section === "resume" && <><h1>Experience & education.</h1><h3 className="ct-section-title">EXPERIENCE</h3><Timeline entries={experience} /><h3 className="ct-section-title">EDUCATION</h3><Timeline entries={education} /></>}
       {route.section === "blogs" && <div className="ct-existing"><BlogApp numbered /></div>}
       {route.section === "contact" && <div className="ct-existing ct-contact"><ContactApp /></div>}

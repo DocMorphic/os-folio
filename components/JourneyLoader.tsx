@@ -27,6 +27,7 @@ function Loader(){
   const leaving=useRef(false),leaveTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const audioTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const canBegin=journey.ready&&minimumPassed;
+  const actionLabel=journey.destination==="desktop"?"Exit":"Begin";
   useEffect(()=>{
     const ready=(event:MessageEvent)=>{
       if(gameHasStarted.current||event.source!==game.current?.contentWindow||event.data?.type!=="runner-ready")return;
@@ -83,9 +84,9 @@ function Loader(){
     return()=>{observer.disconnect();original.forEach((inert,el)=>{if(!el.querySelector(".portfolio-room"))el.inert=inert;});document.removeEventListener("keydown",key,true);document.removeEventListener("keyup",key,true);worldSound.hold(false);if(leaveTimer.current)clearTimeout(leaveTimer.current);if(audioTimer.current)clearTimeout(audioTimer.current);};
   },[]);
   useEffect(()=>{if(canBegin)button.current?.focus({preventScroll:true});},[canBegin]);
-  return <div ref={root} className={`${styles.cover} ${fading?styles.leaving:""}`} role="dialog" aria-modal="true" aria-label={canBegin?"Ready to begin":"Loading"} tabIndex={-1}>
+  return <div ref={root} className={`${styles.cover} ${fading?styles.leaving:""}`} role="dialog" aria-modal="true" aria-label={canBegin?`Ready to ${actionLabel.toLowerCase()}`:"Loading"} tabIndex={-1}>
     {canBegin
-      ?<button ref={button} className={styles.begin} type="button" aria-label="Begin" disabled={fading} onClick={begin}><span aria-hidden="true" className={styles.word}>{Array.from("Begin").map((letter,index)=><span key={index}>{letter}</span>)}</span></button>
+      ?<button ref={button} className={styles.begin} type="button" aria-label={actionLabel} disabled={fading} onClick={begin}><span aria-hidden="true" className={styles.word}>{Array.from(actionLabel).map((letter,index)=><span key={index}>{letter}</span>)}</span></button>
       :<div className={styles.loadingGame}>
         <iframe ref={game} className={styles.game} src="/vendor/chromium-dino/index.html" onLoad={gameLoaded} title="Chrome dinosaur game — Space or tap to jump, Down to duck" sandbox="allow-scripts"/>
         <div className={styles.loadingTrack} role="progressbar" aria-label="Loading" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}><span style={{transform:`scaleX(${progress/100})`}}/></div>

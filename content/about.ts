@@ -15,6 +15,7 @@ export const aboutData = {
   socials: {
     github: "https://github.com/DocMorphic",
     linkedin: "https://www.linkedin.com/in/dharmay-dave/",
+    x: "https://x.com/DocMorphic",
     email: "davedharmay@gmail.com",
   },
 };

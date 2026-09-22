@@ -1,0 +1,32 @@
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 22px;
+  padding: 5px 0 8px;
+  color: var(--color-text-secondary);
+}
+.links a, .links button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px 2px;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 140ms ease;
+}
+.links svg { width: 19px; height: 19px; flex-shrink: 0; }
+.links a:hover, .links button:hover { color: var(--color-accent); }
+.links a:hover span, .links button:hover span { text-decoration: underline; text-underline-offset: 4px; }
+.links a:focus-visible, .links button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .links a, .links button { transition: none; } }

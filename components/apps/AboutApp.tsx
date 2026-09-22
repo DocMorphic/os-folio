@@ -3,6 +3,7 @@
 import { aboutData } from "@/content/about";
 import { useWindowManager } from "@/hooks/use-window-manager";
 import { RetroComputer } from "@/components/RetroComputer";
+import { AboutSocialLinks } from "@/components/AboutSocialLinks";
 
 export function AboutApp() {
   const { openWindow } = useWindowManager();
@@ -66,6 +67,8 @@ export function AboutApp() {
             </button>.
           </p>
         </div>
+
+        <AboutSocialLinks onContact={() => openWindow("contact")} />
 
         <section className="border" style={{ borderColor: "var(--color-border)" }}>
           <h2
