@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWindowManager } from "@/hooks/use-window-manager";
 import { LLM_TXT } from "@/content/text-files";
+import { CV_DOWNLOAD_HREF } from "@/content/cv";
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -45,7 +46,7 @@ const DESKTOP_ITEMS: DesktopItem[] = [
     id: "cv",
     label: "CV.pdf",
     type: "pdf",
-    downloadHref: "/cv.pdf",
+    downloadHref: CV_DOWNLOAD_HREF,
     downloadName: "Dharmay Dave CV.pdf",
   },
 ];

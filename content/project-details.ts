@@ -22,6 +22,41 @@ export interface ProjectDetail {
 }
 
 export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
+  tradefly: {
+    projectId: "tradefly",
+    tasks: ["Neural Simulation", "Paper-Trading Pipeline", "Desktop UI", "Data Visualization"],
+    sections: [
+      {
+        title: "The Experiment",
+        content:
+          "What if a fly had a trading desk? Tradefly turns measured activity from two simulated fruit-fly brains into paper-trading decisions. Each simulation uses 138,639 neurons from the FlyWire female v783 connectome, adapted from the Shiu/Spiller Brian2 reference model. The market inputs, action mapping, and execution rules are human-designed: this is not a biological fly that understands finance.",
+      },
+      {
+        title: "What You Can Explore",
+        content:
+          "A windowed desktop brings together account history, holdings, price charts, recorded neural spikes, and an evidence trail from market observation to broker outcome. The Training Lab explores a separate fly-inspired memory layer using delayed feedback and held-out comparisons. Public visitors can observe; only the owner can change controls.",
+      },
+      {
+        title: "Architecture",
+        content:
+          "Two Python / Brian2 simulation processes feed one account coordinator, with a local SQLite ledger and checkpoints. The Next.js / React desktop runs on Vercel with Turso-backed website state, while the persistent worker runs separately and keeps Alpaca credentials local. Three.js powers the fly habitat, and TypeScript connects the interface and telemetry.",
+      },
+      {
+        title: "Boundaries",
+        content:
+          "This is a paper-trading research project, not a proven trading strategy. The connectome stays fixed; the optional learning layer is separate. Execution is gated by readiness and account checks, training can run without orders, and profitability has not been established.",
+      },
+    ],
+    visuals: [],
+    diagram: {
+      title: "From market observation to paper trade",
+      nodes: ["Market bars", "Sensory inputs", "Two fly-brain simulations", "Neural readout", "Execution checks", "Paper account & evidence trail"],
+    },
+    references: [
+      { label: "Open Tradefly", href: "https://papertradefly.vercel.app/" },
+      { label: "GitHub", href: "https://github.com/DocMorphic/tradefly" },
+    ],
+  },
   aliquot: {
     projectId: "aliquot",
     tasks: ["AI Pipeline", "Frontend", "Backend", "Search Integration"],

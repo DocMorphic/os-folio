@@ -214,7 +214,7 @@ export function Window({
   return (
     <div
       ref={rootRef}
-      className="window-enter absolute flex flex-col overflow-hidden border-2"
+      className="os-window window-enter absolute flex flex-col overflow-hidden border-2"
       style={{
         left: windowState.position.x,
         top: windowState.position.y,

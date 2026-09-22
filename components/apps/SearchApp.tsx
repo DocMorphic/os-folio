@@ -50,6 +50,7 @@ const INTENTS: SearchIntent[] = [
       "build",
       "lighthouse",
       "hashi",
+      "tradefly",
       "framed",
       "freelance",
     ],

@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Newsreader, Geist_Mono } from "next/font/google";
 import { StatsTracker } from "@/components/StatsTracker";
+import { JourneyLoader } from "@/components/JourneyLoader";
+import { ViewportSync } from "@/components/ViewportSync";
 import "./globals.css";
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  interactiveWidget: "resizes-content",
   viewportFit: "cover",
 };
 
@@ -86,6 +87,7 @@ export default function RootLayout({
         />
       </head>
       <body className="h-full overflow-hidden">
+        <ViewportSync/>
         <a href="#desktop-content" className="skip-to-content">
           Skip to content
         </a>
@@ -99,6 +101,7 @@ export default function RootLayout({
           </ul>
         </nav>
         {children}
+        <JourneyLoader />
         <StatsTracker />
       </body>
     </html>

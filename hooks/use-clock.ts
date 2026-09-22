@@ -8,23 +8,19 @@ export interface ClockValue {
 }
 
 export function useClock(): ClockValue {
-  const [time, setTime] = useState(() => formatTime());
+  // A prerendered page may be opened hours later and in another timezone.
+  // Server markup and the first browser render must not contain different dates.
+  const [time, setTime] = useState<ClockValue>({ full: "", time: "" });
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    const tick = () => {
       setTime(formatTime());
-    }, 60_000);
-
-    const now = new Date();
-    const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-    const timeout = setTimeout(() => {
-      setTime(formatTime());
-    }, msUntilNextMinute);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
+      const now = new Date();
+      timeout = setTimeout(tick, (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 10);
     };
+    timeout = setTimeout(tick, 0);
+    return () => clearTimeout(timeout);
   }, []);
 
   return time;

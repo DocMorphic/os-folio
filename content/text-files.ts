@@ -79,6 +79,11 @@ email. Deployed on Vercel at a custom domain.
 
 ## Past projects (the receipts)
 
+- **Tradefly** — Two simulated fruit-fly brains explore paper trading.
+  Python / Brian2 workers feed a Next.js desktop with neural activity,
+  account history, and traceable decisions. Human-designed market inputs
+  and execution rules; paper only, with no established profitability.
+  papertradefly.vercel.app.
 - **Pyra** — Digital-twin O&M console for utility-scale solar plants.
   Doesn't just detect underperformance — explains it, quantifies the
   euros lost (curtailment-adjusted), and turns each finding into an

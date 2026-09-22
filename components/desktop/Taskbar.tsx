@@ -93,9 +93,9 @@ export function Taskbar() {
   const apps = isMobile ? DOCK_APPS_MOBILE : DOCK_APPS;
 
   return (
-    <div className="absolute bottom-5 left-1/2 z-[600] -translate-x-1/2 md:bottom-2">
+    <div className="desktop-dock absolute bottom-5 left-1/2 z-[600] -translate-x-1/2 md:bottom-2">
       <div
-        className="flex items-center justify-center gap-1.5 border-2 px-3 py-3 md:w-auto md:gap-1.5 md:px-2.5 md:py-1.5"
+        className="desktop-dock-items flex items-center justify-center gap-1.5 border-2 px-3 py-3 md:w-auto md:gap-1.5 md:px-2.5 md:py-1.5"
         style={{
           background: "var(--color-dock-bg)",
           borderColor: "var(--color-dock-border)",

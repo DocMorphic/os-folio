@@ -1,0 +1,9 @@
+@font-face {font-family:WorldPixel;src:url('/fonts/VT323-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}
+.ticker{width:800px;height:176px;position:relative;overflow:hidden;background:#080f13;color:#eef5ed;font-family:WorldPixel,monospace;}
+.track{display:flex;width:max-content;animation:tape 36s linear infinite;}
+.quotes{display:flex;flex-shrink:0;}
+.quote{display:flex;flex-direction:column;justify-content:center;min-width:270px;height:144px;padding:8px 24px;border-right:1px solid #9be9cd20;}
+.quote strong{font-size:45px;font-weight:400;line-height:1;}.quote span{font-size:48px;line-height:1.1;white-space:nowrap;}.quote small{font-size:28px;}.up{color:#85f564;}.down{color:#ff625d;}
+.led{position:absolute;inset:0 0 28px;pointer-events:none;background:radial-gradient(circle,transparent 1.2px,#06101888 1.6px);background-size:4px 4px;opacity:.38;}
+.ticker footer{position:absolute;inset:auto 0 0;height:28px;padding:0 18px;display:flex;align-items:center;font-size:22px;letter-spacing:1px;border-top:1px solid #ffffff18;}.status{height:144px;display:grid;place-items:center;font-size:36px;color:#a7b8af;}
+@keyframes tape{to{transform:translateX(-50%);}}@media(prefers-reduced-motion:reduce){.track{animation:none;}}

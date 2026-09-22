@@ -10,6 +10,7 @@ import { projects } from "@/content/projects";
 import { experience } from "@/content/experience";
 import { blogPosts } from "@/content/blog-posts";
 import { aboutData } from "@/content/about";
+import { queueSnakeTurn, snakeSwipeDirection, type SnakeDirection } from "@/lib/snake-gestures";
 
 const PROMPT = "dharmay@portfolio:~$";
 
@@ -30,7 +31,7 @@ const COMMANDS: Array<[string, string]> = [
   ["experience", "List career experience."],
   ["folders", "List desktop folders."],
   ["fortune", "Random developer quote."],
-  ["game [easy|normal|hard]", "Play Terminal Snake. Arrow keys to move, q to quit."],
+  ["game [easy|normal|hard]", "Play Terminal Snake. Swipe or use arrow keys to move."],
   ["github", "Open GitHub profile."],
   ["guess [number]", "Guess the number — 1 to 100."],
   ["hangman [letter]", "Play hangman with programmer words."],
@@ -114,7 +115,7 @@ const SNAKE_ROWS = 12;
 const SNAKE_BEST_KEY = "os-folio:snake-best";
 
 type GameMode = "idle" | "snake";
-type Dir = "up" | "down" | "left" | "right";
+type Dir = SnakeDirection;
 type Difficulty = "easy" | "normal" | "hard";
 interface Point { x: number; y: number; }
 interface SnakeState {
@@ -133,6 +134,7 @@ interface SnakeState {
 interface Line {
   type: "output" | "input" | "error" | "orange" | "green";
   text: string;
+  board?: boolean;
 }
 
 export function TerminalApp() {
@@ -157,6 +159,8 @@ export function TerminalApp() {
   const snakeRef = useRef<SnakeState | null>(null);
   const snakeTickRef = useRef<number | null>(null);
   const gameBaseRef = useRef<Line[]>([]);
+  const gameSurfaceRef = useRef<HTMLDivElement>(null);
+  const swipeRef = useRef<{ id: number; x: number; y: number; used: boolean } | null>(null);
   const guessRef = useRef<{ target: number; attempts: number } | null>(null);
   const hangRef = useRef<{ word: string; guessed: Set<string>; tries: number } | null>(null);
 
@@ -213,25 +217,25 @@ export function TerminalApp() {
     out.push({ type: "orange", text: "Terminal Snake" });
     out.push({
       type: "output",
-      text: "Controls: Arrow Keys move | P pause/resume | R restart | Q or Esc quit",
+      text: "Swipe or arrow keys / WASD to move. P pause · R restart · Q quit",
     });
     out.push({
       type: "output",
       text: `Difficulty ${diffLabel} | Score ${state.score} | Best ${state.best} | Length ${state.snake.length} | Speed ${speed}/s`,
     });
-    out.push({ type: "output", text: border });
+    out.push({ type: "output", text: border, board: true });
     grid.forEach((row) => {
-      out.push({ type: "output", text: "|" + row.join("") + "|" });
+      out.push({ type: "output", text: "|" + row.join("") + "|", board: true });
     });
-    out.push({ type: "output", text: border });
+    out.push({ type: "output", text: border, board: true });
 
     if (state.over) {
       out.push({
         type: "error",
-        text: "Game over. Press R to restart or Q to return to terminal.",
+        text: "Game over. Restart below / R, or Quit / Q.",
       });
     } else if (state.paused) {
-      out.push({ type: "orange", text: "Paused. Press P to resume." });
+      out.push({ type: "orange", text: "Paused. Resume below or press P." });
     }
     return out;
   }, []);
@@ -248,7 +252,7 @@ export function TerminalApp() {
     return { x: 0, y: 0 };
   }, []);
 
-  const tickSnake = useCallback(() => {
+  const tickSnake = useCallback(function advanceSnake() {
     const s = snakeRef.current;
     if (!s || s.over || s.paused) return;
 
@@ -311,7 +315,7 @@ export function TerminalApp() {
         // Restart the interval so the next tick fires at the new cadence.
         if (snakeTickRef.current != null) {
           window.clearInterval(snakeTickRef.current);
-          snakeTickRef.current = window.setInterval(tickSnake, s.speedMs);
+          snakeTickRef.current = window.setInterval(advanceSnake, s.speedMs);
         }
       }
     } else {
@@ -356,12 +360,14 @@ export function TerminalApp() {
     (difficulty: Difficulty) => {
       const state = buildSnakeState(difficulty);
       snakeRef.current = state;
+      inputRef.current?.blur();
 
       setLines((prev) => {
         gameBaseRef.current = prev;
         return [...prev, ...renderSnake(state)];
       });
       setGameMode("snake");
+      requestAnimationFrame(() => gameSurfaceRef.current?.focus({ preventScroll: true }));
       snakeTickRef.current = window.setInterval(tickSnake, state.speedMs);
     },
     [buildSnakeState, renderSnake, tickSnake]
@@ -374,6 +380,7 @@ export function TerminalApp() {
     // Preserve the best score from the previous run
     if (current && current.best > state.best) state.best = current.best;
     snakeRef.current = state;
+    swipeRef.current = null;
     if (snakeTickRef.current != null) {
       window.clearInterval(snakeTickRef.current);
     }
@@ -387,6 +394,7 @@ export function TerminalApp() {
       snakeTickRef.current = null;
     }
     snakeRef.current = null;
+    swipeRef.current = null;
     setGameMode("idle");
     setLines((prev) => [
       ...prev,
@@ -396,6 +404,20 @@ export function TerminalApp() {
     ]);
     requestAnimationFrame(() => inputRef.current?.focus());
   }, []);
+
+  const steerSnake = useCallback((direction: Dir) => {
+    const state = snakeRef.current;
+    if (!state || state.over || state.paused) return;
+    state.queued = queueSnakeTurn(state.dir, state.queued, direction);
+  }, []);
+
+  const pauseSnake = useCallback(() => {
+    const state = snakeRef.current;
+    if (!state || state.over) return;
+    state.paused = !state.paused;
+    swipeRef.current = null;
+    setLines([...gameBaseRef.current, ...renderSnake(state)]);
+  }, [renderSnake]);
 
   // Clean up any running game when the terminal unmounts
   useEffect(
@@ -438,8 +460,7 @@ export function TerminalApp() {
       // Pause / resume
       if (lower === "p") {
         e.preventDefault();
-        s.paused = !s.paused;
-        setLines([...gameBaseRef.current, ...renderSnake(s)]);
+        pauseSnake();
         return;
       }
 
@@ -453,12 +474,6 @@ export function TerminalApp() {
       // Don't process steering while paused
       if (s.paused) return;
 
-      const opposite: Record<Dir, Dir> = {
-        up: "down",
-        down: "up",
-        left: "right",
-        right: "left",
-      };
       const map: Record<string, Dir> = {
         ArrowUp: "up",
         ArrowDown: "down",
@@ -472,12 +487,12 @@ export function TerminalApp() {
       const next = map[key] ?? map[lower];
       if (next) {
         e.preventDefault();
-        if (next !== opposite[s.dir]) s.queued = next;
+        steerSnake(next);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [gameMode, stopSnake, restartSnake, renderSnake]);
+  }, [gameMode, stopSnake, restartSnake, pauseSnake, steerSnake]);
 
   const processCommand = useCallback(
     (raw: string) => {
@@ -1003,25 +1018,62 @@ export function TerminalApp() {
 
   return (
     <div
-      className="-mx-5 -my-4 flex h-[calc(100%+32px)] flex-col font-mono"
+      className="-mx-5 -my-4 flex h-[calc(100%+32px)] min-h-0 min-w-0 flex-col font-mono"
       style={{ background: "#1a0e06" }}
       onClick={() => {
         if (gameMode === "idle") inputRef.current?.focus();
       }}
     >
-      <div ref={scrollRef} className="custom-scrollbar flex-1 overflow-y-auto px-4 pt-3 pb-1">
-        {lines.map((line, i) => (
+      <div ref={scrollRef} className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 pt-3 pb-1">
+        <div
+          ref={gameSurfaceRef}
+          role={gameMode === "snake" ? "application" : undefined}
+          aria-label={gameMode === "snake" ? "Terminal Snake. Swipe in any direction or use arrow keys to steer." : undefined}
+          tabIndex={gameMode === "snake" ? 0 : undefined}
+          style={{
+            containerType: "inline-size",
+            touchAction: gameMode === "snake" ? "none" : "auto",
+            userSelect: gameMode === "snake" ? "none" : "auto",
+          }}
+          onPointerDown={(event) => {
+            if (gameMode !== "snake" || event.pointerType === "mouse") return;
+            if (!event.isPrimary) { swipeRef.current = null; return; }
+            swipeRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY, used: false };
+            event.currentTarget.setPointerCapture(event.pointerId);
+          }}
+          onPointerMove={(event) => {
+            const swipe = swipeRef.current;
+            if (!swipe || swipe.id !== event.pointerId || swipe.used) return;
+            const direction = snakeSwipeDirection(event.clientX - swipe.x, event.clientY - swipe.y);
+            if (!direction) return;
+            swipe.used = true;
+            steerSnake(direction);
+          }}
+          onPointerUp={(event) => {
+            if (swipeRef.current?.id === event.pointerId) swipeRef.current = null;
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+          }}
+          onPointerCancel={() => { swipeRef.current = null; }}
+          onLostPointerCapture={() => { swipeRef.current = null; }}
+        >
+        {(gameMode === "snake" ? lines.slice(gameBaseRef.current.length) : lines).map((line, i) => (
           <div
             key={i}
             className="whitespace-pre-wrap text-[12.5px] leading-[1.5]"
             style={{
               color: getColor(line.type),
               fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
+              ...(line.board && gameMode === "snake" ? {
+                whiteSpace: "pre",
+                fontSize: "clamp(8px, 3.7cqw, 12.5px)",
+                lineHeight: 1.45,
+              } : {}),
             }}
           >
             {line.text}
           </div>
         ))}
+        </div>
         {gameMode === "idle" && (
           <div
             className="flex items-center text-[12.5px]"
@@ -1050,6 +1102,21 @@ export function TerminalApp() {
           </div>
         )}
       </div>
+      {gameMode === "snake" && (
+        <div className="flex shrink-0 flex-wrap gap-2 border-t border-[#714c30] px-4 py-2" aria-label="Snake controls">
+          <button type="button" onClick={pauseSnake} disabled={snakeRef.current?.over}
+            className="min-h-11 border border-[#a16b42] px-4 text-xs text-[#ffb07a] disabled:opacity-40">
+            {snakeRef.current?.paused ? "Resume" : "Pause"}
+          </button>
+          <button type="button" onClick={restartSnake}
+            className="min-h-11 border border-[#a16b42] px-4 text-xs text-[#ffb07a]">Restart</button>
+          <button type="button" onClick={stopSnake}
+            className="min-h-11 border border-[#a16b42] px-4 text-xs text-[#ffb07a]">Quit</button>
+          <span className="sr-only" role="status">
+            {snakeRef.current?.over ? `Game over. Score ${snakeRef.current.score}.` : snakeRef.current?.paused ? "Game paused." : "Game running."}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

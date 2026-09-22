@@ -46,7 +46,7 @@ export function MenuBar() {
   return (
     <div
       ref={menuRef}
-      className="relative z-[600] flex h-[34px] items-stretch justify-between border-b pr-3"
+      className="desktop-menubar relative z-[600] flex h-[34px] items-stretch justify-between border-b pr-3"
       style={{
         background: "var(--color-menubar-bg)",
         borderColor: "var(--color-menubar-border)",

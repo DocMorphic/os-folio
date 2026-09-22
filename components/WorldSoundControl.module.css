@@ -1,0 +1,9 @@
+.control { position:relative; display:flex; gap:3px; pointer-events:auto; z-index:2; }
+.volume { position:absolute; top:calc(100% + 8px); left:0; min-width:165px; padding:14px; display:flex; flex-direction:column; gap:8px; background:#18313b80; color:#effcf8; border:1px solid #eaffff55; border-radius:14px; backdrop-filter:blur(12px) saturate(125%); -webkit-backdrop-filter:blur(12px) saturate(125%); text-shadow:0 1px 3px #071922a6; box-shadow:inset 0 1px 0 #ffffff22,0 8px 25px #07192222; font:12px/1.4 monospace; visibility:hidden; opacity:0; transition:opacity .15s; }
+.volume[data-open="true"] { visibility:visible; opacity:1; }
+.volume input { width:140px; accent-color:#98e9cc; pointer-events:auto; touch-action:none; cursor:pointer; }
+.volume label { position:relative; display:flex; flex-direction:column; gap:6px; }
+.volume output { position:absolute; right:0; top:0; }
+.volume small { display:block; max-width:185px; font-size:11px; line-height:1.5; opacity:.8; }
+.volume a { color:inherit; text-underline-offset:3px; }
+@media (max-width:600px) { .label { display:none; }.control>button { min-width:40px; }.volume { width:200px; max-width:calc(100vw - 24px); }.volume input { width:100%; min-height:32px; } }

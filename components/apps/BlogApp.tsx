@@ -30,7 +30,7 @@ export function preloadBlogs() {
   void loadBlogs().catch(() => {});
 }
 
-export function BlogApp() {
+export function BlogApp({numbered=false}:{numbered?:boolean}={}) {
   const [blogs, setBlogs] = useState<BlogEntry[]>(cachedBlogs ?? []);
   const [loading, setLoading] = useState(cachedBlogs === null);
   const [url, setUrl] = useState("");
@@ -223,6 +223,7 @@ export function BlogApp() {
           blogs.map((b, i) => (
             <a
               key={b.id}
+              data-terminal-row={numbered?i+1:undefined}
               href={b.url}
               target="_blank"
               rel="noopener noreferrer"
@@ -235,7 +236,7 @@ export function BlogApp() {
               }}
             >
               <div className="mt-0.5 shrink-0">
-                <BookIcon />
+                {numbered?String(i+1).padStart(2,"0"):<BookIcon />}
               </div>
               <div className="min-w-0 flex-1">
                 <div

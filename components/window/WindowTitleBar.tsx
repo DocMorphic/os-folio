@@ -39,7 +39,7 @@ export function WindowTitleBar({
 
   return (
     <div
-      className={`flex h-9 shrink-0 items-center justify-between border-b-2 pl-3 pr-1.5 ${
+      className={`window-titlebar flex h-9 shrink-0 items-center justify-between border-b-2 pl-3 pr-1.5 ${
         draggable ? "cursor-move" : "cursor-default"
       }`}
       style={{

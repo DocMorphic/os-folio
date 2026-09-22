@@ -2,6 +2,20 @@ import type { Project } from "@/lib/types";
 
 export const projects: Project[] = [
   {
+    id: "tradefly",
+    title: "Tradefly",
+    description:
+      "A fly-brain paper-trading experiment. Two simulated fruit-fly brains turn market inputs into buy, sell, or hold decisions, with a desktop interface for inspecting neural activity, account history, and the evidence behind each trade. Paper trading only; profitability has not been established.",
+    tags: ["Next.js", "TypeScript", "Python", "Brian2", "Three.js", "Alpaca"],
+    role: "Solo",
+    category: "Personal",
+    year: "2026",
+    startDate: "Sep 2026",
+    endDate: "Sep 2026",
+    github: "https://github.com/DocMorphic/tradefly",
+    link: "https://papertradefly.vercel.app/",
+  },
+  {
     id: "aliquot",
     title: "Aliquot",
     description:

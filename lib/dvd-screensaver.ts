@@ -1,5 +1,5 @@
-export const DVD_WIDTH = 180;
-export const DVD_HEIGHT = 114;
+export const DVD_WIDTH = 120;
+export const DVD_HEIGHT = 76;
 const COLORS = ["#9be67e", "#74c9ff", "#ef88df", "#ffd16e", "#ac9cff", "#72e4d3"];
 
 /** Reflect an unbounded distance into a track without overshoot or teleporting. */
@@ -9,15 +9,14 @@ export function bounceAxis(distance: number, span: number) {
 }
 
 export function dvdPosition(time: number) {
-  const margin = 14;
-  const spanX = 512 - DVD_WIDTH - margin * 2;
-  const spanY = 352 - DVD_HEIGHT - margin * 2;
+  const spanX = 512 - DVD_WIDTH;
+  const spanY = 352 - DVD_HEIGHT;
   const dx = 38 + time * 67;
   const dy = 61 + time * 45;
   const collisions = Math.floor(dx / spanX) + Math.floor(dy / spanY);
   return {
-    x: margin + bounceAxis(dx, spanX),
-    y: margin + bounceAxis(dy, spanY),
+    x: bounceAxis(dx, spanX),
+    y: bounceAxis(dy, spanY),
     color: COLORS[collisions % COLORS.length],
   };
 }

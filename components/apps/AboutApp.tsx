@@ -8,9 +8,8 @@ export function AboutApp() {
   const { openWindow } = useWindowManager();
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-clip pt-1">
-      <div className="flex shrink-0 flex-col gap-3">
-        <div>
+    <div className="about-layout pt-1">
+        <header>
           <h1
             className="about-name-heading font-serif-heading flex flex-nowrap items-center gap-x-3 whitespace-nowrap text-[clamp(48px,5vw,64px)] leading-[0.95]"
             style={{ color: "var(--color-text)" }}
@@ -29,8 +28,10 @@ export function AboutApp() {
           >
             {aboutData.title} · {aboutData.location}
           </p>
-        </div>
+        </header>
 
+      <div className="about-body">
+      <div className="about-copy">
         <div
           className="flex max-w-[68ch] flex-col gap-2 text-[13px] leading-[1.5]"
           style={{ color: "var(--color-text-secondary)" }}
@@ -94,9 +95,11 @@ export function AboutApp() {
             ))}
           </ul>
         </section>
+        <button className="about-experience" type="button" onClick={() => openWindow("experience")}>Open Experience</button>
       </div>
 
-      <RetroComputer onExperience={() => openWindow("experience")} />
+      <RetroComputer />
+      </div>
     </div>
   );
 }

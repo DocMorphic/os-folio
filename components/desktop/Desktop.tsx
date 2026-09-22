@@ -183,7 +183,7 @@ export function Desktop() {
           <div
             id="desktop-content"
             className="absolute inset-0 bottom-0"
-            style={{ top: "34px" }}
+            style={{ top: "calc(var(--menu-height, 34px) + env(safe-area-inset-top))" }}
             tabIndex={-1}
           >
             {/* Desktop shortcut icons */}

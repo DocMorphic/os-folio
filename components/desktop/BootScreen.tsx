@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { isReturningToDesktop } from "@/lib/route-transition";
 
 const BOOT_LINES = [
   "BOOT SEQUENCE INITIATED",
@@ -18,7 +19,7 @@ const FADE_DELAY_MS = WELCOME_DELAY_MS + 150;
 const UNMOUNT_DELAY_MS = FADE_DELAY_MS + 200;
 
 export function BootScreen() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(()=>!isReturningToDesktop());
   const [linesShown, setLinesShown] = useState(0);
   const [showWelcome, setShowWelcome] = useState(false);
 

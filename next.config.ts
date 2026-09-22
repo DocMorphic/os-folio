@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  redirects() {
+    return [{ source: "/youmadeit", destination: "/v2", permanent: true }];
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     // Sizes the viewer + thumbnails actually render at — keeps the on-demand

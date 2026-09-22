@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { StatsResult } from "@/lib/stats-store";
+import { WindowLoader } from "@/components/window/WindowLoader";
 
 const EMPTY_STATS: StatsResult = {
   allTime: { visitors: 0, pageViews: 0 },
@@ -23,29 +24,43 @@ export function SiteStatsApp() {
 
   useEffect(() => {
     let cancelled = false;
+    let settled = false;
+    let minimumElapsed = false;
+    const controller = new AbortController();
+    // Finish one short sweep on fast responses instead of flashing the loader.
+    // Slow requests keep animating; reduced-motion users have no presentation delay.
+    const minimumTimer = window.setTimeout(() => {
+      minimumElapsed = true;
+      if (settled && !cancelled) setLoading(false);
+    }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 500);
 
     async function load() {
       try {
-        const res = await fetch("/api/stats", { cache: "no-store" });
+        const res = await fetch("/api/stats", { cache: "no-store", signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data: StatsResult = await res.json();
         if (!cancelled) {
           setStats(data);
-          setLoading(false);
         }
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : "failed to load stats");
-          setLoading(false);
         }
+      } finally {
+        settled = true;
+        if (minimumElapsed && !cancelled) setLoading(false);
       }
     }
 
     load();
     return () => {
       cancelled = true;
+      controller.abort();
+      window.clearTimeout(minimumTimer);
     };
   }, []);
+
+  if (loading) return <WindowLoader label="Loading site stats…" />;
 
   return (
     <div className="flex flex-col gap-5">
@@ -58,7 +73,7 @@ export function SiteStatsApp() {
       </div>
 
       {/* Connection state */}
-      {!loading && !stats.connected && !error && (
+      {!stats.connected && !error && (
         <div
           className="border px-4 py-3 text-[12px]"
           style={{
@@ -101,27 +116,12 @@ export function SiteStatsApp() {
           style={{ color: "var(--color-text-muted)" }}
         >
           <span>OVERVIEW</span>
-          {loading && (
-            <span className="flex items-center gap-1.5" style={{ textTransform: "none", letterSpacing: 0 }}>
-              <Spinner />
-              <span className="text-[10.5px]">loading…</span>
-            </span>
-          )}
         </div>
 
-        {/* Two big stat cards — skeleton while loading */}
+        {/* Overview */}
         <div className="grid grid-cols-2 gap-3">
-          {loading ? (
-            <>
-              <StatCardSkeleton />
-              <StatCardSkeleton />
-            </>
-          ) : (
-            <>
-              <StatCard label="VISITORS ALL TIME" value={fmt(stats.allTime.visitors)} />
-              <StatCard label="PAGE VIEWS ALL TIME" value={fmt(stats.allTime.pageViews)} />
-            </>
-          )}
+          <StatCard label="VISITORS ALL TIME" value={fmt(stats.allTime.visitors)} />
+          <StatCard label="PAGE VIEWS ALL TIME" value={fmt(stats.allTime.pageViews)} />
         </div>
       </div>
 
@@ -142,14 +142,8 @@ export function SiteStatsApp() {
           <span className="text-right">30D</span>
         </div>
 
-        {/* Rows — skeleton while loading */}
-        {loading ? (
-          <>
-            <MetricRowSkeleton />
-            <MetricRowSkeleton isLast />
-          </>
-        ) : (
-          stats.metrics.map((row, i) => (
+        {/* Metrics */}
+        {stats.metrics.map((row, i) => (
             <div
               key={row.label}
               className="grid grid-cols-[1fr_80px_80px_80px] gap-3 px-4 py-3 text-[12.5px]"
@@ -169,8 +163,7 @@ export function SiteStatsApp() {
                 {fmt(row.d30)}
               </span>
             </div>
-          ))
-        )}
+          ))}
       </div>
     </div>
   );
@@ -195,45 +188,5 @@ function StatCard({ label, value }: { label: string; value: string }) {
         {value}
       </div>
     </div>
-  );
-}
-
-function StatCardSkeleton() {
-  return (
-    <div
-      className="border p-4"
-      style={{
-        background: "var(--color-surface-solid)",
-        borderColor: "var(--color-border)",
-      }}
-    >
-      <div className="skeleton mb-3 h-[11px] w-[130px]" />
-      <div className="skeleton h-[32px] w-[90px]" />
-    </div>
-  );
-}
-
-function MetricRowSkeleton({ isLast }: { isLast?: boolean }) {
-  return (
-    <div
-      className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-3 px-4 py-3"
-      style={{
-        borderBottom: isLast ? "none" : "1px solid var(--color-border)",
-      }}
-    >
-      <div className="skeleton h-[14px] w-[100px]" />
-      <div className="skeleton h-[14px] w-[36px] justify-self-end" />
-      <div className="skeleton h-[14px] w-[36px] justify-self-end" />
-      <div className="skeleton h-[14px] w-[36px] justify-self-end" />
-    </div>
-  );
-}
-
-function Spinner() {
-  return (
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" className="animate-spin">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" strokeOpacity="0.25" />
-      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </svg>
   );
 }

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dinosaur game</title>
+  <link rel="preload" href="offline.js" as="script">
+  <link rel="preload" href="200-offline-sprite.png" as="image" media="(min-resolution: 1.01dppx)">
+  <link rel="preload" href="100-offline-sprite.png" as="image" media="(max-resolution: 1dppx)">
+  <style>
+    html,body{margin:0;width:100%;height:100%;background:#f7f7f7;color:#535353;overflow:hidden;color-scheme:light}
+    body{display:flex;align-items:center;justify-content:center;touch-action:none}
+    .interstitial-wrapper{width:100%;max-width:600px;padding:0;position:relative}
+    .runner-container{position:relative;width:100%;height:150px;overflow:hidden}
+    .runner-canvas{display:block;max-width:100%;height:150px}
+    .icon-offline{display:none}.controller{position:absolute;inset:0}
+    .inverted{filter:invert(1)}
+  </style>
+</head>
+<body>
+  <div class="interstitial-wrapper" role="application" aria-label="Dinosaur game. Space or tap to jump, Down to duck."><div class="icon-offline"></div></div>
+  <div hidden>
+    <img id="offline-resources-1x" src="100-offline-sprite.png" alt="">
+    <img id="offline-resources-2x" src="200-offline-sprite.png" alt="">
+  </div>
+  <script src="adapter.js?v=3"></script>
+  <script src="offline.js"></script>
+</body>
+</html>
